@@ -1,6 +1,6 @@
 # 🌟Make Sure You Read all Instructions :
 
-##### This code is fully funcional web app which is already deployed in heroku cloud server
+##### This code is fully funcional web app which is already deployed in heroku cloud server and i did not attached model due to storage of memory.
 
 ##### You have install requirements.txt for run this code in your pc
 
