@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Farmer Portal{% endblock %}</title>
+    
+    <!-- Include Bootstrap for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'hi,ta,te,kn,pa',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+        // Adjust Chart Heights Dynamically
+function adjustChartSizes() {
+    const chartCards = document.querySelectorAll('.chart-card');
+    chartCards.forEach(card => {
+        const canvas = card.querySelector('canvas');
+        const isMobile = window.innerWidth <= 768;
+        canvas.style.height = isMobile ? '250px' : '350px'; // Resize chart for mobile
+    });
+}
+
+// Call on load and resize
+window.addEventListener('resize', adjustChartSizes);
+document.addEventListener('DOMContentLoaded', adjustChartSizes);
+
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <!-- Custom CSS for Google Translate and dropdown -->
+    <style>
+        /* Styling for the Google Translate Element */
+        #google_translate_element {
+            display: inline-block;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #f9f9f9;
+        }
+
+        /* Dropdown button styling */
+        .goog-te-combo {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            #google_translate_element {
+                width: 100%;
+                text-align: center;
+            }
+            .goog-te-combo {
+                width: 90%;
+                margin: 0 auto;
+            }
+        }
+
+        /* Navbar and Dropdown Styling */
+        .navbar-nav .nav-item.dropdown .dropdown-menu {
+            display: none;
+        }
+
+        .navbar-nav .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .file-upload input[type='file'] {
+            display: none;
+        }
+
+        .rounded-lg {
+            border-radius: 1rem;
+        }
+
+        .custom-file-label.rounded-pill {
+            border-radius: 50rem;
+        }
+
+        .custom-file-label.rounded-pill::after {
+            border-radius: 0 50rem 50rem 0;
+        }
+
+        label {
+            background-color: transparent;
+            color: #00ab41;
+            padding: 0.5rem;
+            font-family: sans-serif;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        #file-chosen {
+            margin-left: 0.3rem;
+            font-family: sans-serif;
+        }
+
+        .bttn-pill {
+    border: none;
+    border-radius: 50px; /* Pill shape */
+    padding: 12px 25px; /* Adjust padding */
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #28a745; /* Green background */
+    color: #fff; /* White text */
+    text-decoration: none; /* Remove underline */
+    transition: all 0.3s ease; /* Smooth hover transition */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+
+  .bttn-pill:hover {
+    background-color: #218838; /* Darker green on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhance shadow */
+    transform: translateY(-2px); /* Slight upward movement */
+  }
+
+  .bttn-pill:active {
+    transform: translateY(2px); /* Button presses down */
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Adjust shadow */
+  }
+
+  .laptop {
+    margin-top: 20px; /* Add spacing from top */
+  }
+
+  .laptop a {
+    text-decoration: none; /* Remove underline on the link */
+  }
+      
+  .col-lg-10.mx-auto {
+    max-width: 80%;
+    margin: auto;
+    text-align: center;
+}
+
+/* Styling for the h1 element */
+h1.display-4 {
+    padding-top: 2%;
+    font-weight: 400;
+    color: rgb(17, 204, 17);
+    font-size: 3rem;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Adding shadow for better readability */
+}
+
+/* Styling for the lead text */
+h3.lead {
+    font-weight: 500;
+    color: #048e39 !important;
+    font-size: 0.5rem;
+    line-height: 1.5;
+    margin-top: 20px;
+    opacity: 0; /* Initially hidden */
+    transition: opacity 1s ease-in-out, transform 0.8s ease; /* Adding transitions for opacity and transformation */
+    transform: translateY(20px); /* Initial position off the screen */
+}
+
+/* Initial state for h2.lead */
+h2.lead {
+    font-weight: 500;
+    color: #048e39 !important;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    margin-top: 20px;
+    opacity: 0; /* Initially hidden */
+    transform: translateX(-100%); /* Positioned off-screen to the left */
+    transition: opacity 1s ease-out, transform 1s ease-out; /* Smooth transition for opacity and transform */
+}
+
+/* On page load, animate the text to slide from left to right and appear */
+.col-lg-10.mx-auto .lead {
+    opacity: 1; /* Makes the text appear */
+    transform: translateX(0); /* Moves the text to its normal position */
+}
+
+
+
+
+/* Background image and styling for the lead class when hovered */
+h2.lead {
+    background-image: url('static/images/cropop2.png'); /* Replace with your desired image URL */
+    background-size: cover;
+    background-position: center center;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adding a subtle shadow effect */
+    color: white; /* Text color for contrast */
+}
+
+/* Adding a hover effect to make the background image more interactive */
+.col-lg-10.mx-auto:hover h2.lead {
+    transform: scale(1.05); /* Slightly zooms the background image */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); /* Stronger shadow for a more interactive feel */
+}
+/* Container for all charts */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Main container */
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Flexible chart rows */
+.charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+}
+
+/* Chart card */
+.chart-card {
+    flex: 1 1 calc(50% - 1rem); /* Half-width cards with spacing */
+    background: #ffffff;
+    padding: 1.5rem; /* Ensure enough padding for content */
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 500px; /* Minimum height for content */
+    max-width: 100%; /* Prevent overflow */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Card hover effect */
+.chart-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Headings */
+.chart-card h3 {
+    font-size: 1.6rem; /* Adjust heading size */
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #333;
+    word-wrap: break-word; /* Handle long headings */
+}
+
+/* Paragraphs */
+.chart-card p {
+    font-size: 1rem;
+    text-align: center;
+    color: #666;
+    line-height: 1.4;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Chart container inside cards */
+.chart-card canvas {
+    flex: 1; /* Allow canvas to grow */
+    max-height: 350px; /* Ensure charts fit smaller screens */
+    width: 100%;
+}
+
+/* Adjustments for larger rows */
+.row-large .chart-card {
+    min-height: 600px; /* Accommodate larger content */
+}
+
+/* Tablet screens (1024px and below) */
+@media (max-width: 1024px) {
+    .charts {
+        gap: 1rem; /* Reduce gap between cards */
+    }
+
+    .chart-card {
+        flex: 1 1 calc(50% - 1rem);
+        min-height: 400px;
+        padding: 1.2rem;
+    }
+
+    .chart-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .chart-card p {
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile screens (768px and below) */
+@media (max-width: 768px) {
+    .charts {
+        flex-direction: column; /* Stack cards */
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .chart-card {
+        flex: 1 1 100%; /* Full-width cards */
+        min-height: 350px;
+        padding: 1rem;
+    }
+
+    .chart-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .chart-card p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Small phones (480px and below) */
+@media (max-width: 480px) {
+    .chart-card {
+        min-height: 300px;
+        padding: 0.8rem;
+    }
+
+    .chart-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .chart-card p {
+        font-size: 0.85rem;
+    }
+
+    .chart-card canvas {
+        max-height: 250px; /* Reduce chart size */
+    }
+}
+
+
+
+    </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center">
+            <img src="/static/images/logo1.png" alt="Logo" class="logo me-2">
+            <span class="fw-bold">KrishiDisha</span>
+        </a>
+
+        <!-- Navbar Toggler for mobile view -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('home_crop') }}">Home</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="cropDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Farmer Dashboard</a>
+                    <ul class="dropdown-menu" aria-labelledby="cropDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('crop_recommendation') }}">Crop Recommendation</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('crop_detection') }}">Crop Disease Detection</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('fertilizer_recommendation') }}">Fertilizer Recommendation</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('crop_yield') }}">Crop Yiled Prediction</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('supplements') }}">Supplements</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('farmer_dashboard') }}">View Your Activity</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{{ url_for('farmer_logout') }}">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Language Switcher -->
+        <div id="google_translate_element"></div>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="container mt-5">
+    {% block content %}
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+          <div>
+              {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+              {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      
+    {% endblock %}
+  </div>
+  <div class="chatbot-container">
+    <button class="chatbot-button" onclick="toggleChat()">Ask KrishiDishaBot</button>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <h3>KrishiBot Assistant</h3>
+            <button onclick="toggleChat()">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Ask about crops, features, or account...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+  <!-- Custom JS to Adjust Navbar Position for Google Translate -->
+  <script>
+    function adjustNavbarForTranslate() {
+        var translateBanner = document.querySelector('.goog-te-banner-frame');
+        if (translateBanner) {
+            var bannerHeight = translateBanner.offsetHeight;
+            document.body.style.paddingTop = bannerHeight + 'px';
+        } else {
+            document.body.style.paddingTop = '70px';
+        }
+    }
+    window.onload = function() {
+        setInterval(adjustNavbarForTranslate, 500);
+    };
+    
+
+    // Ensure DOM is fully loaded before running scripts
+ document.addEventListener('DOMContentLoaded', function () {
+    // Global Chart Configuration
+    Chart.defaults.font.family = 'Arial, sans-serif';
+    Chart.defaults.font.size = 14;
+    Chart.defaults.color = '#666';
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    Chart.defaults.plugins.tooltip.titleColor = '#fff';
+    Chart.defaults.plugins.tooltip.bodyColor = '#fff';
+    Chart.defaults.plugins.legend.labels.color = '#333';
+
+    // Common Chart Options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 800,
+            easing: 'easeOutCubic',
+        },
+        layout: {
+            padding: 10,
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    usePointStyle: true,
+                },
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        return `${context.label}: ${context.raw.toLocaleString()}`;
+                    },
+                },
+            },
+        },
+    };
+
+    // Adjust Chart Card Heights Dynamically
+    function adjustChartSizes() {
+        const chartCards = document.querySelectorAll('.chart-card');
+        const isMobile = window.innerWidth <= 768;
+        chartCards.forEach(card => {
+            card.style.height = isMobile ? '500px' : '400px';
+        });
+    }
+
+    adjustChartSizes();
+    window.addEventListener('resize', adjustChartSizes);
+
+    // Chart Data Sources
+    const fertilizerStats = JSON.parse('{{ fertilizer_stats| default({}) | tojson | safe }}');
+    const diseaseStats = JSON.parse('{{ disease_stats| default({}) | tojson | safe }}');
+    const cropYieldStats = {
+         "Coconut": 86.52,
+        "Sugarcane": 51.73,
+        "Banana": 26.85,
+        "Tapioca": 16.67,
+        "Potato": 13.33,
+        "Onion": 13.25,
+        "Sweet Potato": 9.24,
+        "Jute": 7.56,
+        "Ginger": 6.44,
+        "Mesta": 5.39,
+    };
+    const cropsByTemperature = { "0-20°C": 291, "20-30°C": 1611, "30-50°C": 298 };
+    const stateProductionStats = {
+        "Andhra Pradesh": 55610485,
+        "Kerala": 1296095567,
+        "Maharashtra": 106200886,
+        "Tamil Nadu": 146124793,
+        "Uttar Pradesh": 403935550,
+    };
+    const seasonCropStats = { "Autumn": 850, "Kharif": 8232, "Rabi": 5742, "Summer": 1195, "Winter": 750 };
+    const stateCropData = {
+        "Andhra Pradesh": { "Rice": 12345678, "Cotton": 23456789 },
+        "Karnataka": { "Arecanut": 34451742, "Sugarcane": 12345678 },
+        "Maharashtra": { "Arhar/Tur": 19846220, "Soybean": 87654321 },
+        "Uttar Pradesh": { "Bajra": 33447486, "Wheat": 11223344 },
+        "Tamil Nadu": { "Banana": 72630447, "Groundnut": 55443322 },
+    };
+
+    // Preparing State vs Crop Chart Data
+    const states = Object.keys(stateCropData);
+    const crops = [...new Set(states.flatMap(state => Object.keys(stateCropData[state])))];
+    const datasets = crops.map(crop => {
+        return {
+            label: crop,
+            data: states.map(state => stateCropData[state][crop] || 0),
+            backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`,
+            borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+            borderWidth: 1,
+        };
+    });
+
+    // Chart Configurations
+    const charts = [
+        {
+            id: 'fertilizerChart',
+            type: 'pie',
+            data: {
+                labels: Object.keys(fertilizerStats),
+                datasets: [{
+                    label: 'Fertilizer Usage',
+                    data: Object.values(fertilizerStats),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF','#FF9F40', // Orange
+    '#8B0000'],
+                }],
+            },
+        },
+        {
+            id: 'diseaseChart',
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(diseaseStats),
+                datasets: [{
+                    label: 'Disease Frequency',
+                    data: Object.values(diseaseStats),
+                    backgroundColor: ['#FF6384', // Bright Pink
+    '#36A2EB', // Sky Blue
+    '#FFCE56', // Soft Yellow
+    '#4BC0C0', // Aqua
+    '#9966FF', // Light Purple
+    '#FF9F40', // Orange
+    '#8B0000', // Dark Red
+    '#32CD32', // Lime Green
+    '#1E90FF', // Dodger Blue
+    '#FFD700', // Gold
+    '#00008B', // Dark Blue
+    '#FF69B4', // Hot Pink
+    '#006400', // Dark Green
+    '#800080', // Purple
+    '#708090'  // Slate Gray
+    ],
+                }],
+            },
+        },
+        {
+            id: 'cropYieldChart',
+            type: 'bar',
+            data: {
+                labels: Object.keys(cropYieldStats),
+                datasets: [{
+                    label: 'Average Yield (kg/ha)',
+                    data: Object.values(cropYieldStats),
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                }],
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    x: { title: { display: true, text: 'Crops' } },
+                    y: {
+                        min: 0,
+                        max: 100,
+                        ticks: { stepSize: 10 },
+                        title: { display: true, text: 'Average Yield (kg/ha)' },
+                    },
+                },
+            },
+        },
+        {
+            id: 'tempChart',
+            type: 'bar',
+            data: {
+                labels: Object.keys(cropsByTemperature),
+                datasets: [{
+                    label: 'Number of Recommended Crops',
+                    data: Object.values(cropsByTemperature),
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                }],
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    x: { title: { display: true, text: 'Temperature Ranges (°C)' } },
+                    y: {
+                        min: 0,
+                        max: 2000,
+                        ticks: { stepSize: 500 },
+                        title: { display: true, text: 'Number of Recommended Crops' },
+                    },
+                },
+            },
+        },
+        {
+    id: 'stateProductionChart',
+    type: 'bar',
+    data: {
+        labels: Object.keys(stateProductionStats),
+        datasets: [{
+            label: 'Total Crop Production (tons)',
+            data: Object.values(stateProductionStats),
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+        }],
+    },
+    options: {
+        ...commonOptions,
+        indexAxis: 'y', // Horizontal bar chart
+        scales: {
+            x: {
+                min: 0,
+                max: Math.max(...Object.values(stateProductionStats)) * 1.1, // Dynamically adjust max
+                ticks: {
+                    stepSize: 500000000,
+                },
+                title: { display: true, text: 'Total Crop Production (tons)' },
+            },
+            y: {
+                title: { display: true, text: 'States' },
+            },
+        },
+    },
+},
+{
+    id: 'seasonProductionChart',
+    type: 'polarArea',
+    data: {
+        labels: Object.keys(seasonCropStats),
+        datasets: [{
+            label: 'Total Crop Production by Season (tons)',
+            data: Object.values(seasonCropStats),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)', 
+                'rgba(54, 162, 235, 0.5)', 
+                'rgba(255, 206, 86, 0.5)', 
+                'rgba(75, 192, 192, 0.5)', 
+                'rgba(153, 102, 255, 0.5)', 
+                'rgba(201, 203, 207, 0.5)',
+            ],
+            borderWidth: 1,
+        }],
+    },
+    options: {
+        ...commonOptions,
+        scales: {
+            r: { // Radial scale for polar area charts
+                ticks: {
+                    beginAtZero: true,
+                },
+                title: { display: true, text: 'Production (tons)' },
+            },
+        },
+    },
+},
+
+        {
+            id: 'stateCropChart',
+            type: 'bar',
+            data: {
+                labels: states,
+                datasets: datasets,
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    x: { title: { display: true, text: 'States' } },
+                    y: { title: { display: true, text: 'Total Production (tons)' } },
+                },
+            },
+        },
+    ];
+
+    // Initialize Charts
+    charts.forEach(chartConfig => {
+        const ctx = document.getElementById(chartConfig.id).getContext('2d');
+        new Chart(ctx, {
+            type: chartConfig.type,
+            data: chartConfig.data,
+            options: chartConfig.options || commonOptions,
+        });
+    });
+});
+
+function toggleChat() {
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.style.display = chatWindow.style.display === 'block' ? 'none' : 'block';
+}
+
+async function sendMessage() {
+    const userInput = document.getElementById('userInput');
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    // Add user message
+    const messagesDiv = document.getElementById('chatMessages');
+    messagesDiv.innerHTML += `<div class="user-message">${message}</div>`;
+    
+    // Get bot response
+    try {
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `message=${encodeURIComponent(message)}`
+        });
+        const data = await response.json();
+        messagesDiv.innerHTML += `<div class="bot-message">${data.response}</div>`;
+    } catch (error) {
+        messagesDiv.innerHTML += `<div class="bot-message error">Connection error. Please try again.</div>`;
+    }
+    
+    userInput.value = '';
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+    
+
+  </script>
+
+</body>
+</html>

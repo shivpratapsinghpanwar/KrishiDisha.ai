@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block title %}Admin Login{% endblock %} {% block
+content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=True) %} {% if messages
+%}
+<div>
+  {% for category, message in messages %}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %} {% endwith %}
+<br />
+<div class="registration-container">
+  <!-- Logo Section -->
+  <div class="logo-container">
+    <img src="/static/images/logo1.png" alt="Logo" />
+  </div>
+
+  <!-- Form Section -->
+  <div class="wrapper">
+    <h2 style="color: rgb(17, 204, 17)">Admin Login</h2>
+    <form method="POST" action="{{ url_for('admin_login') }}">
+      <div class="input-box">
+        <input
+          type="text"
+          placeholder="Enter Username"
+          name="username"
+          required
+        />
+      </div>
+      <div class="input-box">
+        <input
+          type="password"
+          placeholder="Enter Password"
+          name="password"
+          required
+        />
+      </div>
+      <div class="input-box button">
+        <a href="{{ url_for('admin_dashboard') }}">
+          <input type="submit" value="Login Now "
+        /></a>
+      </div>
+    </form>
+  </div>
+</div>
+<br><br>
+  {% endblock %}
+

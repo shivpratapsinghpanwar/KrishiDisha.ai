@@ -1,0 +1,27 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Create Admin{% endblock %}
+
+{% block content %}
+<div class="admin-create-wrapper mt-5 pt-5">
+    <h2 class="admin-create-heading mb-4 text-center">Create New Admin</h2>
+    <form method="POST" action="{{ url_for('create_admin') }}" class="admin-create-form w-50 mx-auto">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control admin-input" id="username" name="username" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control admin-input" id="password" name="password" required>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-success admin-submit-btn">Create Admin</button>
+        </div>
+        <div class="d-grid">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary admin-cancel-btn">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

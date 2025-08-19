@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Farmer Portal{% endblock %}</title>
+
+    <!-- Include Bootstrap for styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css" />
+
+    <!-- Google Translate Script -->
+    <style>
+      /* Additional CSS for Google Translate */
+      #google_translate_element {
+        margin: 10px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        padding: 5px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+      }
+
+      .goog-te-combo {
+        width: 100%;
+        max-width: 200px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #fff;
+        font-size: 14px;
+      }
+
+      .goog-te-banner-frame {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
+      <div class="container">
+        <!-- Professional Logo Alignment -->
+        <a
+          class="navbar-brand d-flex align-items-center"
+          href="{{ url_for('index') }}"
+        >
+          <img src="/static/images/logo1.png" alt="Logo" class="logo me-2" />
+          <span class="fw-bold">KrishiDisha</span>
+        </a>
+
+        <!-- Navbar Toggler for mobile view -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div
+          class="collapse navbar-collapse justify-content-center"
+          id="navbarNav"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('farmer_registration') }}"
+                >Farmer Registration</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('farmer_login') }}"
+                >Farmer Login</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_login') }}"
+                >Admin Login</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div class="navbar-nav ms-auto">
+          <div id="google_translate_element"></div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      {% block content %}
+      <!-- Content specific to each page will be injected here -->
+      <div id="google_translate_element"></div>
+      {% endblock %}
+    </div>
+    <div class="chatbot-container">
+      <button class="chatbot-button" onclick="toggleChat()">💬 Ask KrishiBot</button>
+      <div class="chat-window" id="chatWindow">
+          <div class="chat-header">
+              <h3>KrishiBot Assistant</h3>
+              <button onclick="toggleChat()">×</button>
+          </div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input">
+              <input type="text" id="userInput" placeholder="Ask about crops, features, or account...">
+              <button onclick="sendMessage()">Send</button>
+          </div>
+      </div>
+  </div>
+    <!-- Footer Section -->
+    <!-- Footer Section -->
+    <div class="content-box-footer" id="content-box-footer">
+        <div class="dark-overlay"></div>
+        <div class="text-content">
+          <div class="container text-center">
+            <h1 class="animate-text">Stay Connected with KrishiDisha</h1>
+            <p class="animate-text">
+              Empowering Farmers with AI: Optimize Yields, Manage Resources, and Cultivate Sustainability with KrishiDisha
+            </p>
+            <div class="row mt-4">
+              <!-- About Section -->
+              <div class="col-md-4">
+                <h5>About Us</h5>
+                <p>
+                  <b>KrishiDisha Web App:</b> Empowering farmers with cutting-edge agricultural solutions. Receive personalized <b>crop, fertilizer, and yield recommendations</b> based on your data. <b>Detect crop diseases</b> instantly by uploading an image and get disease names, actionable tips, recommended fertilizers, and direct purchase links. Access <b>farmer and admin dashboards</b> to monitor activities, view performance stats on fertilizer usage, disease frequency, crop yield, and state-wise production trends. <b>Download comprehensive reports</b> summarizing your inputs and our expert predictions for crops, fertilizers, yields, and diseases. Simplify farming decisions with KrishiDisha—your trusted partner in smart agriculture.
+                </p>
+              </div>
+      
+              <!-- Quick Links Section -->
+              <div class="col-md-4">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                  <li><a href="{{ url_for('index') }}">Home</a></li>
+                  <li>
+                    <a href="{{ url_for('farmer_registration') }}"
+                      >Farmer Registration</a
+                    >
+                  </li>
+                  <li>
+                    <a href="{{ url_for('farmer_login') }}">Farmer Login</a>
+                  </li>
+                  <li><a href="{{ url_for('admin_login') }}">Admin Login</a></li>
+                </ul>
+              </div>
+      
+              <!-- Social Media Section -->
+              <div class="col-md-4">
+                <h5>Follow Us</h5>
+                <a href="#" class="text-white text-decoration-none me-3">
+                  <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="#" class="text-white text-decoration-none me-3">
+                  <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <a href="#" class="text-white text-decoration-none">
+                  <i class="fab fa-instagram"></i> Instagram
+                </a>
+              </div>
+            </div>
+            <hr class="bg-white mt-4" />
+            <p class="mb-0">&copy; 2025 KrishiDisha. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Include Font Awesome for Social Icons -->
+      <script
+        src="https://kit.fontawesome.com/a076d05399.js"
+        crossorigin="anonymous"
+      ></script>
+      
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS to Adjust Navbar Position -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "hi,ta,te,kn,pa",
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          },
+          "google_translate_element"
+        );
+      }
+
+      window.addEventListener("scroll", function () {
+        const contentBoxes = document.querySelectorAll(".content-box");
+        contentBoxes.forEach(function (contentBox) {
+          const boxPosition = contentBox.getBoundingClientRect().top;
+          const screenPosition = window.innerHeight;
+
+          // Only trigger animation when the box is in view
+          if (boxPosition < screenPosition) {
+            contentBox.classList.add("show-content");
+          }
+        });
+      });
+
+      // Ensure content is visible on page load if it's already in view
+      window.addEventListener("load", function () {
+        const contentBoxes = document.querySelectorAll(".content-box");
+        contentBoxes.forEach(function (contentBox) {
+          const boxPosition = contentBox.getBoundingClientRect().top;
+          const screenPosition = window.innerHeight;
+
+          if (boxPosition < screenPosition) {
+            contentBox.classList.add("show-content");
+          }
+        });
+      });
+      function toggleChat() {
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.style.display = chatWindow.style.display === 'block' ? 'none' : 'block';
+}
+
+async function sendMessage() {
+    const userInput = document.getElementById('userInput');
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    // Add user message
+    const messagesDiv = document.getElementById('chatMessages');
+    messagesDiv.innerHTML += `<div class="user-message">${message}</div>`;
+    
+    // Get bot response
+    try {
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `message=${encodeURIComponent(message)}`
+        });
+        const data = await response.json();
+        messagesDiv.innerHTML += `<div class="bot-message">${data.response}</div>`;
+    } catch (error) {
+        messagesDiv.innerHTML += `<div class="bot-message error">Connection error. Please try again.</div>`;
+    }
+    
+    userInput.value = '';
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+   
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </body>
+</html>
