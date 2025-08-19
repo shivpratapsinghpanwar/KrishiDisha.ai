@@ -1,0 +1,847 @@
+{% extends "base_Crop_Fertilizer.html" %}
+
+{% block title %}Crop Supplyments{% endblock %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="container my-3 mt-3">
+        <center>
+            <div class="row mb-5 text-center text-white laptop">
+        <div class="col-lg-10 mx-auto">
+            <h1 class="display-4" style="padding-top: 2%;font-weight: 400;color: rgb(17, 204, 17);"><b>🛒Supplements🛒</b></h1>
+                <p class="lead" style="font-weight: 500;color: #1fd655;">Buy Supplements &amp; Fertilizer at one place</p>
+        </div>
+    </div>
+    </center></div>
+    <div class="row p-3">
+        
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRfq9MLrPL9tFkuFbGb98fMGDdl67v4I2iDLYCVprdsdGaXURCl9UNEr8v_65X1hKrYF5NjSvB01HOGexg-3CJxjkVSu9zPNJ2AunP09vPa0gjEILskTILx&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Apple : Scab</h6>
+                <h6>Katyayani Prozol Propiconazole 25% EC Systematic Fungicide</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-propiconazole--25-ec-systematic-fungicide-online-.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTZZH2SUe7Hufpd49iFoF_04c96J-fZeywsYQXDb0gFerGOYyL7xPBxLN05LIx6s36u6C_qMvtescsDbrTEzniJp0yhfEsvJoTCMD7FDnI&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Apple : Black Rot</h6>
+                <h6>Magic FungiX For Fungal disease</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-fungicide-online-india--organic-fungicide--yield-enhancer.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://krishisevakendra.in/cdn/shop/files/400gm_13.webp?v=1700635572&width=1946fAdtrzzmkSespqEpKwop3BnWntsLioVSgjy79mpxQVPSqoD4v9yfL0mtiFJvFnPqeE7EcefadhdEpc9uUTCZbROwOPsklL_XDMSLTpxOGvIcBMMFiBQ&usqp=CAE" alt="Supplement Image"
+                width="200" height="250">
+                <br>
+                <br>
+                <h6>For Apple : Cedar rust</h6>
+                <h6>Katyayani All in 1 Organic Fungicide</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-organic-fungicide-all-in-1-online--organic-fungicide-.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="https://rukminim1.flixcart.com/image/416/416/kc6jyq80/soil-manure/6/y/v/500-tapti-booster-500-ml-green-yantra-original-imaftd6rrgfhvshc.jpeg?q=70" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Apple : Healthy</h6>
+                <h6>Tapti Booster Organic Fertilizer</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/tapti-booster-500-ml--organic-fertilizer-online-in-india.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/supply-1.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Blueberry : Healthy</h6>
+                <h6>GreenStix Fertilizer</h6>
+    
+                <a target="_blank" href="https://lazygardener.in/products/greenstix?variant=30920527020087&amp;currency=INR&amp;utm_medium=product_sync&amp;utm_source=google&amp;utm_content=sag_organic&amp;utm_campaign=sag_organic&amp;utm_campaign=gs-2019-10-29&amp;utm_source=google&amp;utm_medium=smart_campaign"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSeHlqcksdF25o8mv-fYxNOrfJkp4Ov2hgVf01w2aCed1WbyL604ubLtPAlB7rfNoHRtxbTljQvA7P3VRh8LM0XndFHWDqvC4kC4w-DLQiknnS3vRzAxTpP&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Cherry : Powdery Mildew</h6>
+                <h6>ROM Mildew Clean</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/rom-mildew-clean-1-kg--price-of-organic-fungicide-online-.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSpHb-xEa2rTSIEf5QtLMbax4zvRsTzD4kAwQ9Rcwr3AbDDQxUhmMmPJBVGLCAvczXrXAqwWKN-rReHwSR-XSGlsJRLvZOKRXHV-54uLhU_6EIuBq5BHXaAwg&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Cherry : Healthy</h6>
+                <h6>Plantic Organic BloomDrop Liquid Plant Food </h6>
+    
+                <a target="_blank" href="https://plantic.in/products/organic-bloomdrop"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTm0wIanaB9OdUkuH9IJ-bHG_qyungwi2lWnmkFmze9VFU1yeSuRO3wImAhPfEJwuBZXPSEf5QwZhieERwrlE5H7lg_8bvf&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Corn : Cercospora Leaf Spot | Gray Leaf Spot</h6>
+                <h6>ANTRACOL FUNGICIDE</h6>
+    
+                <a target="_blank" href="https://www.bighaat.com/products/antracol?variant=14521365063&amp;currency=INR&amp;utm_medium=product_sync&amp;utm_source=google&amp;utm_content=sag_organic&amp;utm_campaign=sag_organic"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcT86avIdiTsKNdgo0Uss9r2tkn9pcx6VCGHeaubXDiR0u_fqqyXomgc1BBviREao7BM_eQiR6tbLCzUxG5VzS4du5DgwBVbtwSLuTEexpI&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Corn : Common Rust</h6>
+                <h6>3 STAR M45 Mancozeb 75% WP Contact Fungicide</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-online-3-star-m45-mancozeb-75-wp.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-2.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Corn : Northern Leaf Blight</h6>
+                <h6>QUIT (Carbendazim 12% + Mancozeb 63% WP) Protective And Curative Fungicide</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-carbendazim-12--mancozeb-63-online--buy-fungicide-online.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-3.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Corn : Healthy</h6>
+                <h6>Biomass Lab Sampoorn Fasal Ahaar (Multipurpose Organic Fertilizer &amp; Plant Food)</h6>
+    
+                <a target="_blank" href="https://www.flipkart.com/biomass-lab-sampoorn-fasal-ahaar-multipurpose-organic-fertilizer-plant-food-1-kg-fertilizer-manure/p/itm69c56f2e19c6a?pid=SMNFM3999GGTXFJZ&amp;lid=LSTSMNFM3999GGTXFJZPRQ8CT&amp;marketplace=FLIPKART&amp;cmpid=content_soil-manure_8965229628_gmc"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://images-na.ssl-images-amazon.com/images/I/51s1IbUD-qL.jpg" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Grape : Black Rot</h6>
+                <h6>Southern Ag Captan 50% WP Fungicide</h6>
+    
+                <a target="_blank" href="https://www.cart2india.com/beneficial-insects/southern-ag-captan-50-wp-fungicide-8-oz/00000000004336428163"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-4.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Grape : Esca | Black Measles</h6>
+                <h6>ALIETTE FUNGICIDE</h6>
+    
+                <a target="_blank" href="https://farmagritech.com/product/aliette-fungicide/?attribute_pa_size=100gm&amp;utm_source=Google%20Shopping&amp;utm_campaign=Google%20shopping%20feed%201&amp;utm_medium=cpc&amp;utm_term=2578"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQPzI0SnMtb60x2D1gGkRHsvD1j7NRl8Y7pjuIyuyrTxdpvUOpci7NxHWxt4Gfn3ETrCrgWKvGPH-jmbboE2vi4b4MiTq3kZKMdHFUSctUmXcH9ZRed0j4-&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Grape : Leaf Blight | Isariopsis Leaf Spot</h6>
+                <h6>Tebulur Tebuconazole 10% + Sulphur 65% WG , Advance Broad Spectrum Premix Fungicides</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-tebuconazole-10--sulphur-65-wg-online--online-agro-store.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="https://rukminim1.flixcart.com/image/416/416/k51cpe80/soil-manure/4/m/h/400-grapes-fertilizer-sansar-green-original-imafntdujntbdner.jpeg?q=70" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Grape : Healthy</h6>
+                <h6>Sansar Green Grapes Fertilizer Fertilizer</h6>
+    
+                <a target="_blank" href="https://www.flipkart.com/sansar-green-grapes-fertilizer/p/itm90f06136b50c7?pid=SMNFNT8F7FCQJ4MH&amp;lid=LSTSMNFNT8F7FCQJ4MHMXEELG&amp;marketplace=FLIPKART&amp;cmpid=content_soil-manure_730597647_g_8965229628_gmc_pla&amp;tgi=sem,1,G,11214002,g,search,,476044024748,,,,c,,,,,,,&amp;ef_id=Cj0KCQjwsLWDBhCmARIsAPSL3_0d3lBg14nXBbhJeTP7z5mqzpyHXmv4c7cL9mW4MqCBlnskpoMB8C0aArWREALw_wcB:G:s&amp;s_kwcid=AL!739!3!476044024748!!!g!293946777986!&amp;gclsrc=aw.ds"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://rukminim1.flixcart.com/image/416/416/ju79hu80/soil-manure/x/m/b/400-citrus-plant-food-green-dews-original-imaffbxhn3rz8k5p.jpeg?q=70" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Orange : Haunglongbing | Citrus Greening</h6>
+                <h6>Green Dews CITRUS PLANT FOOD Fertilizer </h6>
+    
+                <a target="_blank" href="https://www.flipkart.com/green-dews-citrus-plant-food-fertilizer/p/itmffde2heg7hkq2?pid=SMNFFBY9Z8DVTXMB&amp;lid=LSTSMNFFBY9Z8DVTXMBEL4PDT&amp;marketplace=FLIPKART&amp;cmpid=content_soil-manure_8965229628_gmc"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-5.png') }}"width="200" height="250">
+                <br>
+                <br>
+                <h6>For Peach : Bacterial Spot</h6>
+                <h6>SCORE FUNGICIDE</h6>
+    
+                <a target="_blank" href="https://www.bighaat.com/products/score-fungicide?variant=27949138149399&amp;currency=INR&amp;utm_medium=product_sync&amp;utm_source=google&amp;utm_content=sag_organic&amp;utm_campaign=sag_organic"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-6.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Peach : Healthy</h6>
+                <h6>Jeevamrut (Plant Growth Tonic)</h6>
+    
+                <a target="_blank" href="https://nurserylive.com/products/jeevamrut-plant-growth-tonic-250-ml-for-garden?variant=34163328811148"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQNEP3gEC77FdOUBy_xUgIbq7UU_N2TX1zRwCFvtl02Kz5-a6X2ZhXPAhf9y0kLieGR2VTVarUnZP_JMs0kFtEw-LqJwVSMHsjGP4Bz9scPPIB6NCLtcD7JNA&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Pepper bell : Bacterial Spot</h6>
+                <h6>Systemic Fungicide (Domark) Tetraconazole 3.8% w/w (4% w/v) EW</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-systemic-fungicide-online--tetraconazole-38--domark-.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-7.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Pepper bell : Healthy</h6>
+                <h6>Casa De Amor Organic Potash Fertilizer</h6>
+    
+                <a target="_blank" href="https://www.casagardenshop.com/products/organic-potash-fertilizer-for-gardening-improves-size-of-flowers-fruits-and-vegetables-by-casa-de-amor-1-kg-1?variant=40073291088&amp;currency=INR&amp;utm_medium=product_sync&amp;utm_source=google&amp;utm_content=sag_organic&amp;utm_campaign=sag_organic&amp;utm_campaign=gs-2020-02-08&amp;utm_source=google&amp;utm_medium=smart_campaign"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQzAaBb9Tc2B0iXiYc08qD2WM4vjAz4TZHI6qwj-D7nck2bbtYQUnnODSqPSK_Vz5NR1Am8aRbc2Rd0anzqgVKWq-0OlZ6wkjE-3x0jXihQ9F0kO8nJu7FT&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Potato : Early Blight</h6>
+                <h6>Parin Herbal Fungicides (With Turmeric Extract)</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-herbal-fungicide-online-india--buy-pesticides-online.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://krushikendra.com/image/cache/catalog/syngenta/RIDOMIL-GOLD-800x800.jpg" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Potato : Late Blight</h6>
+                <h6>Syngenta Ridomil gold Fungicide </h6>
+    
+                <a target="_blank" href="https://krushikendra.com/Buy-Syngenta-Ridomil-gold-Fungicide-250%20gram"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="https://rukminim1.flixcart.com/image/416/416/kfvfwy80/soil-manure/6/p/g/30-fertilizer-for-potato-saosis-original-imafw8b3sgcyrhh4.jpeg?q=70" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Potato : Healthy</h6>
+                <h6>Saosis Fertilizer for potato Fertilizer</h6>
+    
+                <a target="_blank" href="https://www.flipkart.com/saosis-fertilizer-potato/p/itmc40dfbfcd49f7?pid=SMNFW8B3DTY2V6PG&amp;lid=LSTSMNFW8B3DTY2V6PGHC2BXS&amp;marketplace=FLIPKART&amp;cmpid=content_soil-manure_730597647_g_8965229628_gmc_pla&amp;tgi=sem,1,G,11214002,g,search,,476044024748,,,,c,,,,,,,&amp;ef_id=Cj0KCQjwsLWDBhCmARIsAPSL3_3TcmjyWFqJEZtCD0SQiDb9UFyESkiYtgU35W5Qs_KnTCkDS_Px2Y4aArmBEALw_wcB:G:s&amp;s_kwcid=AL!739!3!476044024748!!!g!293946777986!&amp;gclsrc=aw.ds"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="https://s3.images-iherb.com/jte/jte29001/v/6.jpg" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Raspberry : Healthy</h6>
+                <h6>Karen's Naturals, Organic Just Raspberries</h6>
+    
+                <a target="_blank" href="https://in.iherb.com/pr/Karen-s-Naturals-Organic-Just-Raspberries-1-5-oz-42-g/37730?gclsrc=ds"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-12.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Soybean : Healthy</h6>
+                <h6>Max Crop Liquid Fertilizer</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/max-crop-1-litre.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-11.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Squash : Powdery Mildew</h6>
+                <h6>No powdery mildew 1 quart</h6>
+    
+                <a target="_blank" href="https://kiron.co.in/products/B0068WMLE2"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSV3dLQAuhGWWsZSX3Ray15J_uSeFgSo7oLE0G2BxPFSwVNnOUY7VsBbLzDbw_mzUw3ZFLaF4kPWPyzatefP2bnSZwEbwrYnGGYgEl8rS6XWmwRnloOWnwy&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Strawberry : Leaf Scorch</h6>
+                <h6>Greatindos Premium Quality All in 1 Organic Fungicide</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/buy-organic-fungicide-online--organic-fungicide-with-best-rate-.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="https://rukminim1.flixcart.com/image/416/416/k2urhjk0/soil-manure/q/y/d/500-organic-plant-growth-promoter-strawberry-swiss-green-original-imafm3vx8mzyhxzg.jpeg?q=70" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Strawberry : Healthy</h6>
+                <h6>SWISS GREEN ORGANIC PLANT GROWTH PROMOTER STRAWBERRY Fertilizer</h6>
+    
+                <a target="_blank" href="https://www.flipkart.com/swiss-green-organic-plant-growth-promoter-strawberry-fertilizer-manure/p/itmcaf7955b802fa?pid=SMNFM3TT2RNZEQYD&amp;lid=LSTSMNFM3TT2RNZEQYDIGMSRD&amp;marketplace=FLIPKART&amp;cmpid=content_soil-manure_8965229628_gmc"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRKHQh4EwbE0ksZ_RTOhsGtvTO68zllR9djrYvUrZ-DO6FYo2kYpmyFL8UgaK6aiHJuUWbkax_uhcxMpGfwSHa2CKWqaIZnFp1vIRbGkrZhtGv-Zq-72y61&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Bacterial Spot</h6>
+                <h6>CUREAL Best Fungicide &amp; Bactericide</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/cureal---best-fungicide--bactericide-zinc-based-250-ml.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-8.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Early Blight</h6>
+                <h6>NATIVO FUNGICIDE</h6>
+    
+                <a target="_blank" href="https://farmagritech.com/product/nativo-fungicide/?attribute_pa_size=50gm&amp;utm_source=Google%20Shopping&amp;utm_campaign=Google%20shopping%20feed%201&amp;utm_medium=cpc&amp;utm_term=1326"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRpQmIM9QZkFI43PPlHVFaSlGdrdMP8LFHXAo9b_OGOQCi3R6G-SsqnCXFR4CU9bVAcyuBGTrQRAkRrU9fm-1TGeXg9PrsB&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Late Blight</h6>
+                <h6>ACROBAT FUNGICIDE</h6>
+    
+                <a target="_blank" href="https://www.bighaat.com/products/acrobat-fungicide?variant=31177935519767&amp;currency=INR&amp;utm_medium=product_sync&amp;utm_source=google&amp;utm_content=sag_organic&amp;utm_campaign=sag_organic"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQfgH6lswqhV2hUhqZwEfgQBU1eUP1GCvETxg_a3JFOERS2tc80k8gNMbHM_XxReblck1T7tR95X8Qojdj1k0yAyvhmCZHvkFWaT_L-a8ofElEXerVJqvsF&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Leaf Mold</h6>
+                <h6>Virus Special (Set of Immuno 1 ltr + Enviro 1 ltr)</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/virus-special-enviroimmuno-1-litre.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://agrosiaa.com/uploads/userdata/seller/752ae7bdbb96bf25280b55990570beabf2048ce0/product_images/22226542751b3ce2ad05c5447f6b3c1cc24caeecb6fcd47c94.jpg" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Septoria Leaf Spot</h6>
+                <h6>Roko Fungicide</h6>
+    
+                <a target="_blank" href="https://farmagritech.com/product/roko-fungicide/?attribute_pa_size=500gm&amp;utm_source=Google%20Shopping&amp;utm_campaign=Google%20shopping%20feed%201&amp;utm_medium=cpc&amp;utm_term=3239"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/omite.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Spider Mites | Two-Spotted Spider Mite</h6>
+                <h6>OMITE INSECTICIDE</h6>
+    
+                <a target="_blank" href="https://www.bighaat.com/products/omite-insecticide?variant=31276117196823&amp;currency=INR&amp;utm_medium=product_sync&amp;utm_source=google&amp;utm_content=sag_organic&amp;utm_campaign=sag_organic"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://rukminim1.flixcart.com/image/416/416/k3xcdjk0/soil-manure/y/f/j/100-propineb-70-wp-fungicide-for-plants-diesese-control-propi-original-imafmxg3jghhdyt6.jpeg?q=70" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Target Spot</h6>
+                <h6>Propi Propineb 70% WP Fungicide for Plants Diesese Control Pesticide</h6>
+    
+                <a target="_blank" href="https://www.flipkart.com/propi-propineb-70-wp-fungicide-plants-diesese-control-pesticide/p/itm9db96656402f8?pid=SMNFMX8FJJHZAYFJ&amp;lid=LSTSMNFMX8FJJHZAYFJDGFGXW&amp;marketplace=FLIPKART&amp;cmpid=content_soil-manure_730597647_g_8965229628_gmc_pla&amp;tgi=sem,1,G,11214002,g,search,,476044024748,,,,c,,,,,,,&amp;ef_id=Cj0KCQjwsLWDBhCmARIsAPSL3_2bIC4skU03mHTgG2GvlhsFQstQaLrFyAaL10NTTCDsuI9BoffpPFUaAjn1EALw_wcB:G:s&amp;s_kwcid=AL!739!3!476044024748!!!g!293946777986!&amp;gclsrc=aw.ds"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://krushikendra.com/image/cache/catalog/Sygenta/syngenta-amistar-top-fungicides-500x500-800x800.jpg" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Yellow Leaf Curl Virus</h6>
+                <h6>Syngenta Amistor Top Fungicide</h6>
+    
+                <a target="_blank" href="https://krushikendra.com/Buy-Syngenta-Amistor-Top-Fungicide-100-ml-Online"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Supplements<b style="color: red;"> (Diseased):</b></h5>
+                
+                <br>
+                <img src="https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRmHRAqOUGXt76NPfOMXrUVRvDt8gRYd3-HTexGYI0d4PNmDuLXbfTchIRipVD-hx1wob7hHyVTbmyS85fTcADpBUMezetO&amp;usqp=CAE" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Mosaic Virus</h6>
+                <h6>V Bind Viral Disease Special</h6>
+    
+                <a target="_blank" href="https://agribegri.com/products/viricide-online-.php"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+        
+        <div class="col">
+            <div class="supplyments-card shadow rounded-lg" style="height: 95%;">
+            <center>
+                
+                <h5>Fertilizer<b style="color: green;"> (Healthy):</b></h5>
+                
+                <br>
+                <img src="{{ url_for('static', filename='images/sup-10.png') }}" width="200" height="250">
+                <br>
+                <br>
+                <h6>For Tomato : Healthy</h6>
+                <h6>Tomato Fertilizer Organic, for Home, Balcony, Terrace &amp; Outdoor Gardening</h6>
+    
+                <a target="_blank" href="https://www.casagardenshop.com/products/tomato-fertilizer-for-home-terrace-outdoor-gardening?variant=32106353131619&amp;currency=INR&amp;utm_medium=product_sync&amp;utm_source=google&amp;utm_content=sag_organic&amp;utm_campaign=sag_organic&amp;utm_campaign=gs-2020-02-08&amp;utm_source=google&amp;utm_medium=smart_campaign"><button type="button" class="bttn-pill" style="background-color: #4CAF50;">Buy Product</button></a>
+            </center>
+            
+        </div>
+    </div>
+    
+    
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+           
+     
+    
+      </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+       
+ 
+{% endblock %}

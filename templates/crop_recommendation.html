@@ -1,0 +1,141 @@
+{% extends "base_Crop_Fertilizer.html" %}
+
+{% block title %}Crop Recommendation{% endblock %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  </head>
+  <style>
+		h1 {
+			color: rgb(0, 0, 0);
+			text-align: center;
+		}
+
+		.warning {
+			color: red;
+			font-weight: bold;
+			text-align: center;
+		}
+		.card{
+		margin-left:410px;
+		margin-top: 20px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		color: rgb(241, 239, 240);
+		}
+		.container{
+		background:#fffbfe;
+		font-weight: bold;
+		padding-bottom:10px;
+		border-radius: 15px;
+		}
+        p.capitalize {
+        text-transform: capitalize;
+        }
+        
+</style>
+
+<body style="background: #BCBBB8;">
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+<div class="container my-3 mt-3">
+    <div class="row mb-5 text-center text-white laptop">
+        <div class="col-lg-10 mx-auto">
+            <h1 class="display-4" style="padding-top: 2%;font-weight: 400;color: rgb(17, 204, 17);"><b>🌱Crop Recommendation System🌱</b></h1>
+            <h2 class="lead" style="font-weight: 500;color: rgb(0, 0, 0);text-align: justify;">KrishiDisha intelligently recommends optimal crops such as rice, maize, apple, and more, based on key agricultural parameters—NPK, temperature, humidity, pH, and rainfall. By analyzing user inputs, CropWise generates a tailored report featuring the recommended crop, estimated revenue, and profit per acre, alongside an image of the crop. This solution empowers farmers to make data-driven decisions, enhancing crop yield and sustainability through precision agriculture.</h2>
+        </div>
+
+    </div>
+    
+    <form method="POST" action="{{url_for('crop_recommendation')}}" class="mt-4">
+        <div class="row">
+            <div class="col-md-4">
+            <label for="N" class="form-label"><b>Nitrogen (N) in mm</b></label>
+            <input type="number" step="any" name="N" class="form-control" required>
+            </div>
+        
+        <div class="col-md-4">
+            <label for="P" class="form-label"><b>Phosphorus (P) in mm</b></label>
+            <input type="number" step="any" name="P" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label for="K" class="form-label"><b>Potassium (K) in mm</b></label>
+            <input type="number" step="any" name="K" class="form-control" required>
+        </div>
+        </div>
+        <div class="row mt-4">
+        <div class="col-md-4">
+            <label for="temperature" class="form-label"><b>Temperature in °C</b></label>
+            <input type="number" step="any" name="temperature" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label for="humidity" class="form-label"><b>Humidity %</b></label>
+            <input type="number" step="any" name="humidity" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label for="ph" class="form-label"><b>pH</b></label>
+            <input type="number" step="any" name="ph" class="form-control" required>
+        </div>
+        </div>
+        <div class="row mt-4">
+        <div class="col-md-4">
+            <label for="rainfall" class="form-label"><b>Rainfall in mm</b></label>
+            <input type="number" step="any" name="rainfall" class="form-control" required>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12 text-center">
+            <button class="bttn-pill">
+                Get Recommendation
+              </button>
+        
+        </div>
+    </div>
+    
+    </form>
+<br>
+    {% if prediction %}
+    <center>
+    <div class="card bg-light" style="width: 30rem;">
+        <img src="{{ url_for('static', filename=crop_image) }}" class="card-img-top" alt="{{ prediction }}" width="250px" height="400px">
+        <div class="card-body">
+            <h4 class="card-title" style="color: green;">Recommended Crop: {{ prediction| capitalize }}</p></h4>
+            <h5 class="card-text">Total Revenue per Acre: ₹{{ total_revenue }}</h5>
+            <h5 class="card-text">Total Profit per Acre: ₹{{ total_profit }}</h5>
+        </div>
+    </div>
+    <form action="/download_report" method="POST">
+        <input type="hidden" name="predicted_crop" value="{{ prediction }}">
+        <input type="hidden" name="total_revenue" value="{{ total_revenue }}">
+        <input type="hidden" name="total_profit" value="{{ total_profit }}">
+        <input type="hidden" name="crop_image" value="{{ crop_image }}">
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <button class="bttn-pill">
+                    Download Report
+                </button>
+            </div>
+        </div>
+    </form>
+    </center>
+    {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+       
+ 
+{% endblock %}

@@ -1,0 +1,257 @@
+{% extends "base_Crop_Fertilizer.html" %}
+
+{% block title %}Crop Home{% endblock %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+
+  </head>
+  <style>
+		h1 {
+			color: rgb(0, 0, 0);
+			text-align: center;
+		}
+
+		.warning {
+			color: red;
+			font-weight: bold;
+			text-align: center;
+		}
+
+        
+		
+
+</style>
+
+<body style="background: #BCBBB8;">
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+<div class="row mb-5 text-center text-white laptop">
+  
+    <div class="col-lg-10 mx-auto">
+        <h1 class="display-4" style="padding-top: 2%;font-weight: 400;color: rgb(17, 204, 17);"><b>🍁Smart Crop Solutions: Recommendations & Disease Detection🍁 </b></h1>
+        <h2 class="lead" style="font-weight: 500;color: rgb(0, 0, 0);">KrishiDisha: An intelligent platform providing precise crop and fertilizer recommendations while enabling crop disease detection through image analysis.</h3>
+    </div>
+</div>
+
+<center class="laptop">
+  <a href="/crop_recommendation">
+    <button class="bttn-pill">
+      Let's Go
+    </button>
+  </a>
+</center>
+<div class="container mt-5">
+  <div class="row p-5">
+      <!-- Apple Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/apple.jpg') }}" class="card-img-top" alt="Apple" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Apple</p>
+              </div>
+          </div>
+      </div>
+      <!-- Blueberry Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://www.supermarketperimeter.com/ext/resources/0430-blueberries.png?t=1588260305&width=1080" class="card-img-top" alt="Blueberry" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Blueberry</p>
+              </div>
+          </div>
+      </div>
+      <!-- Cherry Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/slideshows/health_benefits_of_cherries_slideshow/1800x1200_health_benefits_of_cherries_slideshow.jpg" class="card-img-top" alt="Cherry" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Cherry</p>
+              </div>
+          </div>
+      </div>
+      <!-- Corn Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/maize.png') }}" class="card-img-top" alt="Corn" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Corn</p>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="row p-5">
+      <!-- Grape Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://i.ndtvimg.com/i/2015-09/grapes_625x350_61443376353.jpg" class="card-img-top" alt="Grape" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Grape</p>
+              </div>
+          </div>
+      </div>
+      <!-- Orange Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/orange.png') }}" class="card-img-top" alt="Orange" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Orange</p>
+              </div>
+          </div>
+      </div>
+      <!-- Peach Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/articles/health_tools/the_health_benefits_of_peaches_slideshow/thinkstock_rf_peaches.jpg?resize=650px:*" class="card-img-top" alt="Peach" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Peach</p>
+              </div>
+          </div>
+      </div>
+      <!-- Pepper Bell Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/pepper.jpg') }}" class="card-img-top" alt="Pepper Bell" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Pepper Bell</p>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="row p-5">
+      <!-- Coffee Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/coffee.jpg') }}" class="card-img-top" alt="Coffee" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Coffee</p>
+              </div>
+          </div>
+      </div>
+      <!-- Mothbeans Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/mothbeans.png') }}" class="card-img-top" alt="Mothbeans" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Mothbeans</p>
+              </div>
+          </div>
+      </div>
+      <!-- Muskmelon Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/muskmelon.jfif') }}" class="card-img-top" alt="Muskmelon" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Muskmelon</p>
+              </div>
+          </div>
+      </div>
+      <!-- Rice Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="{{ url_for('static', filename='images/rice.jpeg') }}" class="card-img-top" alt="Rice" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Rice</p>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="row p-5">
+      <!-- Potato Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://m.economictimes.com/thumb/height-450,width-600,imgsize-111140,msid-72862126/potato-getty.jpg" class="card-img-top" alt="Potato" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Potato</p>
+              </div>
+          </div>
+      </div>
+      <!-- Raspberry Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://i0.wp.com/cdn-prod.medicalnewstoday.com/content/images/articles/326/326272/raspberries-with-ketones-in-a-bowl.jpg?w=1155&h=1541" class="card-img-top" alt="Raspberry" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Raspberry</p>
+              </div>
+          </div>
+      </div>
+      <!-- Soybean Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://m.economictimes.com/thumb/msid-66988154,width-1200,height-900,resizemode-4,imgsize-211276/soyabean-agencies.jpg" class="card-img-top" alt="Soybean" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Soybean</p>
+              </div>
+          </div>
+      </div>
+      <!-- Squash Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://post.healthline.com/wp-content/uploads/2020/08/squash-fruit-or-vegetable-732x549-thumbnail-732x549.jpg" class="card-img-top" alt="Squash" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Squash</p>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="row p-5">
+      <!-- Strawberry Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://images.indianexpress.com/2020/02/strawberry-1200.jpg" class="card-img-top" alt="Strawberry" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Strawberry</p>
+              </div>
+          </div>
+      </div>
+      <!-- Tomato Card -->
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card shadow rounded-lg">
+              <img src="https://images-prod.healthline.com/hlcmsresource/images/AN_images/tomatoes-1296x728-feature.jpg" class="card-img-top" alt="Tomato" width="250" height="250">
+              <div class="card-body text-center">
+                  <p class="card-text" style="font-weight: 500;color: black;">Tomato</p>
+              </div>
+          </div>
+      </div>
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card shadow rounded-lg">
+            <img src="{{ url_for('static', filename='images/kindneybeans.png') }}" class="card-img-top" alt="Strawberry" width="250" height="250">
+            <div class="card-body text-center">
+                <p class="card-text" style="font-weight: 500;color: black;">KidneyBeans</p>
+            </div>
+        </div>
+    </div>
+    <!-- Tomato Card -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card shadow rounded-lg">
+            <img src="{{ url_for('static', filename='images/papaya.png') }}" class="card-img-top" alt="Tomato" width="250" height="250">
+            <div class="card-body text-center">
+                <p class="card-text" style="font-weight: 500;color: black;">Papaya</p>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</center>
+
+{% endblock %}
+       
+ 
+

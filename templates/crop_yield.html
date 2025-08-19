@@ -1,0 +1,95 @@
+{% extends "base_Crop_Fertilizer.html" %}
+
+{% block title %}Crop Yield Prediction{% endblock %}
+
+{% block content %}
+<div class="container mt-5"><br>
+    <h1 class="text-center" style="color: rgb(17, 204, 17);">🌾 Crop Yield Prediction 🌾</h1>
+    <form action="/crop_yield" method="POST" class="mt-4">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="crop" class="form-label"><b>Crop</b></label>
+                <select name="crop" id="crop" class="form-select" required>
+                    <option value="" disabled selected>Select a crop</option>
+                    {% for crop in crops %}
+                    <option value="{{ crop }}">{{ crop }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="crop_year" class="form-label"><b>Crop Year</b></label>
+                <input type="number" name="crop_year" id="crop_year" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label for="season" class="form-label"><b>Season</b></label>
+                <select name="season" id="season" class="form-select" required>
+                    <option value="" disabled selected>Select a season</option>
+                    {% for season in seasons %}
+                    <option value="{{ season }}">{{ season }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="state" class="form-label"><b>State</b></label>
+                <select name="state" id="state" class="form-select" required>
+                    <option value="" disabled selected>Select a state</option>
+                    {% for state in states %}
+                    <option value="{{ state }}">{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="area" class="form-label"><b>Area (in hectares)</b></label>
+                <input type="number" step="0.01" name="area" id="area" class="form-control" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="production" class="form-label"><b>Production (in tonnes)</b></label>
+                <input type="number" step="0.01" name="production" id="production" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label for="annual_rainfall" class="form-label"><b>Annual Rainfall (mm)</b></label>
+                <input type="number" step="0.01" name="annual_rainfall" id="annual_rainfall" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label for="fertilizer" class="form-label"><b>Fertilizer Used (kg)</b></label>
+                <input type="number" step="0.01" name="fertilizer" id="fertilizer" class="form-control" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="pesticide" class="form-label"><b>Pesticide Used (kg)</b></label>
+                <input type="number" step="0.01" name="pesticide" id="pesticide" class="form-control" required>
+            </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-md-12 text-center">
+              <button class="bttn-pill">
+                  Predict Yield
+              </button>
+          </div>
+      </div>
+    </form>
+
+    {% if prediction %}
+    <div class="alert alert-success mt-4 text-center">
+        <h4>Predicted Yield: {{ prediction }} tonnes/hectare</h4>
+    </div>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="alert alert-danger mt-4">
+        <ul>
+            {% for category, message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}

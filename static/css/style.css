@@ -1,0 +1,954 @@
+/* Basic styles for the body */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #cefad0;
+}
+
+/* Header and Navbar */
+header {
+  background-color: #4CAF50;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Make navbar fixed and adjust size */
+.navbar {
+  height: 120px; /* Adjusted height for responsiveness */
+  padding: 0 20px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #4CAF50;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for professionalism */
+}
+
+/* Adjust logo size */
+.logo {
+  height: 55px; /* Slightly larger logo */
+  width: auto;  /* Maintain aspect ratio */
+}
+
+/* Center navbar links and adjust spacing */
+.navbar-nav {
+  gap: 50px; /* Increased space between each link for more visual clarity */
+}
+
+.nav-link {
+  font-size: 18px;
+  color: white !important;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: color 0.3s ease, background-color 0.3s ease; /* Hover animation */
+  padding: 10px 15px;
+  border-radius: 5px; /* Slightly rounded corners for hover effect */
+}
+
+/* Hover effect for navbar links */
+.nav-link:hover {
+  background-color: white;
+  color: #4CAF50 !important; /* Invert colors on hover */
+}
+
+/* Spacing for the logo and title */
+.navbar-brand span {
+  font-size: 22px;
+  color: white;
+  font-weight: bold;
+  letter-spacing: 1px; /* Increase spacing between letters for professional look */
+}
+
+/* Reduced padding to remove large gap under navbar */
+body {
+  padding-top: 80px; /* Adjusted padding for the navbar */
+}
+
+/* Make the navbar responsive */
+@media (max-width: 992px) {
+  .navbar-nav {
+    gap: 20px;
+    text-align: center;
+  }
+  .navbar-brand {
+    font-size: 18px;
+  }
+  .logo {
+    height: 45px;
+  }
+}
+
+/* Adjust the layout for mobile devices */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column; /* Stack items vertically */
+    height: auto; /* Allow height to adjust based on content */
+    padding: 10px; /* Adjust padding for mobile */
+  }
+  
+  .navbar-nav {
+    flex-direction: column; /* Stack navbar items vertically */
+    align-items: center; /* Center items */
+    width: 100%; /* Full width */
+    margin-top: 10px; /* Space between navbar brand and links */
+  }
+  
+  .nav-link {
+    font-size: 16px; /* Slightly smaller font size for mobile */
+    padding: 8px 12px; /* Adjust padding */
+  }
+
+  body {
+    padding-top: 90px; /* Increase space below navbar for mobile devices */
+  }
+}
+
+/* Additional media query for mobile */
+@media (max-width: 450px) {
+  .navbar-nav {
+    gap: 10px; /* Further reduce space for very small screens */
+  }
+  
+  .nav-link {
+    font-size: 14px; /* Even smaller font size for very small screens */
+    padding: 6px 10px; /* Adjust padding for tiny screens */
+  }
+  
+  .logo {
+    height: 40px; /* Even smaller logo size for very small screens */
+  }
+
+  body {
+    padding-top: 70px; /* Adjust padding for small screens */
+  }
+}
+
+/* Main Content Section */
+main {
+  text-align: center;
+  padding: 20px;
+}
+
+footer {
+  background-color: #4CAF50;
+  text-align: center;
+  color: white;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Container for the entire form and logo */
+.registration-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Logo styling - reduced size and margin */
+.logo-container img {
+  width: 80px; /* Further reduced size of the logo */
+  margin-top: -10px; /* Reduced top margin to bring it closer to the navbar */
+  margin-bottom: 10px; /* Reduced bottom margin */
+}
+
+/* Wrapper for the form - reduced size and margin */
+.wrapper {
+  width: 100%;
+  max-width: 330px; /* Further reduced width of the form */
+  background-color: #fff;
+  padding: 20px; /* Adjusted padding */
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for headings */
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 15px; /* Reduced margin below the heading */
+}
+
+/* Input box styling */
+.input-box {
+  margin-bottom: 10px; /* Reduced spacing between input fields */
+}
+
+/* Input fields styling */
+.input-box input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+/* Button styling */
+.button input {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button input:hover {
+  background-color: #45a049;
+}
+
+/* Policy and link text styling */
+.policy h3, .text h3 {
+  font-size: 13px;
+  color: #666;
+  margin: 5px 0; /* Reduced margin */
+}
+
+.text a {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.text a:hover {
+  text-decoration: underline;
+}
+
+/* Alert message styling */
+.alert {
+  margin-bottom: 15px; /* Reduced margin for alerts */
+}
+
+/* Full-screen hero section starting from the navbar */
+.hero {
+  position: relative;
+  height: calc(100vh - 80px); /* Adjust height to account for navbar height */
+  margin: 0; /* Remove margin */
+  padding: 0; /* Remove padding */
+  overflow: hidden;
+  width: 100%; /* Ensure full width */
+}
+
+/* Dark overlay to darken the image */
+
+/* Animation on hover for text */
+
+/* Responsive adjustments */
+.content-box {
+  position: relative;
+  width: 100%; /* Adjust width for smaller screens */
+  max-width: 1366px; /* Laptop size */
+  height: 600px; /* Set height */
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(207, 96, 96, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+  background-color: transparent;
+}
+
+/* Dark overlay for the content box */
+.content-box .dark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 50, 0, 0.6); /* Semi-transparent black background */
+  z-index: 1; /* Ensure overlay is above the image */
+}
+
+/* Image within the content box */
+.content-box img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+  z-index: 0; /* Ensure image is below the overlay */
+}
+
+/* Text inside the box */
+.text-content {
+  position: relative;
+  z-index: 2; /* Ensures text is above both overlay and image */
+  color: #dcf72a;
+  padding-top: 10%;
+  text-align: center;
+}
+
+/* Heading styles */
+h1 {
+  font-size: 3rem; /* Bigger font size for heading */
+  font-weight: bold; /* Bold heading */
+  color: #39e75a; /* Heading color */
+  animation: animate-text 2s ease-in-out;
+}
+
+/* Paragraph styles */
+p {
+  font-size: 1.25rem; /* Smaller than heading */
+  line-height: 1.6;
+  text-align: center;
+  color: #ffffff; /* Paragraph color */
+  animation: animate-text 2s ease-in-out;
+}
+
+/* Hover effect for image */
+.content-box:hover img {
+  opacity: 1;
+}
+
+/* Scroll animation trigger */
+.show-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animation for heading and paragraph */
+@keyframes animate-text {
+  0% { opacity: 0; transform: translateY(-50px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Different background colors for each box */
+#content-box-1, #content-box-2, #content-box-3, #content-box-4, #content-box-5 {
+  background-color: transparent;
+}
+
+.alert {
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Card hover effect: scaling the card and adding shadow */
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Image zoom effect on hover */
+.card-img-top {
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.1);
+}
+
+/* Text animation on hover */
+.card-body p {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover .card-body p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Table Box Styling */
+.table-box {
+  border: 2px solid #008631; /* Dark green border */
+  border-radius: 15px;
+  padding: 20px;
+  background-color: #abf7b1; /* Lighter green background */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 40px;
+  animation: fadeIn 1s ease-out;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Table Header Styling */
+.table th {
+  background-color: #1fd655; /* Green shade for header */
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 15px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+/* Table Rows Styling */
+.table td {
+  background-color: #83f28f; /* Light green background for rows */
+  color: #333; /* Dark text color for readability */
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #5ced73; /* Green border at the bottom */
+}
+
+/* Alternating Row Colors */
+.table tr:nth-child(odd) {
+  background-color: #39e75f; /* Darker shade for odd rows */
+}
+
+.table tr:nth-child(even) {
+  background-color: #5ced73; /* Lighter shade for even rows */
+}
+
+/* Hover Effect for Table Rows */
+.table-row:hover {
+  background-color: #00c04b; /* Highlight row with a hover effect */
+  cursor: pointer;
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Styling for View Input Button */
+.view-input-btn {
+  color: #008631; /* Dark Green Color for View Input Button Text */
+  border: 1px solid #008631;
+  background-color: transparent;
+}
+
+.view-input-btn:hover {
+  background-color: #008631;
+  color: white;
+}
+
+/* Output Data Styling */
+.output-data-text {
+  color: #00ab41; /* Dark Green Color for Output Data */
+  font-weight: bold;
+}
+
+/* Modal Styling */
+.modal-body textarea {
+  width: 100%;
+  height: 150px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #4CAF50;
+  background-color: #f9f9f9;
+  color: #333;
+  resize: none;
+}
+
+/* Footer Styling */
+.footer {
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  margin-top: 40px;
+  border-radius: 10px;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .table th, .table td {
+      font-size: 0.9rem;
+      padding: 10px;
+  }
+
+ 
+
+ 
+
+  .footer {
+      font-size: 0.9rem;
+  }
+
+  .table-box {
+      padding: 15px;
+  }
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  0% {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  100% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Container for the messages */
+.supplyments-container {
+  margin-top: 1rem;
+}
+
+/* Alert messages */
+
+
+/* Card styling */
+.supplyments-card {
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease, background-color 0.3s ease, filter 0.3s ease;
+  font-family: 'Georgia', serif; /* Elegant, intellectual font */
+}
+
+.supplyments-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Deeper shadow for more emphasis */
+  background-color: #f0f0f0; /* Subtle light gray background */
+  filter: brightness(1.1); /* Slightly brighter effect */
+}
+
+.supplyments-card h2, .supplyments-card p {
+  transition: color 0.3s ease;
+}
+
+.supplyments-card:hover h2, .supplyments-card:hover p {
+  color: #333; /* Darker text color to emphasize reading */
+}
+
+/* Button styling */
+.supplyments-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.supplyments-button:hover {
+  background-color: #45a049;
+}
+/* Footer Styling */
+/* Footer Styling */
+.content-box-footer {
+  width: 100%;
+  background: linear-gradient(180deg, #008631, #00ab41, #00c04b, #1fd655, #39e75f, #5ced73, #83f28f, #abf7b1, #cefad0);
+  color: white;
+  padding: 10px 20px;
+  position: relative;
+  
+}
+
+.content-box-footer .dark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* Subtle overlay for text readability */
+  z-index: 1;
+}
+
+.content-box-footer .text-content {
+  position: relative;
+  z-index: 2;
+}
+
+.content-box-footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.content-box-footer h1 {
+  font-size: 1.5rem;
+  margin-top: 0%;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.content-box-footer p {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.content-box-footer h5 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.content-box-footer ul {
+  padding: 0;
+  list-style: none;
+}
+
+.content-box-footer ul li {
+  margin-bottom: 5px;
+}
+
+.content-box-footer ul li a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.content-box-footer ul li a:hover {
+  color: #cefad0; /* Lighter green shade for hover */
+}
+
+.content-box-footer a {
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.content-box-footer hr {
+  border: 1px solid white;
+  opacity: 0.5;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content-box-footer h1 {
+      font-size: 1.5rem;
+  }
+
+  .content-box-footer h5 {
+      font-size: 1.125rem;
+  }
+
+  .content-box-footer p,
+  .content-box-footer a {
+      font-size: 0.875rem;
+  }
+
+  .content-box-footer .row > div {
+      margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .content-box-footer h1 {
+      font-size: 1.25rem;
+  }
+
+  .content-box-footer h5 {
+      font-size: 1rem;
+  }
+
+  .content-box-footer p {
+      font-size: 0.75rem;
+  }
+}
+
+
+/* Chatbot Container */
+.chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Chatbot Button */
+.chatbot-button {
+  background: #4CAF50; /* Green background */
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.chatbot-button:hover {
+  background: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+/* Chat Window */
+.chat-window {
+  display: none;
+  width: 350px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+      transform: translateY(20px);
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
+
+/* Chat Header */
+/* Professional Chatbot Styles */
+
+/* Professional Chatbot Styles */
+
+/* Chatbot Button - Enlarged Speech Bubble Shape */
+/* Chatbot Container */
+.chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Chatbot Button */
+.chatbot-button {
+  background: #4CAF50; /* Green background */
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.chatbot-button:hover {
+  background: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+/* Chat Window */
+.chat-window {
+  display: none;
+  width: 350px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+      transform: translateY(20px);
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
+
+/* Chat Header */
+.chat-header {
+  background: #388E3C; /* Dark green header */
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 15px 15px 0 0;
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.chat-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.chat-header button:hover {
+  color: #ffeb3b; /* Yellow on hover */
+}
+
+/* Chat Messages */
+.chat-messages {
+  height: 300px;
+  overflow-y: auto;
+  padding: 15px;
+  background: #f9f9f9; /* Light gray background for messages */
+  border-bottom: 1px solid #ddd;
+}
+
+/* User Message */
+.user-message {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.user-message div {
+  display: inline-block;
+  background: #4CAF50; /* Green background for user messages */
+  color: white;
+  padding: 10px 15px;
+  border-radius: 15px 15px 0 15px;
+  max-width: 80%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Bot Message */
+.bot-message {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.bot-message div {
+  display: inline-block;
+  background: #ffffff; /* White background for bot messages */
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 15px 15px 15px 0;
+  max-width: 80%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Error Message */
+.error {
+  color: #ff4444; /* Red color for error messages */
+  font-weight: bold;
+}
+
+/* Chat Input */
+.chat-input {
+  padding: 15px;
+  background: #f1f1f1; /* Light gray background for input area */
+  display: flex;
+  gap: 10px;
+  border-radius: 0 0 15px 15px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.chat-input input:focus {
+  border-color: #4CAF50; /* Green border on focus */
+}
+
+.chat-input button {
+  background: #4CAF50; /* Green background for send button */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.chat-input button:hover {
+  background: #45a049; /* Darker green on hover */
+}
+
+/* Scrollbar Styling */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Wrapper styling */
+.admin-create-wrapper {
+  padding-top: 4rem;
+}
+
+/* Form container */
+.admin-create-form {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading style */
+.admin-create-heading {
+  font-weight: 600;
+  color: #198754;
+}
+
+/* Input field enhancements */
+.admin-input:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Button hover styles */
+.admin-submit-btn:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+.admin-cancel-btn:hover {
+  background-color: #5c636a;
+  border-color: #565e64;
+}
+
+/* Add spacing between buttons */
+.admin-create-form .d-grid + .d-grid {
+  margin-top: 0.75rem;
+}

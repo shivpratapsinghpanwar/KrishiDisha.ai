@@ -1,0 +1,60 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- Add the required script for Google Translate -->
+
+<br>
+       <!-- Flash Messages -->
+ {% with messages = get_flashed_messages(with_categories=True) %}
+ {% if messages %}
+     <div>
+         {% for category, message in messages %}
+             <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                 {{ message }}
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+             </div>
+         {% endfor %}
+     </div>
+ {% endif %}
+ {% endwith %}
+<div class="container my-4">
+    <h2 class="text-center mb-4" style="color: rgb(17, 204, 17);">Admin Dashboard</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-hover shadow-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Username</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for farmer in farmers %}
+                <tr class="animate__animated animate__fadeIn">
+                    <td>{{ farmer.id }}</td>
+                    <td>{{ farmer.name }}</td>
+                    <td>{{ farmer.email }}</td>
+                    <td>{{ farmer.phone }}</td>
+                    <td>{{ farmer.username }}</td>
+                    <td>{% if farmer.verified %}Verified{% else %}Pending{% endif %}</td>
+                    <td>
+                        {% if not farmer.verified %}
+                        <a href="{{ url_for('verify_farmer', farmer_id=farmer.id) }}" class="btn btn-success btn-sm">Verify</a>
+                        {% endif %}
+                        <a href="{{ url_for('update_farmer', farmer_id=farmer.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{{ url_for('delete_farmer', farmer_id=farmer.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this farmer?');">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

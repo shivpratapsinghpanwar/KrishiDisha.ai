@@ -1,0 +1,295 @@
+{% extends "base_Crop_Fertilizer.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <br>
+    <h1 style="text-align: center;">Welcome, {{ farmer.name }}</h1>
+</div>
+    <!-- Flash Messages -->
+<br>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages and messages|length > 0 %}
+    <div>
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category|default('info') }} alert-dismissible fade show" role="alert">
+            {{ message|default('An unexpected error occurred.') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+
+<!-- Table Box Container -->
+<div class="table-box">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Activity Type</th>
+                    <th>Input Data</th>
+                    <th>Output Data</th>
+                    <th>Timestamp</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                    <tr class="table-row">
+                        <td>{{ activity.activity_type }}</td>
+                        <td>
+                            <button class="btn btn-outline-light view-input-btn" data-bs-toggle="modal" data-bs-target="#inputModal{{ loop.index }}">
+                                View Input
+                            </button>
+                        </td>
+                        <td>
+                            <p class="output-data-text">
+                                {{ activity.output_data if activity.output_data else 'No output data available' }}
+                            </p>
+                        </td>
+                        <td>{{ activity.timestamp }}</td>
+                        <td>
+                            {% if not activity.deleted %}
+                                <form action="{{ url_for('farmer_dashboard') }}" method="POST" style="display:inline;">
+                                    <input type="hidden" name="activity_id" value="{{ activity.id }}">  
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted">Activity deleted</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- Modal for Viewing Input Data -->
+                    <div class="modal fade" id="inputModal{{ loop.index }}" tabindex="-1" aria-labelledby="inputModalLabel{{ loop.index }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="inputModalLabel{{ loop.index }}">Activity Input Data</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <textarea readonly>{{ activity.input_data }}</textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if activities|length == 0 %}
+    <p>No activities found.</p>
+{% endif %}
+<br>
+<div class="charts-container">
+    <!-- Row 1 -->
+    <div class="charts">
+        <div class="chart-card">
+            <h3>Fertilizer Usage</h3>
+            <canvas id="fertilizerChart"></canvas>
+            <p>Breakdown of fertilizer usage across regions.</p>
+        </div>
+        <div class="chart-card">
+            <h3>Disease Frequency</h3>
+            <canvas id="diseaseChart"></canvas>
+            <p>Occurrences of crop diseases by type.</p>
+        </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="charts">
+        <div class="chart-card">
+            <h3>Crop Yield</h3>
+            <canvas id="cropYieldChart"></canvas>
+            <p>Average yield per crop in kilograms per hectare.</p>
+        </div>
+        <div class="chart-card">
+            <h3>Temperature and Crops</h3>
+            <canvas id="tempChart"></canvas>
+            <p>Number of crops recommended by temperature range.</p>
+        </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="charts">
+        <div class="chart-card">
+            <h3>State Crop Production</h3>
+            <canvas id="stateProductionChart"></canvas>
+            <p>Total crop production by state in tons.</p>
+        </div>
+        <div class="chart-card">
+            <h3>Seasonal Production</h3>
+            <canvas id="seasonProductionChart"></canvas>
+            <p>Crop production distribution by season.</p>
+        </div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="charts row-large">
+        <div class="chart-card">
+            <h3>State vs. Crop Production</h3>
+            <canvas id="stateCropChart"></canvas>
+            <p>Detailed breakdown of crop production by state and crop.</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const cropYieldStats = JSON.parse('{{ crop_yield_stats| default({})|tojson|safe }}');
+    const fertilizerStats = JSON.parse('{{ fertilizer_stats| default({})|tojson|safe }}');
+    const diseaseStats = JSON.parse('{{ disease_stats| default({})|tojson|safe }}');
+    const topCropsByYield = JSON.parse('{{ top_crops_by_yield | default({})| tojson | safe }}');
+    const yieldDistribution = JSON.parse('{{ yield_distribution | default({})| tojson | safe }}');
+    const topFertilizers = JSON.parse('{{ top_fertilizers | default({})| tojson | safe }}');
+    const frequentDiseases = JSON.parse('{{ frequent_diseases | default({})| tojson | safe }}');
+
+    console.log('Crop Yield Stats:', cropYieldStats);
+    console.log('Fertilizer Stats:', fertilizerStats);
+    console.log('Disease Stats:', diseaseStats);
+    console.log('Top Crops By Yield',topCropsByYield);
+    console.log('Yield Distribution',yieldDistribution);
+    console.log('Top Fertilizers',topFertilizers);
+    console.log('Frequent Disease',frequentDiseases)
+
+    new Chart(document.getElementById('cropYieldChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(cropYieldStats),
+            datasets: [{
+                label: 'Average Yield',
+                data: Object.values(cropYieldStats),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('fertilizerChart'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(fertilizerStats),
+            datasets: [{
+                data: Object.values(fertilizerStats),
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('diseaseChart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(diseaseStats),
+            datasets: [{
+                data: Object.values(diseaseStats),
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('topCropsChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(topCropsByYield),
+            datasets: [{
+                label: 'Average Yield',
+                data: Object.values(topCropsByYield),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            }
+        }
+    });
+
+    // Chart: Yield Distribution
+    new Chart(document.getElementById('yieldDistributionChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(yieldDistribution),
+            datasets: [{
+                label: 'Frequency',
+                data: Object.values(yieldDistribution),
+                backgroundColor: 'rgba(255, 206, 86, 0.5)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            }
+        }
+    });
+
+    // Chart: Fertilizer Usage Frequency
+    new Chart(document.getElementById('fertilizerChart'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(topFertilizers),
+            datasets: [{
+                data: Object.values(topFertilizers),
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#FF6384'
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' },
+                tooltip: { enabled: true }
+            }
+        }
+    });
+
+    // Chart: Frequent Diseases
+    new Chart(document.getElementById('diseaseChart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(frequentDiseases),
+            datasets: [{
+                data: Object.values(frequentDiseases),
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#FF6384'
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' },
+                tooltip: { enabled: true }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

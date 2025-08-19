@@ -1,0 +1,233 @@
+Season,Crop,Count
+Autumn     ,Rice,158
+Autumn     ,Maize,61
+Autumn     ,Ragi,44
+Autumn     ,Sesamum,34
+Autumn     ,Groundnut,29
+Autumn     ,Urad,20
+Autumn     ,Jute,19
+Autumn     ,Moong(Green Gram),17
+Autumn     ,Jowar,8
+Autumn     ,Small millets,8
+Autumn     ,Dry chillies,3
+Autumn     ,Arhar/Tur,1
+Autumn     ,Banana,1
+Autumn     ,Cotton(lint),1
+Autumn     ,Ginger,1
+Autumn     ,Onion,1
+Autumn     ,Peas & beans (Pulses),1
+Autumn     ,Potato,1
+Autumn     ,Sannhamp,1
+Autumn     ,Soyabean,1
+Autumn     ,Sugarcane,1
+Autumn     ,Sweet potato,1
+Autumn     ,Tapioca,1
+Autumn     ,Turmeric,1
+Kharif     ,Maize,514
+Kharif     ,Rice,505
+Kharif     ,Sesamum,437
+Kharif     ,Groundnut,423
+Kharif     ,Arhar/Tur,418
+Kharif     ,Cotton(lint),406
+Kharif     ,Urad,403
+Kharif     ,Bajra,389
+Kharif     ,Moong(Green Gram),380
+Kharif     ,Other Kharif pulses,378
+Kharif     ,Small millets,355
+Kharif     ,Jowar,329
+Kharif     ,Soyabean,326
+Kharif     ,Ragi,289
+Kharif     ,Castor seed,255
+Kharif     ,Sunflower,220
+Kharif     ,Horse-gram,215
+Kharif     ,Mesta,186
+Kharif     ,Ginger,165
+Kharif     ,Niger seed,164
+Kharif     ,Jute,159
+Kharif     ,Potato,113
+Kharif     ,Moth,104
+Kharif     ,Dry chillies,101
+Kharif     ,Other Cereals,77
+Kharif     ,Peas & beans (Pulses),77
+Kharif     ,Sannhamp,76
+Kharif     ,Cowpea(Lobia),70
+Kharif     ,Sugarcane,70
+Kharif     ,Onion,69
+Kharif     ,Tapioca,63
+Kharif     ,other oilseeds,60
+Kharif     ,Sweet potato,59
+Kharif     ,Barley,47
+Kharif     ,Turmeric,46
+Kharif     ,Tobacco,42
+Kharif     ,Banana,32
+Kharif     ,Guar seed,32
+Kharif     ,Cashewnut,27
+Kharif     ,Rapeseed &Mustard,23
+Kharif     ,Arecanut,20
+Kharif     ,Gram,19
+Kharif     ,Masoor,18
+Kharif     ,Black pepper,13
+Kharif     ,Coriander,11
+Kharif     ,Linseed,11
+Kharif     ,Safflower,11
+Kharif     ,Garlic,9
+Kharif     ,Oilseeds total,5
+Kharif     ,Wheat,5
+Kharif     ,Cardamom,3
+Kharif     ,Coconut ,2
+Kharif     ,Khesari,1
+Rabi       ,Wheat,514
+Rabi       ,Rapeseed &Mustard,480
+Rabi       ,Gram,462
+Rabi       ,Other  Rabi pulses,349
+Rabi       ,Masoor,305
+Rabi       ,Linseed,295
+Rabi       ,Peas & beans (Pulses),282
+Rabi       ,Barley,248
+Rabi       ,Maize,218
+Rabi       ,Urad,202
+Rabi       ,Moong(Green Gram),188
+Rabi       ,Potato,163
+Rabi       ,Safflower,156
+Rabi       ,Onion,141
+Rabi       ,Rice,139
+Rabi       ,Sunflower,137
+Rabi       ,Groundnut,133
+Rabi       ,Jowar,126
+Rabi       ,Horse-gram,112
+Rabi       ,Small millets,101
+Rabi       ,Sesamum,81
+Rabi       ,Ragi,78
+Rabi       ,Khesari,73
+Rabi       ,Arhar/Tur,69
+Rabi       ,Other Cereals,65
+Rabi       ,Dry chillies,63
+Rabi       ,Bajra,58
+Rabi       ,Tobacco,57
+Rabi       ,Cowpea(Lobia),53
+Rabi       ,other oilseeds,52
+Rabi       ,Coriander,50
+Rabi       ,Garlic,48
+Rabi       ,Castor seed,36
+Rabi       ,Turmeric,29
+Rabi       ,Cotton(lint),27
+Rabi       ,Sweet potato,27
+Rabi       ,Niger seed,20
+Rabi       ,Tapioca,20
+Rabi       ,Arecanut,16
+Rabi       ,Soyabean,16
+Rabi       ,Ginger,12
+Rabi       ,Black pepper,6
+Rabi       ,Cashewnut,5
+Rabi       ,Mesta,5
+Rabi       ,Moth,5
+Rabi       ,Sugarcane,5
+Rabi       ,Oilseeds total,4
+Rabi       ,Other Kharif pulses,4
+Rabi       ,Guar seed,2
+Rabi       ,Jute,2
+Rabi       ,Sannhamp,2
+Rabi       ,Banana,1
+Summer     ,Rice,244
+Summer     ,Maize,143
+Summer     ,Moong(Green Gram),124
+Summer     ,Groundnut,104
+Summer     ,Urad,82
+Summer     ,Sunflower,63
+Summer     ,Sesamum,60
+Summer     ,Ragi,53
+Summer     ,Bajra,52
+Summer     ,Onion,51
+Summer     ,Potato,35
+Summer     ,Jowar,30
+Summer     ,Dry chillies,25
+Summer     ,Horse-gram,18
+Summer     ,Wheat,17
+Summer     ,Cotton(lint),14
+Summer     ,Banana,13
+Summer     ,Tobacco,13
+Summer     ,Other Summer Pulses,10
+Summer     ,Small millets,9
+Summer     ,Cowpea(Lobia),8
+Summer     ,Other  Rabi pulses,6
+Summer     ,Peas & beans (Pulses),5
+Summer     ,other oilseeds,5
+Summer     ,Other Cereals,4
+Summer     ,Ginger,2
+Summer     ,Sugarcane,2
+Summer     ,Arhar/Tur,1
+Summer     ,Jute,1
+Summer     ,Turmeric,1
+Whole Year ,Sugarcane,507
+Whole Year ,Potato,272
+Whole Year ,Turmeric,259
+Whole Year ,Tobacco,252
+Whole Year ,Dry chillies,226
+Whole Year ,Banana,197
+Whole Year ,Garlic,193
+Whole Year ,Onion,191
+Whole Year ,Sweet potato,185
+Whole Year ,Coconut ,170
+Whole Year ,Ginger,142
+Whole Year ,Coriander,138
+Whole Year ,Arecanut,126
+Whole Year ,Tapioca,117
+Whole Year ,Black pepper,107
+Whole Year ,Cashewnut,102
+Whole Year ,Sannhamp,81
+Whole Year ,Cardamom,71
+Whole Year ,Sesamum,38
+Whole Year ,Guar seed,29
+Whole Year ,Cotton(lint),27
+Whole Year ,Bajra,25
+Whole Year ,Maize,21
+Whole Year ,Sunflower,21
+Whole Year ,Jowar,20
+Whole Year ,Oilseeds total,20
+Whole Year ,Mesta,19
+Whole Year ,Groundnut,18
+Whole Year ,Arhar/Tur,16
+Whole Year ,Ragi,16
+Whole Year ,Moong(Green Gram),14
+Whole Year ,Small millets,12
+Whole Year ,Castor seed,9
+Whole Year ,Gram,9
+Whole Year ,other oilseeds,9
+Whole Year ,Horse-gram,8
+Whole Year ,Urad,8
+Whole Year ,Wheat,8
+Whole Year ,Rapeseed &Mustard,7
+Whole Year ,Soyabean,5
+Whole Year ,Rice,4
+Whole Year ,Cowpea(Lobia),3
+Whole Year ,Niger seed,3
+Whole Year ,Peas & beans (Pulses),3
+Whole Year ,Barley,2
+Whole Year ,Linseed,2
+Whole Year ,Safflower,2
+Whole Year ,Khesari,1
+Whole Year ,Masoor,1
+Whole Year ,Moth,1
+Winter     ,Rice,147
+Winter     ,Potato,44
+Winter     ,Sesamum,35
+Winter     ,Sugarcane,20
+Winter     ,Groundnut,18
+Winter     ,Horse-gram,18
+Winter     ,Maize,18
+Winter     ,Ragi,18
+Winter     ,Rapeseed &Mustard,18
+Winter     ,Urad,18
+Winter     ,Moong(Green Gram),17
+Winter     ,Niger seed,5
+Winter     ,Arhar/Tur,3
+Winter     ,Banana,1
+Winter     ,Cotton(lint),1
+Winter     ,Dry chillies,1
+Winter     ,Ginger,1
+Winter     ,Onion,1
+Winter     ,Peas & beans (Pulses),1
+Winter     ,Soyabean,1
+Winter     ,Sweet potato,1
+Winter     ,Turmeric,1
+Winter     ,Wheat,1

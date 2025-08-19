@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Login{% endblock %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=True) %}
+{% if messages %}
+<div>
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<br>
+<div class="content-box" id="content-box-5">
+    <div class="dark-overlay"></div>
+    <img src="static/images/login.jpg" alt="Login Image" class="main-image">
+    <div class="text-content">
+        <h1 class="animate-text">Secure Login</h1>
+        <p class="animate-text" style="color: black;">Access Your Farmer Portal with Admin-Verified Credentials</p>
+
+        <!-- Form Section -->
+        <div class="form-wrapper">
+            <h2 class="form-title" style="color: rgb(17, 204, 17);">Farmer Login</h2>
+            <form method="POST" action="{{ url_for('farmer_login') }}">
+                <div class="input-box">
+                    <input type="text" placeholder="Enter Username" name="username" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" placeholder="Enter Password" name="password" required>
+                </div>
+                <div class="policy">
+                    <input type="checkbox" required>
+                    <h3>I accept all terms & condition</h3>
+                </div>
+                <div class="input-box button">
+                    <input type="submit" value="Login Now">
+                </div>
+                <div class="text">
+                    <h3>Create Account <a href="{{ url_for('farmer_registration') }}">Register Now</a></h3>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS Styles -->
+<style>
+    .content-box {
+        position: relative;
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+    }
+
+    .content-box .dark-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+    }
+
+    .content-box img.main-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 8px;
+    }
+
+    .content-box .text-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        width: 100%;
+        max-width: 400px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-wrapper {
+        width: 100%;
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .input-box {
+        margin-bottom: 15px;
+    }
+
+    .input-box input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    .input-box.button input {
+        background: rgb(17, 204, 17);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .input-box.button input:hover {
+        background: rgb(15, 180, 15);
+    }
+
+    .policy {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .policy h3 {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .text {
+        text-align: center;
+    }
+
+    .text a {
+        color: rgb(17, 204, 17);
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .text a:hover {
+        text-decoration: underline;
+    }
+</style>
+<br><br>
+
+{% endblock %}

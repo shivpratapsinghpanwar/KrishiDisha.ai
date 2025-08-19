@@ -1,0 +1,63 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Create Farmer{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
+  <div class="container">
+      <!-- Professional Logo Alignment -->
+      <a class="navbar-brand d-flex align-items-center">
+          <img src="/static/images/logo1.png" alt="Logo" class="logo me-2">
+          <span class="fw-bold">KrishiDisha</span>
+      </a>
+
+      <!-- Navbar Toggler for mobile view -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a class="nav-link active" href="{{ url_for('admin_logout') }}">Admin Logout</a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav><br>
+<br>
+<div class="registration-container">
+  <!-- Logo Section -->
+  <div class="logo-container">
+    <img src="/static/images/logo1.png" alt="Logo">
+  </div>
+
+  <!-- Form Section -->
+  <div class="wrapper">
+    <h2 >Create Farmer</h2>
+
+    <form method="POST" action="{{ url_for('create_farmer') }}">
+      <div class="input-box">
+        <input type="text" placeholder="Enter your name" name="name" required>
+      </div>
+      <div class="input-box">
+        <input type="text" placeholder="Enter your email" name="email" required>
+      </div>
+      <div class="input-box">       
+        <input type="text" placeholder="Enter Phone No." name="phone" required>
+      </div>
+      <div class="input-box">
+        
+        <input type="text" placeholder="Create Username" name="username" required>
+      </div>
+      <div class="input-box">
+        <input type="password" placeholder="Create password" name="password" required>
+      </div>
+      <div class="text">
+        <button type="submit" class="btn btn-primary">Create Farmer</a></button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
