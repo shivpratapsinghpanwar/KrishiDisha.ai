@@ -1,0 +1,17 @@
+# FastAPI Requirements for KrishiDisha API
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# ML Dependencies
+numpy>=1.20.2
+pandas>=1.2.4
+torch>=1.8.1
+torchvision>=0.9.1
+Pillow>=8.2.0
+scikit-learn>=0.24.0
+joblib>=1.0.0
+
+# Optional: For production deployment
+gunicorn>=20.1.0
