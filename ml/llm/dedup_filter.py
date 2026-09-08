@@ -81,15 +81,19 @@ def dedupe(examples: list[dict], threshold: float = 0.8) -> tuple[list[dict], in
             kept.append(ex)
         return kept, len(examples) - len(kept)
 
-    lsh = MinHashLSH(threshold=threshold, num_perm=128)
+    # A tool trajectory and a plain Q&A pair with the same answer are different training signals (one
+    # teaches the tool call), so near-duplicates are removed within a source family, never across.
+    indexes: dict[str, MinHashLSH] = defaultdict(lambda: MinHashLSH(threshold=threshold, num_perm=128))
     kept: list[dict] = []
     for i, ex in enumerate(examples):
+        family = "tool" if ex["source"].startswith("tool") else "plain"
         text = _normalise(" ".join(_user_assistant_text(ex)))
         tokens = text.split()
         shingles = {" ".join(tokens[j:j + 5]) for j in range(max(len(tokens) - 4, 1))} or {text}
         m = MinHash(num_perm=128)
         for s in shingles:
             m.update(s.encode("utf-8"))
+        lsh = indexes[family]
         if lsh.query(m):
             continue
         lsh.insert(str(i), m)
