@@ -102,9 +102,29 @@ def fertilizer_report(inputs: dict, result: dict, static_dir: str, farmer_name: 
         el.append(_table([["Parameter", "Value"]] + [[k, str(v)] for k, v in inputs.items()]))
         el.append(Paragraph("Recommendation", st["h"]))
         rows = [["Field", "Value"], ["Recommended fertilizer", result["recommended_fertilizer"]],
-                ["NPK grade", result.get("npk") or "-"], ["Model confidence", f"{result['confidence'] * 100:.1f}%"],
+                ["NPK grade", result.get("npk") or "-"],
+                ["NPK ratio match", f"{result['confidence'] * 100:.1f}%"],
+                ["Why", Paragraph(result.get("why") or "-", st["body"])],
                 ["How to use", Paragraph(result.get("usage_note") or "-", st["body"])]]
         el.append(_table(rows))
+        if result.get("deficit_kg_per_ha"):
+            el.append(Paragraph("Nutrient gap after the soil test (kg per hectare)", st["h"]))
+            status = result.get("soil_status") or {}
+            el.append(_table([["Nutrient", "Required (kg/ha)", "Soil test"]] +
+                             [[k, str(v), status.get(k, "-")] for k, v in result["deficit_kg_per_ha"].items()],
+                             col_widths=(45 * mm, 55 * mm, 55 * mm)))
+        if result.get("ranked"):
+            el.append(Paragraph("Ranked options", st["h"]))
+            el.append(_table([["Product", "NPK", "Ratio match"]] +
+                             [[r["fertilizer"], r["npk"], f"{r['similarity'] * 100:.1f}%"]
+                              for r in result["ranked"]],
+                             col_widths=(55 * mm, 50 * mm, 50 * mm)))
+        hint = result.get("model_hint")
+        if hint:
+            el.append(Paragraph(
+                f"For reference only, the statistical model would have suggested {hint['fertilizer']} "
+                f"({hint['confidence'] * 100:.1f}% confidence). {hint.get('reliability', '')} "
+                f"This report follows the agronomic rule above.", st["body"]))
         if result.get("calculator") and "error" not in result["calculator"]:
             c = result["calculator"]
             el.append(Paragraph(f"Dose calculator ({c['area']} {c['unit']})", st["h"]))
@@ -150,8 +170,28 @@ def yield_report(inputs: dict, result: dict, farmer_name: str | None = None) -> 
         el.append(Paragraph("Inputs", st["h"]))
         el.append(_table([["Parameter", "Value"]] + [[k, str(v)] for k, v in inputs.items()]))
         el.append(Paragraph("Prediction", st["h"]))
-        el.append(_table([["Field", "Value"], ["Predicted yield", f"{result['predicted_yield']} {result['unit']}"],
-                          ["Estimated production", f"{result['estimated_production']} tonnes"]]))
+        rows = [["Field", "Value"], ["Predicted yield", f"{result['predicted_yield']} {result['unit']}"]]
+        rng = result.get("expected_range")
+        if rng:
+            rows.append(["Expected range",
+                         Paragraph(f"{rng[0]} to {rng[1]} t/ha. {result.get('expected_range_note') or ''}",
+                                   st["body"])])
+        if result.get("baseline_yield"):
+            base = result["baseline_yield"]
+            delta = result["predicted_yield"] - base
+            rows.append(["5-year state average", f"{base} t/ha ({delta:+.2f} t/ha vs this prediction)"])
+        rows.append(["Estimated production", f"{result['estimated_production']} tonnes"])
+        used = result.get("inputs_used") or {}
+        src = used.get("source") or {}
+        filled = [k for k, v in src.items() if v != "provided"]
+        if filled:
+            rows.append(["Assumed inputs",
+                         Paragraph(", ".join(f"{k} {used.get(k)} kg (regional median)" for k in filled), st["body"])])
+        el.append(_table(rows))
+        el.append(Paragraph(
+            "This model is trained on state-level annual records and is not given a production figure "
+            "(yield is derived from production in the source data). Treat the number as a regional "
+            "expectation, not a field-level guarantee.", st["body"]))
         for t in result.get("tips", []):
             el.append(Paragraph("- " + t, st["body"]))
     return _doc("Crop Yield Prediction Report", farmer_name, build)
