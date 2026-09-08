@@ -129,11 +129,13 @@ def disease_detect():
     if not result.get("available"):
         return jsonify(result), 503
     top = result["top"]
-    result["info"] = current_app.kb.disease_by_label(top["label"])
+    is_plant = result.get("is_plant", True)
+    result["info"] = current_app.kb.disease_by_label(top["label"]) if is_plant else None
     from .marketplace import search_products
 
     result["products"] = [dict(p.to_dict(), url=f"/marketplace/product/{p.slug}")
-                          for p in search_products(disease=top["label"], crop=top["crop"], limit=4)]
+                          for p in search_products(disease=top["label"], crop=top["crop"], limit=4)] \
+        if is_plant and not top["is_healthy"] else []
     log_activity("Crop Disease Detection", {"image": file.filename}, {"disease": top["name"], "confidence": top["confidence"]})
     return jsonify(result)
 

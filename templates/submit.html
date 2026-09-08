@@ -39,6 +39,18 @@
           </div>
           <span class="fw-semibold">{{ top.confidence | pct }}</span>
         </div>
+        {% if result.message %}
+          <div class="alert {{ 'alert-danger' if not result.is_plant else 'alert-warning' }} d-flex align-items-start gap-2 py-2 mb-3" role="alert">
+            <i class="bi {{ 'bi-camera-fill' if not result.is_plant else 'bi-exclamation-triangle-fill' }} mt-1"></i>
+            <div>
+              <strong>{{ 'Photo not recognised' if not result.is_plant else ('Low confidence' if result.uncertain else 'Experimental crop') }}.</strong>
+              {{ result.message }}
+              {% if not result.is_plant %}<a href="{{ url_for('farmer.crop_detection') }}" class="alert-link">Retake photo</a>{% endif %}
+            </div>
+          </div>
+        {% elif result.crop_tier %}
+          <div class="small mb-2"><span class="badge {{ 'text-bg-success' if result.crop_tier == 'A' else 'text-bg-info' }}">Coverage tier {{ result.crop_tier }}</span></div>
+        {% endif %}
         <div class="small text-muted mb-3">Model: {{ result.model }} ({{ result.backend }})</div>
 
         {% if result.predictions and result.predictions|length > 1 %}

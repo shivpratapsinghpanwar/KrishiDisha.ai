@@ -204,13 +204,17 @@ def submit():
         flash(result.get("message", "Disease model unavailable."), "danger")
         return redirect(url_for("farmer.crop_detection"))
     top = result["top"]
-    info = current_app.kb.disease_by_label(top["label"])
+    is_plant = result.get("is_plant", True)
+    info = current_app.kb.disease_by_label(top["label"]) if is_plant else None
     from .marketplace import search_products
 
-    products = search_products(disease=top["label"], crop=top["crop"], limit=4)
+    # never recommend products for a photo the model does not recognise as a leaf
+    products = search_products(disease=top["label"], crop=top["crop"], limit=4) if is_plant and not top["is_healthy"] else []
     session["disease_result"] = {"result": result, "info": info, "image_path": path, "image_url": url,
                                  "product_ids": [p.id for p in products]}
-    log_activity("Crop Disease Detection", {"image": url}, {"disease": top["name"], "confidence": top["confidence"]})
+    log_activity("Crop Disease Detection", {"image": url},
+                 {"disease": top["name"], "confidence": top["confidence"], "uncertain": result.get("uncertain"),
+                  "is_plant": is_plant, "model": result.get("model")})
     return render_template("submit.html", result=result, top=top, info=info, image_url=url, products=products)
 
 
