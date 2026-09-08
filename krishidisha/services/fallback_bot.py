@@ -106,10 +106,16 @@ class RulesBot:
         tools_used: list[str] = []
         sources: list[str] = []
 
+        if detection and detection.get("available") and not detection.get("is_plant", True):
+            msg = detection.get("message") or "The photo does not look like a plant leaf."
+            return {"reply": f"**Leaf analysis:** {msg}", "tools_used": [], "sources": ["Disease model"]}
+
         if detection and detection.get("available"):
             top = detection["top"]
             info = self.kb.disease_by_label(top["label"]) or {}
             lines = [f"**Leaf analysis:** {top['name']} ({top['confidence'] * 100:.1f}% confidence)"]
+            if detection.get("message"):
+                lines.append(f"_{detection['message']}_")
             if top.get("is_healthy"):
                 lines.append("The leaf looks healthy. Keep monitoring and follow the crop's fertilizer schedule.")
             else:

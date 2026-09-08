@@ -104,13 +104,25 @@ class AgriAssistant:
                 detection = self.detector.predict(Image.open(io.BytesIO(image_bytes)))
                 if detection.get("available"):
                     top = detection["top"]
-                    info = self.kb.disease_by_label(top["label"]) or {}
-                    vision_note = (
-                        f"[Leaf image analysed by the KrishiDisha disease model ({detection['model']}): "
-                        f"top prediction {top['name']} with {top['confidence'] * 100:.1f}% confidence; "
-                        f"other candidates: {', '.join(p['name'] + ' ' + str(round(p['confidence'] * 100, 1)) + '%' for p in detection['predictions'][1:])}. "
-                        f"Catalogue guidance: {info.get('description', '')[:600]} Steps: {info.get('prevention', '')[:600]}]"
-                    )
+                    if not detection.get("is_plant", True):
+                        vision_note = (
+                            f"[The KrishiDisha disease model could not recognise a plant leaf in the photo "
+                            f"(top guess {top['name']} at {top['confidence'] * 100:.0f}%). Tell the farmer to retake it: one leaf "
+                            f"filling the frame, daylight, plain background. Do not diagnose from this photo.]"
+                        )
+                    else:
+                        info = self.kb.disease_by_label(top["label"]) or {}
+                        caveat = ""
+                        if detection.get("uncertain"):
+                            caveat = " The model is NOT confident: present this as a possibility, ask about symptoms, and advise confirming with a KVK."
+                        elif detection.get("crop_tier") == "C":
+                            caveat = " This crop has limited training data (experimental); advise confirming with an expert."
+                        vision_note = (
+                            f"[Leaf image analysed by the KrishiDisha disease model ({detection['model']}): "
+                            f"top prediction {top['name']} with {top['confidence'] * 100:.1f}% confidence; "
+                            f"other candidates: {', '.join(p['name'] + ' ' + str(round(p['confidence'] * 100, 1)) + '%' for p in detection['predictions'][1:])}.{caveat} "
+                            f"Catalogue guidance: {info.get('description', '')[:600]} Steps: {info.get('prevention', '')[:600]}]"
+                        )
             except Exception as exc:  # noqa: BLE001
                 log.warning("Image analysis failed: %s", exc)
 
