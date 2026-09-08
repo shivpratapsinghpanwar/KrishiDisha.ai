@@ -61,6 +61,8 @@ class Config:
     # Translation layer for regional languages when the provider is the local model or the rules bot:
     # none | indictrans2 (local ai4bharat models) | bhashini (hosted, needs BHASHINI_USER_ID/API_KEY)
     TRANSLATION_BACKEND = os.getenv("TRANSLATION_BACKEND", "none")
+    # Dense multilingual retrieval over the knowledge base (needs sentence-transformers); empty = TF-IDF only.
+    KB_EMBEDDING_MODEL = os.getenv("KB_EMBEDDING_MODEL", "")
 
     # --- External data ------------------------------------------------------
     # data.gov.in Agmarknet daily mandi prices. The public sample key works
@@ -95,4 +97,5 @@ class TestConfig(Config):
     LLM_PROVIDER = "rules"
     DISEASE_MODEL_BACKEND = "stub"
     TRANSLATION_BACKEND = "none"
+    KB_EMBEDDING_MODEL = ""
     SECRET_KEY = "test"
