@@ -55,6 +55,7 @@ api = [
 train = [
   "timm>=1.0",
   "onnx>=1.15",
+  "imagehash>=4.3",
   "pyyaml>=6.0",
   "kaggle>=1.6",
   "optuna>=3.6",

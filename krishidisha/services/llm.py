@@ -144,17 +144,32 @@ class AgriAssistant:
 
         try:
             if self.provider == "anthropic":
-                return self._chat_anthropic(user_turn, history, image_bytes, image_mime, passages, detection)
+                return self._guard(self._chat_anthropic(user_turn, history, image_bytes, image_mime, passages, detection))
             if self.provider == "openai":
-                return self._chat_openai(user_turn, history, image_bytes, image_mime, passages, detection)
+                return self._guard(self._chat_openai(user_turn, history, image_bytes, image_mime, passages, detection))
         except Exception as exc:  # noqa: BLE001
             log.exception("LLM provider %s failed; using offline fallback", self.provider)
             result = self.rules.reply(message, language=language, detection=detection, farmer_context=farmer_context)
             result["provider"] = "rules"
             result["fallback_reason"] = str(exc)[:300]
-            return result
+            return self._guard(result)
         result = self.rules.reply(message, language=language, detection=detection, farmer_context=farmer_context)
         result["provider"] = "rules"
+        return self._guard(result)
+
+    @staticmethod
+    def _guard(result: dict[str, Any]) -> dict[str, Any]:
+        """Pesticide safety post-check applied to every provider's reply."""
+        from .safety import check_reply
+
+        try:
+            check = check_reply(result.get("reply", ""))
+        except Exception as exc:  # noqa: BLE001 - never block a reply on the guard itself
+            log.warning("safety check failed: %s", exc)
+            return result
+        if not check["ok"]:
+            result["reply"] = check["annotated"]
+            result["safety_flags"] = check["flags"]
         return result
 
     # ------------------------------------------------------------ anthropic

@@ -108,39 +108,57 @@ def discover(name: str, spec: dict, src_dir: Path, seed: int):
 
 
 # ------------------------------------------------------------------ hashing
-def phash(img: Image.Image, size: int = 8) -> int:
-    """64-bit perceptual hash (DCT-free average-hash on a 4x downsample; good enough for twins)."""
-    small = ImageOps.grayscale(img).resize((size * 4, size * 4), Image.Resampling.BILINEAR).resize((size, size), Image.Resampling.BOX)
-    px = list(small.getdata())
-    mean = sum(px) / len(px)
-    bits = 0
-    for v in px:
-        bits = (bits << 1) | (1 if v > mean else 0)
-    return bits
+def _hash_to_int(h) -> int:
+    return int(str(h), 16)
+
+
+def phash(img: Image.Image) -> int:
+    """64-bit DCT perceptual hash (imagehash.phash). An average hash was tried first and produced
+    thousands of false near-duplicates on uniform-background leaf photos (mango), so DCT it is."""
+    import imagehash
+
+    return _hash_to_int(imagehash.phash(img))
+
+
+def dhash(img: Image.Image) -> int:
+    import imagehash
+
+    return _hash_to_int(imagehash.dhash(img))
 
 
 def hamming(a: int, b: int) -> int:
     return bin(a ^ b).count("1")
 
 
+def _chunks(h: int, n_chunks: int = 9, bits: int = 64) -> list[tuple[int, int]]:
+    """Split a hash into chunks; two hashes within Hamming distance < n_chunks share at least one chunk."""
+    width = -(-bits // n_chunks)
+    return [(i, (h >> (i * width)) & ((1 << width) - 1)) for i in range(n_chunks)]
+
+
 # ------------------------------------------------------------------ processing
-def process_image(src: Path, dst: Path, resize: int) -> tuple[int, int, str, int] | None:
-    """Resize (short side = resize), save JPEG q90. Returns (w, h, sha1, phash) or None if unreadable."""
+def process_image(src: Path, dst: Path, resize: int) -> tuple[int, int, str, int, int] | None:
+    """Resize (short side = resize), save JPEG q90. Returns (w, h, sha1, phash, dhash) or None if unreadable."""
     try:
         with Image.open(src) as im:
-            im = ImageOps.exif_transpose(im).convert("RGB")
+            try:
+                im = ImageOps.exif_transpose(im)
+            except Exception:  # noqa: BLE001 - corrupt EXIF orientation tag
+                pass
+            im = im.convert("RGB")
             w, h = im.size
             if resize and min(w, h) > resize:
                 scale = resize / min(w, h)
                 im = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.Resampling.LANCZOS)
-            ph = phash(im)
+            ph, dh = phash(im), dhash(im)
             dst.parent.mkdir(parents=True, exist_ok=True)
-            im.save(dst, "JPEG", quality=90, optimize=True)
-    except (UnidentifiedImageError, OSError) as exc:
+            im.info = {}  # drop malformed dpi/exif metadata that Pillow may fail to re-encode
+            im.save(dst, "JPEG", quality=90, optimize=True, dpi=(72, 72))
+    except (UnidentifiedImageError, OSError, ValueError, TypeError) as exc:
         print(f"  unreadable {src}: {exc}")
         return None
     sha = hashlib.sha1(dst.read_bytes()).hexdigest()
-    return im.size[0], im.size[1], sha, ph
+    return im.size[0], im.size[1], sha, ph, dh
 
 
 def assign_splits(rows: list[dict], seed: int, ratios=(0.70, 0.15, 0.15)) -> None:
@@ -159,26 +177,30 @@ def assign_splits(rows: list[dict], seed: int, ratios=(0.70, 0.15, 0.15)) -> Non
             r["split"] = "test" if i < n_test else ("valid" if i < n_test + n_valid else "train")
 
 
-def dedupe(rows: list[dict], max_hamming: int = 4) -> tuple[list[dict], int, int]:
-    """Drop exact (sha1) and near (phash) duplicates. Test rows win over valid over train."""
-    order = {"test": 0, "valid": 1, "train": 2}
-    rows = sorted(rows, key=lambda r: order[r["split"]])
+def dedupe(rows: list[dict], max_hamming: int = 8) -> tuple[list[dict], int, int]:
+    """Drop exact (sha1) and near duplicates. Near = DCT phash distance <= max_hamming AND dhash distance
+    <= max_hamming (both, to avoid merging distinct leaves on plain backgrounds). Test rows win over valid
+    over train so a kept test image never has a twin in train. Multi-index bucketing keeps it O(n)."""
+    order = {"test": 0, "valid": 1, "train": 2, "": 3}
+    rows = sorted(rows, key=lambda r: order.get(r["split"], 3))
     seen_sha: set[str] = set()
     kept: list[dict] = []
     exact = near = 0
-    # bucket phashes by top 16 bits to keep the near-dup scan fast
-    buckets: dict[int, list[int]] = defaultdict(list)
+    n_chunks = max_hamming + 1
+    buckets: dict[tuple[int, int], list[tuple[int, int]]] = defaultdict(list)
     for r in rows:
         if r["sha1"] in seen_sha:
             exact += 1
             continue
-        ph = r["phash"]
-        bucket = buckets[ph >> 48]
-        if any(hamming(ph, other) <= max_hamming for other in bucket):
+        ph, dh = r["phash"], r.get("dhash", 0)
+        keys = _chunks(ph, n_chunks)
+        cands = {c for k in keys for c in buckets[k]}
+        if any(hamming(ph, oph) <= max_hamming and hamming(dh, odh) <= max_hamming for oph, odh in cands):
             near += 1
             continue
         seen_sha.add(r["sha1"])
-        bucket.append(ph)
+        for k in keys:
+            buckets[k].append((ph, dh))
         kept.append(r)
     return kept, exact, near
 
@@ -226,19 +248,20 @@ def build(out: Path, sources: dict[str, dict], names: list[str], resize: int, mi
                 try:
                     with Image.open(dst) as im:
                         w, h = im.size
-                        ph = phash(im.convert("RGB"))
+                        rgb = im.convert("RGB")
+                        ph, dh = phash(rgb), dhash(rgb)
                     sha = hashlib.sha1(dst.read_bytes()).hexdigest()
-                    meta = (w, h, sha, ph)
+                    meta = (w, h, sha, ph, dh)
                 except OSError:
                     meta = process_image(path, dst, resize)
             else:
                 meta = process_image(path, dst, resize)
             if meta is None:
                 continue
-            w, h, sha, ph = meta
+            w, h, sha, ph, dh = meta
             rows.append({"path": rel.as_posix(), "label": label, "crop": crop, "condition": cond, "source": name,
                          "domain": spec["domain"], "split": split or "", "width": w, "height": h, "sha1": sha,
-                         "phash": ph})
+                         "phash": ph, "dhash": dh})
             counts[label] += 1
             if len(rows) % 2000 == 0:
                 print(f"  {len(rows)} images processed ({time.time() - t0:.0f}s)", flush=True)
@@ -254,13 +277,16 @@ def build(out: Path, sources: dict[str, dict], names: list[str], resize: int, mi
         if r["label"] == NOT_A_LEAF:
             r["domain"] = "ood"
 
-    # drop small classes (computed over field+ood rows only)
+    # Dedupe BEFORE assigning random splits so the 70/15/15 ratios apply to unique images. Sources that
+    # ship their own splits keep them; among twins the test copy wins, then valid, then train, then unsplit.
+    rows, n_exact, n_near = dedupe(rows)
+
+    # drop small classes (computed on unique images)
     class_counts = Counter(r["label"] for r in rows)
     small = {c for c, n in class_counts.items() if n < min_per_class}
     rows = [r for r in rows if r["label"] not in small]
 
     assign_splits(rows, seed)
-    rows, n_exact, n_near = dedupe(rows)
     rows.sort(key=lambda r: (r["source"], r["label"], r["path"]))
 
     with open(out / "manifest.csv", "w", newline="", encoding="utf-8") as fh:
