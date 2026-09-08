@@ -1,120 +1,91 @@
-"""Retrain everything KrishiDisha serves: tabular models, then the disease CNN.
+"""Retrain everything KrishiDisha serves: tabular models, then the field disease classifier.
 
-The tabular stage always runs (its CSVs ship with the repo).  The image stage
-runs only when a PlantVillage-style ``ImageFolder`` dataset can be found - it
-is several gigabytes and is not part of the repository - otherwise it is
-skipped with a note rather than failing the whole run.
+The tabular stage always runs (its CSVs ship with the repo). The vision stage runs when the unified
+field manifest exists (``<KRISHIDISHA_DATA_ROOT>/disease_unified/manifest.csv``, built by
+``python -m ml.datasets.build_disease_manifest`` from the downloaded sources) - otherwise it is skipped
+with a note rather than failing the whole run. PlantVillage is never used (owner's decision).
 
-Dataset lookup order for the image stage:
+Any arguments after a bare ``--`` are forwarded verbatim to :mod:`ml.vision.train`, e.g.::
 
-1. ``--disease-data-dir`` if given
-2. ``$KRISHIDISHA_DISEASE_DATA``
-3. the first of a few conventional local paths that contains ``train/`` and a
-   validation folder
-
-Any arguments after a bare ``--`` are forwarded verbatim to
-:mod:`ml.train_disease`, e.g.::
-
-    python -m ml.train_all -- --epochs 6 --arch efficientnet_b0 --batch-size 32
+    python -m ml.train_all -- --epochs 12 --arch timm:efficientnet_b0 --batch-size 32 --ema
 
 Other examples::
 
-    python -m ml.train_all                       # tabular (+ disease if found)
-    python -m ml.train_all --skip-disease        # tabular only
-    python -m ml.train_all --skip-tabular -- --limit-per-class 40 --epochs 1
+    python -m ml.train_all                       # tabular (+ vision if the manifest exists)
+    python -m ml.train_all --skip-vision         # tabular only
+    python -m ml.train_all --skip-tabular --build-manifest -- --limit-per-class 40 --epochs 1
 """
 from __future__ import annotations
 
 import argparse
-import os
 import sys
+import time
 from pathlib import Path
-
-DEFAULT_DISEASE_PATHS = [
-    Path("data/plantvillage"),
-    Path("datasets/plantvillage"),
-    Path("../datasets/plantvillage"),
-    Path("C:/Shivpratap_Singh_Official_Work/datasets/plantvillage"),
-]
-
-
-def locate_disease_dataset(explicit: Path | None) -> Path | None:
-    """Return a folder that (somewhere below it) holds train/ + valid/, or None."""
-    from ml.train_disease import find_dataset_root
-
-    candidates: list[Path] = []
-    if explicit:
-        candidates.append(Path(explicit))
-    env = os.environ.get("KRISHIDISHA_DISEASE_DATA")
-    if env:
-        candidates.append(Path(env))
-    candidates.extend(DEFAULT_DISEASE_PATHS)
-
-    for cand in candidates:
-        if not cand.is_dir():
-            continue
-        try:
-            return find_dataset_root(cand)
-        except FileNotFoundError:
-            continue
-    return None
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run the tabular stage and, when the dataset exists, the disease stage."""
     argv = list(sys.argv[1:] if argv is None else argv)
-    passthrough: list[str] = []
+    forwarded: list[str] = []
     if "--" in argv:
-        cut = argv.index("--")
-        argv, passthrough = argv[:cut], argv[cut + 1:]
-
+        i = argv.index("--")
+        argv, forwarded = argv[:i], argv[i + 1:]
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--data-dir", type=Path, default=Path("data"), help="folder with the tabular CSVs")
-    p.add_argument("--output", type=Path, default=Path("models"), help="folder for all artefacts")
-    p.add_argument("--cv-folds", type=int, default=5)
-    p.add_argument("--disease-data-dir", type=Path, default=None,
-                   help="PlantVillage dataset root (skips the image stage if absent)")
+    p.add_argument("--data-dir", type=Path, default=Path("data"))
+    p.add_argument("--output", type=Path, default=Path("models"))
+    p.add_argument("--manifest", type=Path, help="override the disease manifest path")
+    p.add_argument("--build-manifest", action="store_true", help="(re)build the unified manifest from downloaded sources first")
     p.add_argument("--skip-tabular", action="store_true")
-    p.add_argument("--skip-disease", action="store_true")
+    p.add_argument("--skip-vision", action="store_true")
+    p.add_argument("--no-export", action="store_true", help="skip ONNX export after training")
     args = p.parse_args(argv)
 
-    args.output.mkdir(parents=True, exist_ok=True)
-    (args.output / ".gitkeep").touch()
-
+    t0 = time.time()
     if not args.skip_tabular:
+        print("=== tabular ===")
         from ml.train_tabular import main as tabular_main
 
-        print("=" * 70)
-        print("STAGE 1/2  tabular models (crop / fertilizer / yield)")
-        print("=" * 70)
-        rc = tabular_main(["--data-dir", str(args.data_dir), "--output", str(args.output),
-                           "--cv-folds", str(args.cv_folds)])
-        if rc != 0:
+        rc = tabular_main(["--data-dir", str(args.data_dir), "--output", str(args.output)])
+        if rc:
             return rc
-    else:
-        print("skipping tabular stage (--skip-tabular)")
 
-    if args.skip_disease:
-        print("\nskipping disease stage (--skip-disease)")
+    if args.skip_vision:
+        return 0
+    from ml.datasets import data_root
+
+    manifest = args.manifest or data_root() / "disease_unified" / "manifest.csv"
+    if args.build_manifest or not manifest.exists():
+        if args.build_manifest or any((data_root() / n / "_source.json").exists() for n in ("rice_leaf_4", "paddy_doctor", "mango_leaf")):
+            print("=== building manifest ===")
+            from ml.datasets.build_disease_manifest import main as build_main
+
+            build_main(["--out", str(manifest.parent)])
+    if not manifest.exists():
+        print(f"SKIPPED vision stage: no manifest at {manifest}. Run `python -m ml.datasets.download --all` then "
+              f"`python -m ml.datasets.build_disease_manifest`.")
         return 0
 
-    root = locate_disease_dataset(args.disease_data_dir)
-    if root is None:
-        print("\n" + "=" * 70)
-        print("STAGE 2/2  plant-disease CNN - SKIPPED")
-        print("No ImageFolder dataset with train/ and valid/ found. Download the")
-        print("Kaggle 'New Plant Diseases Dataset (Augmented)' and rerun with")
-        print("  python -m ml.train_all --disease-data-dir <path>")
-        print("=" * 70)
-        return 0
+    print("=== vision ===")
+    from ml.vision.train import main as vision_main
 
-    from ml.train_disease import main as disease_main
+    vargs = ["--manifest", str(manifest), "--output", str(args.output)]
+    if "--calibrate" not in forwarded:
+        vargs.append("--calibrate")
+    rc = vision_main(vargs + forwarded)
+    if rc:
+        return rc
+    ckpt = args.output / "plant_disease_model.pt"
+    if ckpt.exists():
+        from ml.vision.eval import run_eval
+        from ml.datasets import SOURCES_FILE
 
-    print("\n" + "=" * 70)
-    print(f"STAGE 2/2  plant-disease CNN  (dataset: {root})")
-    print("=" * 70)
-    return disease_main(["--data-dir", str(root), "--output", str(args.output), *passthrough])
+        run_eval(ckpt, manifest, args.output, sources_yaml=SOURCES_FILE)
+        if not args.no_export:
+            from ml.vision.export import main as export_main
+
+            export_main(["--checkpoint", str(ckpt), "--output", str(args.output)])
+    print(f"done in {(time.time() - t0) / 60:.1f} min")
+    return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())
