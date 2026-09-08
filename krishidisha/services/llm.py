@@ -54,7 +54,12 @@ class AgriAssistant:
         self.provider = self._choose_provider()
         self._anthropic = None
         self._openai = None
-        log.info("Agri assistant provider: %s", self.provider)
+        from .lang import LanguageLayer
+
+        # Translation layer for languages the local model / rules bot cannot handle natively. Claude handles
+        # Indic languages itself, so the layer only acts for the openai (local) and rules providers.
+        self.lang = LanguageLayer(getattr(config, "TRANSLATION_BACKEND", None))
+        log.info("Agri assistant provider: %s (translation: %s)", self.provider, self.lang.translator.name)
 
     # ------------------------------------------------------------ provider
     def _choose_provider(self) -> str:
@@ -93,6 +98,23 @@ class AgriAssistant:
              language: str = "en", image_bytes: bytes | None = None, image_mime: str = "image/jpeg") -> dict[str, Any]:
         history = [h for h in (history or []) if h.get("role") in {"user", "assistant"} and h.get("content")]
         history = history[-self.cfg.CHAT_HISTORY_TURNS:]
+
+        # 0. Language: trust a confident script detection over the UI setting; translate for non-native
+        #    languages when the provider cannot handle them itself.
+        language, _conf = self.lang.resolve(message, language)
+        translate = self.provider != "anthropic" and self.lang.active and language not in self.lang.native
+        original_message = message
+        if translate:
+            message, _ = self.lang.inbound(message, language)
+
+        def finish(result: dict[str, Any]) -> dict[str, Any]:
+            result = self._guard(result)
+            result["language"] = language
+            if translate:
+                result["reply_en"] = result.get("reply", "")
+                result["reply"] = self.lang.outbound(result.get("reply", ""), language)
+                result["translated"] = True
+            return result
 
         # 1. Optional image -> run disease model first (works for every provider)
         vision_note = None
@@ -144,18 +166,18 @@ class AgriAssistant:
 
         try:
             if self.provider == "anthropic":
-                return self._guard(self._chat_anthropic(user_turn, history, image_bytes, image_mime, passages, detection))
+                return finish(self._chat_anthropic(user_turn, history, image_bytes, image_mime, passages, detection))
             if self.provider == "openai":
-                return self._guard(self._chat_openai(user_turn, history, image_bytes, image_mime, passages, detection))
+                return finish(self._chat_openai(user_turn, history, image_bytes, image_mime, passages, detection))
         except Exception as exc:  # noqa: BLE001
             log.exception("LLM provider %s failed; using offline fallback", self.provider)
             result = self.rules.reply(message, language=language, detection=detection, farmer_context=farmer_context)
             result["provider"] = "rules"
             result["fallback_reason"] = str(exc)[:300]
-            return self._guard(result)
+            return finish(result)
         result = self.rules.reply(message, language=language, detection=detection, farmer_context=farmer_context)
         result["provider"] = "rules"
-        return self._guard(result)
+        return finish(result)
 
     @staticmethod
     def _guard(result: dict[str, Any]) -> dict[str, Any]:

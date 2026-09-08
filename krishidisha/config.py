@@ -58,6 +58,9 @@ class Config:
     OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     LLM_MAX_TOOL_ROUNDS = int(os.getenv("LLM_MAX_TOOL_ROUNDS", "6"))
     CHAT_HISTORY_TURNS = int(os.getenv("CHAT_HISTORY_TURNS", "12"))
+    # Translation layer for regional languages when the provider is the local model or the rules bot:
+    # none | indictrans2 (local ai4bharat models) | bhashini (hosted, needs BHASHINI_USER_ID/API_KEY)
+    TRANSLATION_BACKEND = os.getenv("TRANSLATION_BACKEND", "none")
 
     # --- External data ------------------------------------------------------
     # data.gov.in Agmarknet daily mandi prices. The public sample key works
@@ -91,4 +94,5 @@ class TestConfig(Config):
     AUTO_VERIFY_FARMERS = True
     LLM_PROVIDER = "rules"
     DISEASE_MODEL_BACKEND = "stub"
+    TRANSLATION_BACKEND = "none"
     SECRET_KEY = "test"
