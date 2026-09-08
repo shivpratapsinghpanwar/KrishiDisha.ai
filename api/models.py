@@ -1,116 +1,133 @@
-"""
-Pydantic models for KrishiDisha Agriculture API
-"""
+"""Pydantic schemas for the standalone FastAPI service (mirrors the Flask /api/v1 payloads)."""
+from __future__ import annotations
+
+from typing import Any, Optional
+
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-from datetime import datetime
 
 
-class ChatMessage(BaseModel):
-    """Model for chat messages"""
-    message: str = Field(..., description="User's message to the chatbot")
-    farmer_id: Optional[int] = Field(None, description="Farmer ID for personalized responses")
+class ChatRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=2000, examples=["How much urea for 2 acres of wheat?"])
+    language: str = Field("en", max_length=10, description="en, hi, hinglish, mr, pa, gu, ta, te, kn, bn")
+    history: Optional[list[dict[str, str]]] = Field(None, description="Prior turns: [{role, content}]")
+    farmer_context: Optional[str] = Field(None, description="Free text profile, e.g. 'state: Punjab, land: 3 acres'")
+    plain: bool = Field(False, description="Also return a markdown-stripped reply for SMS / TTS")
 
 
 class ChatResponse(BaseModel):
-    """Model for chatbot responses"""
-    response: str = Field(..., description="Chatbot's response")
-    timestamp: datetime = Field(default_factory=datetime.now)
+    reply: str
+    reply_plain: Optional[str] = None
+    provider: Optional[str] = None
+    model: Optional[str] = None
+    tools_used: list[str] = []
+    sources: list[str] = []
 
 
 class CropRecommendationInput(BaseModel):
-    """Model for crop recommendation input"""
-    N: float = Field(..., description="Nitrogen content in soil")
-    P: float = Field(..., description="Phosphorus content in soil")
-    K: float = Field(..., description="Potassium content in soil")
-    temperature: float = Field(..., description="Temperature in Celsius")
-    humidity: float = Field(..., description="Humidity percentage")
-    ph: float = Field(..., description="Soil pH level")
-    rainfall: float = Field(..., description="Rainfall in mm")
+    N: float = Field(..., ge=0, le=200, description="Soil nitrogen kg/ha")
+    P: float = Field(..., ge=0, le=200, description="Soil phosphorus kg/ha")
+    K: float = Field(..., ge=0, le=250, description="Soil potassium kg/ha")
+    temperature: float = Field(..., ge=-5, le=60, description="Celsius")
+    humidity: float = Field(..., ge=0, le=100, description="Relative humidity %")
+    ph: float = Field(..., ge=0, le=14)
+    rainfall: float = Field(..., ge=0, le=5000, description="mm")
+
+
+class Alternative(BaseModel):
+    crop: Optional[str] = None
+    fertilizer: Optional[str] = None
+    probability: float
 
 
 class CropRecommendationOutput(BaseModel):
-    """Model for crop recommendation output"""
-    recommended_crop: str = Field(..., description="Recommended crop name")
-    confidence: float = Field(..., description="Prediction confidence score")
-    additional_info: Optional[str] = Field(None, description="Additional farming advice")
+    recommended_crop: str
+    confidence: float
+    alternatives: list[Alternative]
+    revenue_per_acre: Optional[float] = None
+    cost_per_acre: Optional[float] = None
+    profit_per_acre: Optional[float] = None
+    image: Optional[str] = None
+    guide: Optional[dict[str, Any]] = None
 
 
 class FertilizerRecommendationInput(BaseModel):
-    """Model for fertilizer recommendation input"""
-    N: float = Field(..., description="Nitrogen content in soil")
-    P: float = Field(..., description="Phosphorus content in soil")
-    K: float = Field(..., description="Potassium content in soil")
-    soil_type: str = Field(..., description="Type of soil (e.g., loamy, clay, sandy)")
-    crop_type: str = Field(..., description="Crop type")
+    temperature: float = Field(..., ge=-5, le=60)
+    humidity: float = Field(..., ge=0, le=100)
+    moisture: float = Field(..., ge=0, le=100)
+    soil_type: str = Field(..., examples=["Sandy"], description="Black, Clayey, Loamy, Red, Sandy")
+    crop_type: str = Field(..., examples=["Maize"])
+    N: float = Field(..., ge=0, le=200)
+    P: float = Field(..., ge=0, le=200)
+    K: float = Field(..., ge=0, le=250)
+    area: Optional[float] = Field(None, gt=0, description="Optional field area to get a dose calculator")
+    unit: str = Field("acre", pattern="^(acre|hectare)$")
 
 
 class FertilizerRecommendationOutput(BaseModel):
-    """Model for fertilizer recommendation output"""
-    recommended_fertilizer: str = Field(..., description="Recommended fertilizer name")
-    npk_ratio: str = Field(..., description="NPK ratio for the fertilizer")
-    application_rate: Optional[str] = Field(None, description="Application rate per hectare")
+    recommended_fertilizer: str
+    confidence: float
+    alternatives: list[Alternative]
+    npk: Optional[str] = None
+    usage_note: Optional[str] = None
+    image: Optional[str] = None
+    calculator: Optional[dict[str, Any]] = None
 
 
-class DiseaseDetectionInput(BaseModel):
-    """Model for disease detection input"""
-    image_url: Optional[str] = Field(None, description="URL of the plant image")
-    image_file: Optional[str] = Field(None, description="Base64 encoded image file")
+class FertilizerCalculatorInput(BaseModel):
+    crop: str
+    area: float = Field(..., gt=0)
+    unit: str = Field("acre", pattern="^(acre|hectare)$")
+    soil_n: Optional[float] = None
+    soil_p: Optional[float] = None
+    soil_k: Optional[float] = None
+
+
+class Prediction(BaseModel):
+    label: str
+    name: str
+    crop: str
+    condition: str
+    is_healthy: bool
+    confidence: float
 
 
 class DiseaseDetectionOutput(BaseModel):
-    """Model for disease detection output"""
-    disease_name: str = Field(..., description="Name of the detected disease")
-    confidence: float = Field(..., description="Prediction confidence score")
-    description: Optional[str] = Field(None, description="Disease description")
-    preventive_measures: Optional[str] = Field(None, description="Preventive measures")
-    supplement_recommendation: Optional[str] = Field(None, description="Recommended supplement")
+    available: bool
+    backend: str
+    model: Optional[str] = None
+    message: Optional[str] = None
+    predictions: list[Prediction] = []
+    top: Optional[Prediction] = None
+    info: Optional[dict[str, Any]] = None
+    products: list[dict[str, Any]] = []
 
 
 class CropYieldInput(BaseModel):
-    """Model for crop yield prediction input"""
-    crop: str = Field(..., description="Crop name")
-    crop_year: int = Field(..., description="Crop year")
-    season: str = Field(..., description="Season (Kharif, Rabi, Zaid)")
-    state: str = Field(..., description="State name")
-    area: float = Field(..., description="Area in hectares")
-    production: float = Field(..., description="Production in tonnes")
-    annual_rainfall: float = Field(..., description="Annual rainfall in mm")
-    fertilizer: float = Field(..., description="Fertilizer usage in kg/ha")
-    pesticide: float = Field(..., description="Pesticide usage in kg/ha")
+    crop: str = Field(..., examples=["Wheat"])
+    crop_year: int = Field(..., ge=1990, le=2040)
+    season: str = Field(..., examples=["Rabi"])
+    state: str = Field(..., examples=["Punjab"])
+    area: float = Field(..., gt=0, description="hectares")
+    production: float = Field(..., ge=0, description="tonnes")
+    annual_rainfall: float = Field(..., ge=0, description="mm")
+    fertilizer: float = Field(..., ge=0, description="kg")
+    pesticide: float = Field(..., ge=0, description="kg")
 
 
 class CropYieldOutput(BaseModel):
-    """Model for crop yield prediction output"""
-    predicted_yield: float = Field(..., description="Predicted yield in tonnes/hectare")
-    confidence: float = Field(..., description="Prediction confidence score")
-    recommendations: Optional[List[str]] = Field(None, description="Yield improvement recommendations")
-
-
-class FarmerActivityLog(BaseModel):
-    """Model for logging farmer activities"""
-    farmer_id: int = Field(..., description="Farmer ID")
-    activity_type: str = Field(..., description="Type of activity")
-    input_data: Dict[str, Any] = Field(..., description="Input data for the activity")
-    output_data: Dict[str, Any] = Field(..., description="Output data from the activity")
-
-
-class ActivityResponse(BaseModel):
-    """Model for activity log response"""
-    status: str = Field(..., description="Status of the operation")
-    message: str = Field(..., description="Response message")
-    activity_id: Optional[int] = Field(None, description="ID of the logged activity")
+    predicted_yield: float
+    unit: str
+    estimated_production: float
+    tips: list[str] = []
 
 
 class HealthCheck(BaseModel):
-    """Model for health check response"""
-    status: str = Field(..., description="Service status")
-    version: str = Field(..., description="API version")
-    timestamp: datetime = Field(default_factory=datetime.now)
+    status: str
+    assistant: dict[str, Any]
+    models: dict[str, bool]
+    disease_model: dict[str, Any]
 
 
 class ErrorResponse(BaseModel):
-    """Model for error responses"""
-    error: str = Field(..., description="Error message")
-    detail: Optional[str] = Field(None, description="Detailed error information")
-    status_code: int = Field(..., description="HTTP status code")
+    error: str
+    detail: Optional[str] = None

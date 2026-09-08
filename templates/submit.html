@@ -1,145 +1,131 @@
-{% extends "base_Crop_Fertilizer.html" %}
+{% extends "base.html" %}
 
-{% block title %}Crop Recommendation{% endblock %}
+{% block title %}Detection Result{% endblock %}
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-  </head>
-  <style>
-		h1 {
-			color: rgb(0, 0, 0);
-			text-align: center;
-		}
-
-		.warning {
-			color: red;
-			font-weight: bold;
-			text-align: center;
-		}
-		.card{
-		margin-left:410px;
-		margin-top: 20px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		color: rgb(241, 239, 240);
-		}
-		.container{
-		background:#fffbfe;
-		font-weight: bold;
-		padding-bottom:10px;
-		border-radius: 15px;
-		}
-        p.capitalize {
-        text-transform: capitalize;
-        }
-	</style>
-</style>
-
-<body style="background: #BCBBB8;">
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="container mt-3">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% endwith %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-4"><i class="bi bi-camera me-2"></i>Detection Result</h1>
 
-<div>
-  <div class="container">
-    <!-- For demo purpose -->
-    <div class="row mb-5 text-center text-white">
-      <div class="col-lg-10 mx-auto">
-        <h1 class="display-4" style="padding-top: 2%;font-weight: 400;color: rgb(28, 146, 28);""><b>{{title}}🍂</b></h1>
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card kd-card p-3 text-center">
+        <img src="{{ image_url }}" alt="Uploaded leaf" class="img-fluid rounded" style="max-height: 360px; object-fit: contain;">
       </div>
     </div>
-    <center>
-    <div class=" col">
-          <div class="p-3 bg-white shadow rounded-lg" style="width: 30%;">
 
-            <img src={{image_url}} width="350" height="350">
-
+    <div class="col-lg-7">
+      <div class="kd-result mb-4">
+        {% if top.is_healthy %}
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-check-circle-fill text-success fs-2"></i>
+            <div>
+              <div class="small text-muted">Crop</div>
+              <h3 class="text-success mb-0">{{ top.crop }} &mdash; {{ top.condition }}</h3>
+            </div>
           </div>
-      </div>
-      </center>
-      <br>
-      <div class=" row ">
-        <div class="col mx-auto">
-          <div class="p-5 bg-white shadow rounded-lg" style="height: 95%;">
-
-            <h5><b>
-                {% if pred==3 or pred==5 or pred==7 or pred==11 or pred==15 or pred==18 or pred==20 or pred==23 or
-                pred==24 or pred==25 or pred==28 or pred==38 %}
-                Tips to Grow Healthy Plants :
-                {% else %}
-                Brief Descritpion :
-                {% endif %}
-              </b></h5>
-            <h6 style="text-align: justify;">{{desc}}
-            </h6>
+        {% else %}
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-exclamation-triangle-fill text-warning fs-2"></i>
+            <div>
+              <div class="small text-muted">Crop</div>
+              <h3 class="text-warning-emphasis mb-0">{{ top.crop }} &mdash; {{ top.condition }}</h3>
+            </div>
           </div>
+        {% endif %}
+
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="progress kd-confidence flex-grow-1" role="progressbar" aria-label="Confidence" aria-valuenow="{{ (top.confidence * 100) | round }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar {{ 'bg-success' if top.is_healthy else 'bg-warning' }}" style="width: {{ (top.confidence * 100) | round }}%"></div>
+          </div>
+          <span class="fw-semibold">{{ top.confidence | pct }}</span>
+        </div>
+        <div class="small text-muted mb-3">Model: {{ result.model }} ({{ result.backend }})</div>
+
+        {% if result.predictions and result.predictions|length > 1 %}
+          <div class="small text-muted mb-1">All predictions</div>
+          <ul class="list-group list-group-flush mb-0">
+            {% for p in result.predictions %}
+              <li class="list-group-item px-0 py-2">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span>{{ p.crop }} &mdash; {{ p.condition }}</span>
+                  <span class="fw-semibold">{{ p.confidence | pct }}</span>
+                </div>
+                <div class="progress kd-confidence">
+                  <div class="progress-bar {{ 'bg-success' if p.is_healthy else 'bg-secondary' }}" style="width: {{ (p.confidence * 100) | round }}%"></div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <a href="{{ url_for('farmer.download_disease_report') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>Download PDF report</a>
+          <a href="{{ url_for('farmer.crop_detection') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-repeat me-1"></i>Analyse another image</a>
+          <a href="{{ url_for('chat.page') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-robot me-1"></i>Ask the assistant about this</a>
         </div>
       </div>
-      <div class="row">
-        <div class="col mx-auto">
-          <div class="p-5 bg-white shadow rounded-lg" style="height:95%">
-            <h5><b>
-                {% if pred==3 or pred==5 or pred==7 or pred==11 or pred==15 or pred==18 or pred==20 or pred==23 or
-                pred==24 or pred==25 or pred==28 or pred==38 %}
-                Benefits :
-                {% else %}
-                Prevent This Plant Disease By follow below steps :
+
+      {% if info %}
+        <div class="card kd-card p-3 mb-4">
+          {% if info.description %}
+            <h6 class="mb-2"><i class="bi bi-info-circle me-1"></i>About this condition</h6>
+            {% for para in info.description.split('\n') if para.strip() %}
+              <p class="small text-muted">{{ para }}</p>
+            {% endfor %}
+          {% endif %}
+          {% if info.prevention %}
+            <h6 class="mb-2"><i class="bi bi-shield-check me-1"></i>Prevention &amp; treatment</h6>
+            {% for para in info.prevention.split('\n') if para.strip() %}
+              <p class="small text-muted mb-1">{{ para }}</p>
+            {% endfor %}
+          {% endif %}
+          {% if info.supplement %}
+            <div class="d-flex align-items-center gap-3 mt-2 p-2 bg-kd-light rounded">
+              {% if info.supplement.image %}
+                <img src="{{ info.supplement.image }}" alt="{{ info.supplement.name }}" style="height: 60px; width: 60px; object-fit: contain;">
+              {% endif %}
+              <div>
+                <div class="small text-muted">Suggested supplement</div>
+                <div class="fw-semibold">{{ info.supplement.name }}</div>
+                {% if info.supplement.buy_link %}
+                  <a href="{{ info.supplement.buy_link }}" target="_blank" rel="noopener" class="small">View product <i class="bi bi-box-arrow-up-right"></i></a>
                 {% endif %}
-              </b></h5>
-            <h6 style="text-align: justify;">
-              {{prevent}}
-            </h6>
-          </div>
+              </div>
+            </div>
+          {% endif %}
         </div>
-
-        {% if pred!=4 %}
-        <div class="col mx-auto">
-        <div class=" p-5 bg-white shadow rounded-lg" style="height: 95%;">
-          <center>
-            <h5><b>
-                {% if pred==3 or pred==5 or pred==7 or pred==11 or pred==15 or pred==18 or pred==20 or pred==23 or
-                pred==24 or pred==25 or pred==28 or pred==38 %}
-                Fertilizer :
-                {% else %}
-                Supplements :
-                {% endif %}
-              </b></h5>
-            <br>
-            <img src={{simage}} width="300" height="350">
-            <br>
-            <br>
-            <h6>{{sname}}</h6>
-
-            <a target="_blank" href={{buy_link}}><button type="button" class="bttn-pill"
-                style="background-color: #05380b;">Buy Product</button></a>
-          </center>
-        </div>
-      </div>
-      <center>
-        <a href="{{ download_url }}" class="">
-            <button type="button" class="bttn-pill">Download PDF</button>
-        </a>
-    </center>
-
       {% endif %}
 
+      {% if products %}
+        <h5 class="kd-section-title mb-3">From our marketplace</h5>
+        <div class="row g-3">
+          {% for product in products %}
+            <div class="col-6 col-md-4">
+              <div class="card kd-card h-100">
+                <a href="{{ url_for('marketplace.product', slug=product.slug) }}" class="text-decoration-none text-reset">
+                  {% if product.image_url %}
+                    <img src="{{ product.image_url }}" class="kd-product-img w-100" alt="{{ product.name }}">
+                  {% else %}
+                    <div class="kd-product-img w-100 d-flex align-items-center justify-content-center bg-kd-light">
+                      <i class="bi bi-box-seam fs-1 text-success"></i>
+                    </div>
+                  {% endif %}
+                  <div class="card-body pb-2">
+                    <h6 class="mb-1">{{ product.name }}</h6>
+                    <span class="kd-price">{{ product.price | inr }}</span>
+                  </div>
+                </a>
+                <div class="card-body pt-0">
+                  <button type="button" class="btn btn-success btn-sm w-100" data-add-to-cart="{{ product.id }}" {% if product.stock <= 0 %}disabled{% endif %}>
+                    <i class="bi bi-cart-plus"></i> Add to cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-       
- 
 {% endblock %}

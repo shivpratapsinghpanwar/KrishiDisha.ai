@@ -1,135 +1,219 @@
-{% extends "base_Crop_Fertilizer.html" %}
+{% extends "base.html" %}
 
 {% block title %}Fertilizer Recommendation{% endblock %}
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-</head>
+
+{% block head %}
 <style>
-   h1 {
-			color: rgb(0, 0, 0);
-			text-align: center;
-		}
-
-		.warning {
-			color: red;
-			font-weight: bold;
-			text-align: center;
-		}
-		.card{
-		margin-left:410px;
-		margin-top: 20px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		color: rgb(241, 239, 240);
-		}
-		.container{
-		background:#fffbfe;
-		font-weight: bold;
-		padding-bottom:10px;
-		border-radius: 15px;
-		}
-        p.capitalize {
-        text-transform: capitalize;
-        }
-        
-
+  .kd-chip { display: inline-flex; align-items: center; gap: .35rem; background: var(--kd-green-light); color: var(--kd-green-dark); border-radius: 999px; padding: .3rem .7rem; font-size: .85rem; margin: 0 .35rem .35rem 0; }
 </style>
-{% block content %}
-<div class="container my-3 mt-3">
-    <div class="row mb-5 text-center text-white laptop">
-        <div class="col-lg-10 mx-auto">
-            <h1 class="display-4" style="padding-top: 2%;font-weight: 400;color: rgb(17, 204, 17);"><b>🌱Fertilizer Recommendation System🌱</b></h1>
-        </div>
-        <div class="col-lg-10 mx-auto">
-            <h2 class="lead" style="font-weight: 500;color: rgb(0, 0, 0);text-align: justify;">KrishiDisha’s fertilizer recommendation system suggests the best fertilizers based on soil type, crop type, NPK levels, temperature, moisture, and humidity. By analyzing these factors, it provides tailored recommendations to optimize crop growth, improve soil health, and promote sustainable farming, ensuring efficient fertilizer use and boosting productivity.</h2>
-        </div>
-    </div>
-    <form method="POST" action="{{url_for('fertilizer_recommendation')}}" class="mt-4">
-        <div class="row">
-            <div class="col-md-4">
-                <label for="temperature" class="form-label"><b>Temperature in °C</b></label>
-                <input type="number" step="any" name="temperature" class="form-control" required>
-            </div>
-            <div class="col-md-4">
-                <label for="humidity" class="form-label"><b>Humidity %</b></label>
-                <input type="number" step="any" name="humidity" class="form-control" required>
-            </div>
-            <div class="col-md-4">
-                <label for="moisture" class="form-label"><b>Moisture %</b></label>
-                <input type="number" step="any" name="moisture" class="form-control" required>
-            </div>
-        </div><br><br>
-        <div class="row">
-            <div class="col-md-4">
-                <label for="N" class="form-label"><b>Nitrogen (N) in mm</b></label>
-                <input type="number" step="any" name="N" class="form-control" required>
-            </div>
-            <div class="col-md-4">
-                <label for="K" class="form-label"><b>Potassium (K) in mm</b></label>
-                <input type="number" step="any" name="K" class="form-control" required>
-            </div>
-            <div class="col-md-4">
-                <label for="P" class="form-label"><b>Phosphorus (P) in mm</b></label>
-                <input type="number" step="any" name="P" class="form-control" required>
-            </div>
-            </div>
-        <div class="row mt-4">
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <label for="soil_type" class="form-label"><b>Soil Type</b></label>
-                    <select name="soil_type" class="form-control" required>
-                        {% for key, value in soil_mapping.items() %}
-                            <option value="{{ key }}">{{ value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="crop_type" class="form-label"><b>Crop Type</b></label>
-                    <select name="crop_type" class="form-control" required>
-                        {% for key, value in crop_mapping.items() %}
-                            <option value="{{ key }}">{{ value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
-        
-        <div class="row mt-4">
-            <div class="col-md-12 text-center">
-                <button class="bttn-pill">
-                    Get Recommendation
-                </button>
-            </div>
-        </div>
-    </form>
-    
-   <!-- Add Bootstrap CSS in your HTML head if not already included -->
-<div class="mt-4 d-flex justify-content-center">
-    {% if prediction_fertilizer %}
-    <center>
-    <div class="card bg-light" style="width: 30rem;">
-        <img src="{{ fertilizer_image }}" class="card-img-top" alt="{{ prediction_fertilizer }}" width="250px" height="400px">
-        <div class="card-body">
-            <h4 class="card-title" style="color: green;">Predicted Fertiizer: {{ prediction_fertilizer| capitalize }}</p></h4>
-        </div>
-    </div>
-    <form action="/download_fertilizer_report" method="POST">
-        <input type="hidden" name="predicted_fertilizer" value="{{ prediction_fertilizer }}">
-        <input type="hidden" name="fertilizer_image" value="{{ fertilizer_image }}">
-        <div class="row mt-4">
-            <div class="col-md-12 text-center">
-                <button class="bttn-pill">
-                    Download Report
-                </button>
-            </div>
-        </div>
-    </form>
-    </center>
-    {% endif %}
-</div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
 
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-1"><i class="bi bi-droplet-half me-2"></i>Fertilizer Recommendation</h1>
+  <p class="text-muted mb-4">Tell us your soil and crop details to get the right fertilizer, and optionally the exact dose for your field.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="kd-form-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Soil &amp; crop inputs</h5>
+          <button type="button" class="btn btn-sm btn-outline-success" id="fillExampleBtn"><i class="bi bi-magic me-1"></i>Fill example values</button>
+        </div>
+        <form method="post" action="{{ url_for('farmer.fertilizer_recommendation') }}" id="fertForm">
+          <div class="row g-3">
+            <div class="col-4">
+              <label for="temperature" class="form-label">Temperature</label>
+              <input type="number" step="any" class="form-control" id="temperature" name="temperature" value="{{ inputs.temperature if inputs.temperature is not none else '' }}" required>
+              <div class="kd-help">&deg;C</div>
+            </div>
+            <div class="col-4">
+              <label for="humidity" class="form-label">Humidity</label>
+              <input type="number" step="any" class="form-control" id="humidity" name="humidity" value="{{ inputs.humidity if inputs.humidity is not none else '' }}" required>
+              <div class="kd-help">%</div>
+            </div>
+            <div class="col-4">
+              <label for="moisture" class="form-label">Soil moisture</label>
+              <input type="number" step="any" class="form-control" id="moisture" name="moisture" value="{{ inputs.moisture if inputs.moisture is not none else '' }}" required>
+              <div class="kd-help">%</div>
+            </div>
+            <div class="col-6">
+              <label for="soil_type" class="form-label">Soil type</label>
+              <select class="form-select" id="soil_type" name="soil_type" required>
+                {% for s in soil_types %}
+                  <option value="{{ s }}" {% if inputs.soil_type == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label for="crop_type" class="form-label">Crop type</label>
+              <select class="form-select" id="crop_type" name="crop_type" required>
+                {% for c in crop_types %}
+                  <option value="{{ c }}" {% if inputs.crop_type == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-4">
+              <label for="N" class="form-label">Nitrogen (N)</label>
+              <input type="number" step="any" min="0" class="form-control" id="N" name="N" value="{{ inputs.N if inputs.N is not none else '' }}" required>
+            </div>
+            <div class="col-4">
+              <label for="P" class="form-label">Phosphorus (P)</label>
+              <input type="number" step="any" min="0" class="form-control" id="P" name="P" value="{{ inputs.P if inputs.P is not none else '' }}" required>
+            </div>
+            <div class="col-4">
+              <label for="K" class="form-label">Potassium (K)</label>
+              <input type="number" step="any" min="0" class="form-control" id="K" name="K" value="{{ inputs.K if inputs.K is not none else '' }}" required>
+            </div>
+          </div>
+
+          <hr class="my-3">
+          <p class="small text-muted mb-2"><i class="bi bi-calculator me-1"></i>Optional: get a dose calculator for your field size</p>
+          <div class="row g-3">
+            <div class="col-7">
+              <label for="area" class="form-label">Field area</label>
+              <input type="number" step="any" min="0" class="form-control" id="area" name="area" value="{{ inputs.area if inputs.area is defined and inputs.area is not none else '' }}">
+            </div>
+            <div class="col-5">
+              <label for="unit" class="form-label">Unit</label>
+              <select class="form-select" id="unit" name="unit">
+                <option value="acre" {% if inputs.unit == 'acre' or not inputs.unit %}selected{% endif %}>Acre</option>
+                <option value="hectare" {% if inputs.unit == 'hectare' %}selected{% endif %}>Hectare</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 mt-4"><i class="bi bi-search me-1"></i>Recommend fertilizer</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      {% if result %}
+        <div class="kd-result mb-4">
+          <div class="row g-3 align-items-center mb-3">
+            <div class="col-auto">
+              {% if result.image %}
+                <img src="{{ url_for('static', filename=result.image) }}" alt="{{ result.recommended_fertilizer }}" class="kd-result-img rounded">
+              {% else %}
+                <div class="kd-feature-icon" style="width:80px;height:80px;font-size:2rem;"><i class="bi bi-droplet-half"></i></div>
+              {% endif %}
+            </div>
+            <div class="col">
+              <div class="small text-muted">Recommended fertilizer</div>
+              <h2 class="text-success mb-1">{{ result.recommended_fertilizer }}</h2>
+              {% if result.npk %}<span class="badge bg-success mb-2">NPK {{ result.npk }}</span>{% endif %}
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress kd-confidence flex-grow-1" role="progressbar" aria-label="Confidence" aria-valuenow="{{ (result.confidence * 100) | round }}" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-success" style="width: {{ (result.confidence * 100) | round }}%"></div>
+                </div>
+                <span class="fw-semibold">{{ result.confidence | pct }}</span>
+              </div>
+            </div>
+          </div>
+
+          {% if result.alternatives %}
+            <div class="mb-3">
+              <div class="small text-muted mb-1">Other options</div>
+              {% for alt in result.alternatives %}
+                <span class="kd-chip"><i class="bi bi-droplet"></i>{{ alt.fertilizer }} · {{ alt.probability | pct }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if result.usage_note %}
+            <p class="small text-muted"><i class="bi bi-info-circle me-1"></i>{{ result.usage_note }}</p>
+          {% endif %}
+
+          {% if result.calculator %}
+            {% if result.calculator.error %}
+              <div class="alert alert-warning small mb-0">{{ result.calculator.error }}</div>
+            {% else %}
+              <hr>
+              <h6 class="mb-2">Dose for {{ result.calculator.area }} {{ result.calculator.unit }}{{ 's' if result.calculator.area != 1 }}</h6>
+              <div class="table-responsive mb-2">
+                <table class="table table-kd table-sm mb-0">
+                  <thead><tr><th>Fertilizer</th><th>Quantity (kg)</th><th>Bags (50 kg)</th></tr></thead>
+                  <tbody>
+                    {% for name, kg in result.calculator.fertilizers_kg.items() %}
+                      <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ kg }}</td>
+                        <td>{{ result.calculator.bags_50kg.get(name, '—') }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% if result.calculator.schedule %}
+                <div class="small text-muted mb-1">Application schedule</div>
+                <ul class="small mb-0">
+                  {% for step in result.calculator.schedule %}<li>{{ step }}</li>{% endfor %}
+                </ul>
+              {% endif %}
+              {% if result.calculator.note %}<p class="small text-muted mt-2 mb-0">{{ result.calculator.note }}</p>{% endif %}
+            {% endif %}
+          {% endif %}
+
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <form method="post" action="{{ url_for('farmer.download_fertilizer_report') }}">
+              <button type="submit" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>Download PDF report</button>
+            </form>
+            <a class="btn btn-outline-success btn-sm" href="{{ url_for('main.fert_calc') }}"><i class="bi bi-calculator me-1"></i>Open full calculator</a>
+          </div>
+        </div>
+
+        {% if products %}
+          <h5 class="kd-section-title mb-3">Buy from the marketplace</h5>
+          <div class="row g-3">
+            {% for product in products %}
+              <div class="col-6 col-md-4">
+                <div class="card kd-card h-100">
+                  <a href="{{ url_for('marketplace.product', slug=product.slug) }}" class="text-decoration-none text-reset">
+                    {% if product.image_url %}
+                      <img src="{{ product.image_url }}" class="kd-product-img w-100" alt="{{ product.name }}">
+                    {% else %}
+                      <div class="kd-product-img w-100 d-flex align-items-center justify-content-center bg-kd-light">
+                        <i class="bi bi-box-seam fs-1 text-success"></i>
+                      </div>
+                    {% endif %}
+                    <div class="card-body pb-2">
+                      <h6 class="mb-1">{{ product.name }}</h6>
+                      <span class="kd-price">{{ product.price | inr }}</span>
+                    </div>
+                  </a>
+                  <div class="card-body pt-0">
+                    <button type="button" class="btn btn-success btn-sm w-100" data-add-to-cart="{{ product.id }}" {% if product.stock <= 0 %}disabled{% endif %}>
+                      <i class="bi bi-cart-plus"></i> Add to cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="card kd-card p-5 text-center h-100 d-flex flex-column justify-content-center">
+          <i class="bi bi-droplet-half display-3 text-success mb-3"></i>
+          <h4>Get your fertilizer recommendation</h4>
+          <p class="text-muted mb-0">Fill in the soil, weather and crop details on the left. Add your field area for an exact urea / DAP / MOP dosage and application schedule.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('fillExampleBtn').addEventListener('click', function () {
+    var vals = {temperature: 26, humidity: 52, moisture: 38, N: 37, P: 0, K: 0};
+    Object.keys(vals).forEach(function (k) {
+      var el = document.getElementById(k);
+      if (el) el.value = vals[k];
+    });
+    document.getElementById('soil_type').value = 'Sandy';
+    document.getElementById('crop_type').value = 'Maize';
+  });
+</script>
 {% endblock %}

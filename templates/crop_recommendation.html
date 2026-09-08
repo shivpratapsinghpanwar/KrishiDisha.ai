@@ -1,141 +1,181 @@
-{% extends "base_Crop_Fertilizer.html" %}
+{% extends "base.html" %}
 
 {% block title %}Crop Recommendation{% endblock %}
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-  </head>
-  <style>
-		h1 {
-			color: rgb(0, 0, 0);
-			text-align: center;
-		}
-
-		.warning {
-			color: red;
-			font-weight: bold;
-			text-align: center;
-		}
-		.card{
-		margin-left:410px;
-		margin-top: 20px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		color: rgb(241, 239, 240);
-		}
-		.container{
-		background:#fffbfe;
-		font-weight: bold;
-		padding-bottom:10px;
-		border-radius: 15px;
-		}
-        p.capitalize {
-        text-transform: capitalize;
-        }
-        
+{% block head %}
+<style>
+  .kd-chip { display: inline-flex; align-items: center; gap: .35rem; background: var(--kd-green-light); color: var(--kd-green-dark); border-radius: 999px; padding: .3rem .7rem; font-size: .85rem; margin: 0 .35rem .35rem 0; }
 </style>
+{% endblock %}
 
-<body style="background: #BCBBB8;">
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="container mt-3">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="container py-4">
+  <h1 class="kd-section-title mb-1"><i class="bi bi-flower1 me-2"></i>Crop Recommendation</h1>
+  <p class="text-muted mb-4">Enter your soil test values and local climate to find the best-suited crop from 22 supported crops.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="kd-form-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Soil &amp; climate inputs</h5>
+          <button type="button" class="btn btn-sm btn-outline-success" id="fillExampleBtn"><i class="bi bi-magic me-1"></i>Fill example values</button>
+        </div>
+        <form method="post" action="{{ url_for('farmer.crop_recommendation') }}" id="cropForm">
+          <div class="row g-3">
+            <div class="col-6">
+              <label for="N" class="form-label">Nitrogen (N)</label>
+              <input type="number" step="any" min="0" max="140" class="form-control" id="N" name="N" value="{{ inputs.N if inputs.N is not none else '' }}" required>
+              <div class="kd-help">kg/ha · typical 0-140</div>
+            </div>
+            <div class="col-6">
+              <label for="P" class="form-label">Phosphorus (P)</label>
+              <input type="number" step="any" min="5" max="145" class="form-control" id="P" name="P" value="{{ inputs.P if inputs.P is not none else '' }}" required>
+              <div class="kd-help">kg/ha · typical 5-145</div>
+            </div>
+            <div class="col-6">
+              <label for="K" class="form-label">Potassium (K)</label>
+              <input type="number" step="any" min="5" max="205" class="form-control" id="K" name="K" value="{{ inputs.K if inputs.K is not none else '' }}" required>
+              <div class="kd-help">kg/ha · typical 5-205</div>
+            </div>
+            <div class="col-6">
+              <label for="temperature" class="form-label">Temperature</label>
+              <input type="number" step="any" min="8" max="44" class="form-control" id="temperature" name="temperature" value="{{ inputs.temperature if inputs.temperature is not none else '' }}" required>
+              <div class="kd-help">&deg;C · typical 8-44</div>
+            </div>
+            <div class="col-6">
+              <label for="humidity" class="form-label">Humidity</label>
+              <input type="number" step="any" min="14" max="100" class="form-control" id="humidity" name="humidity" value="{{ inputs.humidity if inputs.humidity is not none else '' }}" required>
+              <div class="kd-help">% · typical 14-100</div>
+            </div>
+            <div class="col-6">
+              <label for="ph" class="form-label">Soil pH</label>
+              <input type="number" step="0.1" min="3.5" max="10" class="form-control" id="ph" name="ph" value="{{ inputs.ph if inputs.ph is not none else '' }}" required>
+              <div class="kd-help">typical 3.5-10</div>
+            </div>
+            <div class="col-12">
+              <label for="rainfall" class="form-label">Rainfall</label>
+              <input type="number" step="any" min="20" max="300" class="form-control" id="rainfall" name="rainfall" value="{{ inputs.rainfall if inputs.rainfall is not none else '' }}" required>
+              <div class="kd-help">mm · typical 20-300</div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success w-100 mt-4"><i class="bi bi-search me-1"></i>Recommend crop</button>
+        </form>
+        <p class="small text-muted mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>Find these values on your Soil Health Card, issued free by your local agriculture department, or from a nearby soil testing lab.</p>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      {% if result %}
+        <div class="kd-result">
+          <div class="row g-3 align-items-center mb-3">
+            <div class="col-auto">
+              {% if result.image %}
+                <img src="{{ url_for('static', filename=result.image) }}" alt="{{ result.recommended_crop }}" class="kd-result-img rounded">
+              {% else %}
+                <div class="kd-feature-icon" style="width:80px;height:80px;font-size:2rem;"><i class="bi bi-flower1"></i></div>
+              {% endif %}
+            </div>
+            <div class="col">
+              <div class="small text-muted">Recommended crop</div>
+              <h2 class="text-success text-capitalize mb-1">{{ result.recommended_crop | title }}</h2>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress kd-confidence flex-grow-1" role="progressbar" aria-label="Confidence" aria-valuenow="{{ (result.confidence * 100) | round }}" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-success" style="width: {{ (result.confidence * 100) | round }}%"></div>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% endwith %}
-
-<div class="container my-3 mt-3">
-    <div class="row mb-5 text-center text-white laptop">
-        <div class="col-lg-10 mx-auto">
-            <h1 class="display-4" style="padding-top: 2%;font-weight: 400;color: rgb(17, 204, 17);"><b>🌱Crop Recommendation System🌱</b></h1>
-            <h2 class="lead" style="font-weight: 500;color: rgb(0, 0, 0);text-align: justify;">KrishiDisha intelligently recommends optimal crops such as rice, maize, apple, and more, based on key agricultural parameters—NPK, temperature, humidity, pH, and rainfall. By analyzing user inputs, CropWise generates a tailored report featuring the recommended crop, estimated revenue, and profit per acre, alongside an image of the crop. This solution empowers farmers to make data-driven decisions, enhancing crop yield and sustainability through precision agriculture.</h2>
-        </div>
-
-    </div>
-    
-    <form method="POST" action="{{url_for('crop_recommendation')}}" class="mt-4">
-        <div class="row">
-            <div class="col-md-4">
-            <label for="N" class="form-label"><b>Nitrogen (N) in mm</b></label>
-            <input type="number" step="any" name="N" class="form-control" required>
+                <span class="fw-semibold">{{ result.confidence | pct }}</span>
+              </div>
             </div>
-        
-        <div class="col-md-4">
-            <label for="P" class="form-label"><b>Phosphorus (P) in mm</b></label>
-            <input type="number" step="any" name="P" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label for="K" class="form-label"><b>Potassium (K) in mm</b></label>
-            <input type="number" step="any" name="K" class="form-control" required>
-        </div>
-        </div>
-        <div class="row mt-4">
-        <div class="col-md-4">
-            <label for="temperature" class="form-label"><b>Temperature in °C</b></label>
-            <input type="number" step="any" name="temperature" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label for="humidity" class="form-label"><b>Humidity %</b></label>
-            <input type="number" step="any" name="humidity" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label for="ph" class="form-label"><b>pH</b></label>
-            <input type="number" step="any" name="ph" class="form-control" required>
-        </div>
-        </div>
-        <div class="row mt-4">
-        <div class="col-md-4">
-            <label for="rainfall" class="form-label"><b>Rainfall in mm</b></label>
-            <input type="number" step="any" name="rainfall" class="form-control" required>
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-12 text-center">
-            <button class="bttn-pill">
-                Get Recommendation
-              </button>
-        
-        </div>
-    </div>
-    
-    </form>
-<br>
-    {% if prediction %}
-    <center>
-    <div class="card bg-light" style="width: 30rem;">
-        <img src="{{ url_for('static', filename=crop_image) }}" class="card-img-top" alt="{{ prediction }}" width="250px" height="400px">
-        <div class="card-body">
-            <h4 class="card-title" style="color: green;">Recommended Crop: {{ prediction| capitalize }}</p></h4>
-            <h5 class="card-text">Total Revenue per Acre: ₹{{ total_revenue }}</h5>
-            <h5 class="card-text">Total Profit per Acre: ₹{{ total_profit }}</h5>
-        </div>
-    </div>
-    <form action="/download_report" method="POST">
-        <input type="hidden" name="predicted_crop" value="{{ prediction }}">
-        <input type="hidden" name="total_revenue" value="{{ total_revenue }}">
-        <input type="hidden" name="total_profit" value="{{ total_profit }}">
-        <input type="hidden" name="crop_image" value="{{ crop_image }}">
-        <div class="row mt-4">
-            <div class="col-md-12 text-center">
-                <button class="bttn-pill">
-                    Download Report
-                </button>
+          </div>
+
+          {% if result.alternatives %}
+            <div class="mb-3">
+              <div class="small text-muted mb-1">Other suitable crops</div>
+              {% for alt in result.alternatives %}
+                <span class="kd-chip"><i class="bi bi-leaf"></i>{{ alt.crop | title }} · {{ alt.probability | pct }}</span>
+              {% endfor %}
             </div>
+          {% endif %}
+
+          {% if result.revenue_per_acre is not none or result.cost_per_acre is not none or result.profit_per_acre is not none %}
+            <div class="table-responsive mb-3">
+              <table class="table table-kd table-sm mb-0">
+                <thead><tr><th>Revenue / acre</th><th>Cost / acre</th><th>Profit / acre</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>{{ result.revenue_per_acre | inr if result.revenue_per_acre is not none else '—' }}</td>
+                    <td>{{ result.cost_per_acre | inr if result.cost_per_acre is not none else '—' }}</td>
+                    <td class="fw-semibold text-success">{{ result.profit_per_acre | inr if result.profit_per_acre is not none else '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+
+          {% if result.alternatives %}
+            <div class="mb-3" style="max-width: 420px;">
+              <canvas id="cropChart" height="180"></canvas>
+            </div>
+          {% endif %}
+
+          {% if result.guide %}
+            <div class="mb-3">
+              <div class="small text-muted mb-1">Cultivation snapshot</div>
+              <dl class="row mb-0 small">
+                {% if result.guide.season %}<dt class="col-4">Season</dt><dd class="col-8">{{ result.guide.season }}</dd>{% endif %}
+                {% if result.guide.soil %}<dt class="col-4">Soil</dt><dd class="col-8">{{ result.guide.soil }}</dd>{% endif %}
+                {% if result.guide.sowing_time %}<dt class="col-4">Sowing time</dt><dd class="col-8">{{ result.guide.sowing_time }}</dd>{% endif %}
+                {% if result.guide.improved_varieties %}<dt class="col-4">Improved varieties</dt><dd class="col-8">{{ result.guide.improved_varieties }}</dd>{% endif %}
+              </dl>
+            </div>
+          {% endif %}
+
+          <div class="d-flex flex-wrap gap-2">
+            <form method="post" action="{{ url_for('farmer.download_crop_report') }}">
+              <button type="submit" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>Download PDF report</button>
+            </form>
+            <a class="btn btn-outline-success btn-sm" href="{{ url_for('main.crop_guide_page', crop=result.recommended_crop) }}"><i class="bi bi-book me-1"></i>Cultivation guide</a>
+            <a class="btn btn-outline-success btn-sm" href="{{ url_for('main.fert_calc') }}"><i class="bi bi-calculator me-1"></i>Fertilizer calculator</a>
+          </div>
         </div>
-    </form>
-    </center>
-    {% endif %}
+      {% else %}
+        <div class="card kd-card p-5 text-center h-100 d-flex flex-column justify-content-center">
+          <i class="bi bi-flower1 display-3 text-success mb-3"></i>
+          <h4>Find your best-fit crop</h4>
+          <p class="text-muted mb-0">Fill the soil and climate values on the left. Our model is trained on 22 crops &mdash; from rice, wheat and maize to pulses, fruits and cash crops &mdash; and picks the one that matches your conditions best, along with an estimated profit per acre.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
+{% endblock %}
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-       
- 
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  document.getElementById('fillExampleBtn').addEventListener('click', function () {
+    var vals = {N: 90, P: 42, K: 43, temperature: 21, humidity: 82, ph: 6.5, rainfall: 202};
+    Object.keys(vals).forEach(function (k) {
+      var el = document.getElementById(k);
+      if (el) el.value = vals[k];
+    });
+  });
+  {% if result and result.alternatives %}
+  (function () {
+    var labels = ["{{ result.recommended_crop | title }}"];
+    var data = [{{ (result.confidence * 100) | round(1) }}];
+    {% for alt in result.alternatives[:2] %}
+      labels.push("{{ alt.crop | title }}");
+      data.push({{ (alt.probability * 100) | round(1) }});
+    {% endfor %}
+    var ctx = document.getElementById('cropChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ label: 'Confidence %', data: data, backgroundColor: '#1b7f3b' }] },
+        options: { indexAxis: 'y', scales: { x: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
+      });
+    }
+  })();
+  {% endif %}
+</script>
 {% endblock %}

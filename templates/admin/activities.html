@@ -1,0 +1,55 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Activity log{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-list-check me-2"></i>Activity log</h4>
+  <div class="text-muted small">{{ activities|length }} record(s) shown (latest 300).</div>
+{% endblock %}
+{% block admin_content %}
+<div class="kd-card p-3 mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label for="type" class="form-label">Activity type</label>
+      <select class="form-select" id="type" name="type" onchange="this.form.submit()">
+        <option value="">All types</option>
+        {% for k in kinds %}
+        <option value="{{ k }}" {% if k == kind %}selected{% endif %}>{{ k }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success" type="submit"><i class="bi bi-search"></i> Filter</button>
+    </div>
+  </form>
+</div>
+
+<div class="kd-card p-3">
+  {% if activities %}
+  <div class="table-responsive">
+    <table class="table table-kd align-middle mb-0">
+      <thead><tr><th>Farmer</th><th>Type</th><th>Time</th><th>Details</th></tr></thead>
+      <tbody>
+        {% for a in activities %}
+        <tr>
+          <td>{% if a.farmer %}<a href="{{ url_for('admin.farmer_detail', farmer_id=a.farmer.id) }}">{{ a.farmer.name }}</a>{% else %}-{% endif %}</td>
+          <td><span class="badge bg-kd-light text-success border">{{ a.activity_type }}</span></td>
+          <td class="small text-muted text-nowrap">{{ a.timestamp.strftime('%d %b %Y %H:%M') }}</td>
+          <td>
+            <div class="d-flex flex-wrap gap-1">
+              {% for k, v in a.input_dict().items() %}
+                {% if loop.index0 < 6 %}<span class="badge text-bg-light border">{{ k }}: {{ v }}</span>{% endif %}
+              {% endfor %}
+              {% for k, v in a.output_dict().items() %}
+                {% if loop.index0 < 6 %}<span class="badge bg-kd-light text-success border">{{ k }}: {{ v }}</span>{% endif %}
+              {% endfor %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted mb-0">No activity recorded for this filter.</p>
+  {% endif %}
+</div>
+{% endblock %}

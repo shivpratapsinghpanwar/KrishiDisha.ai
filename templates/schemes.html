@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Government Schemes{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-3"><i class="bi bi-bank me-1"></i>Government Schemes</h1>
+  <p class="text-muted">Central and state schemes for farmers: subsidies, insurance, credit and income support.</p>
+
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-sm-8 col-md-6">
+      <label for="qInput" class="form-label">Search schemes</label>
+      <input type="text" class="form-control" id="qInput" name="q" value="{{ q }}" placeholder="e.g. kisan, insurance, credit">
+    </div>
+    <div class="col-sm-4 col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-success w-100"><i class="bi bi-search me-1"></i>Search</button>
+    </div>
+  </form>
+
+  {% if schemes %}
+    <div class="row g-3">
+      {% for s in schemes %}
+        {% set title = s.name or s.title %}
+        {% set summary = s.summary or s.text %}
+        <div class="col-md-6">
+          <div class="card kd-card kd-scheme-card h-100 p-3">
+            <h5 class="mb-1">{{ title }}</h5>
+            {% if s.ministry %}<div class="small text-muted mb-2">{{ s.ministry }}</div>{% endif %}
+            {% if s.tags %}
+              <div class="mb-2">
+                {% for tag in s.tags %}<span class="badge bg-kd-light text-success border border-success-subtle me-1">{{ tag }}</span>{% endfor %}
+              </div>
+            {% endif %}
+            <p class="text-muted small mb-2">{{ summary }}</p>
+            {% if s.benefit or s.eligibility or s.how_to_apply %}
+              <button class="btn btn-sm btn-outline-success mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#scheme{{ loop.index }}">
+                Details <i class="bi bi-chevron-down"></i>
+              </button>
+              <div class="collapse" id="scheme{{ loop.index }}">
+                {% if s.benefit %}<p class="small mb-1"><strong>Benefit:</strong> {{ s.benefit }}</p>{% endif %}
+                {% if s.eligibility %}<p class="small mb-1"><strong>Eligibility:</strong> {{ s.eligibility }}</p>{% endif %}
+                {% if s.how_to_apply %}<p class="small mb-1"><strong>How to apply:</strong> {{ s.how_to_apply }}</p>{% endif %}
+              </div>
+            {% endif %}
+            {% if s.url %}
+              <a href="{{ s.url }}" target="_blank" rel="noopener" class="small mt-2"><i class="bi bi-box-arrow-up-right me-1"></i>Official website</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No schemes found{% if q %} for "{{ q }}"{% endif %}. Try a different search term.</p>
+  {% endif %}
+</div>
+{% endblock %}

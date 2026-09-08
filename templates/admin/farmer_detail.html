@@ -1,0 +1,112 @@
+{% extends "admin/_layout.html" %}
+{% block title %}{{ farmer.name }}{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-person-badge me-2"></i>{{ farmer.name }}</h4>
+  <div class="text-muted small">Farmer profile, activity and order history.</div>
+{% endblock %}
+{% block admin_content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="kd-card p-3 mb-4">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <h6 class="fw-bold mb-0">Profile</h6>
+        {% if farmer.verified %}<span class="badge text-bg-success">Verified</span>{% else %}<span class="badge text-bg-warning">Pending</span>{% endif %}
+      </div>
+      <ul class="list-unstyled small mb-3">
+        <li class="mb-1"><i class="bi bi-person me-2 text-success"></i>{{ farmer.name }}</li>
+        <li class="mb-1"><i class="bi bi-at me-2 text-success"></i>{{ farmer.username }}</li>
+        <li class="mb-1"><i class="bi bi-envelope me-2 text-success"></i>{{ farmer.email }}</li>
+        <li class="mb-1"><i class="bi bi-telephone me-2 text-success"></i>{{ farmer.phone }}</li>
+        <li class="mb-1"><i class="bi bi-geo-alt me-2 text-success"></i>{{ farmer.state or '-' }} / {{ farmer.district or '-' }}</li>
+        <li class="mb-1"><i class="bi bi-rulers me-2 text-success"></i>{{ farmer.land_area_acres if farmer.land_area_acres else '-' }} acres</li>
+        <li class="mb-1"><i class="bi bi-translate me-2 text-success"></i>{{ farmer.preferred_language }}</li>
+        <li class="mb-1"><i class="bi bi-calendar-check me-2 text-success"></i>Registered {{ farmer.created_at.strftime('%d %b %Y') }}</li>
+      </ul>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.update_farmer', farmer_id=farmer.id) }}"><i class="bi bi-pencil"></i> Edit</a>
+        {% if farmer.verified %}
+        <form method="post" action="{{ url_for('admin.unverify_farmer', farmer_id=farmer.id) }}">
+          <button class="btn btn-sm btn-outline-warning" type="submit"><i class="bi bi-slash-circle"></i> Suspend</button>
+        </form>
+        {% else %}
+        <a class="btn btn-sm btn-success" href="{{ url_for('admin.verify_farmer', farmer_id=farmer.id) }}"><i class="bi bi-check2-circle"></i> Verify</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="kd-card p-3">
+      <h6 class="fw-bold mb-3"><i class="bi bi-chat-dots me-1"></i>Chat sessions</h6>
+      {% if sessions %}
+      <ul class="list-group list-group-flush">
+        {% for s in sessions %}
+        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+          <a href="{{ url_for('admin.chat_detail', session_id=s.id) }}">{{ s.title or 'Conversation' }}</a>
+          <span class="small text-muted">{{ s.updated_at.strftime('%d %b') }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted small mb-0">No chat sessions yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="kd-card p-3 mb-4">
+      <h6 class="fw-bold mb-3"><i class="bi bi-list-check me-1"></i>Recent activity</h6>
+      {% if activities %}
+      <div class="table-responsive">
+        <table class="table table-kd table-sm align-middle mb-0">
+          <thead><tr><th>Type</th><th>Time</th><th>Details</th></tr></thead>
+          <tbody>
+            {% for a in activities %}
+            <tr>
+              <td><span class="badge bg-kd-light text-success border">{{ a.activity_type }}</span></td>
+              <td class="small text-muted text-nowrap">{{ a.timestamp.strftime('%d %b %Y %H:%M') }}</td>
+              <td>
+                <div class="d-flex flex-wrap gap-1">
+                  {% for k, v in a.input_dict().items() %}
+                    {% if loop.index0 < 6 %}<span class="badge text-bg-light border">{{ k }}: {{ v }}</span>{% endif %}
+                  {% endfor %}
+                  {% for k, v in a.output_dict().items() %}
+                    {% if loop.index0 < 6 %}<span class="badge bg-kd-light text-success border">{{ k }}: {{ v }}</span>{% endif %}
+                  {% endfor %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted small mb-0">No activity recorded.</p>
+      {% endif %}
+    </div>
+
+    <div class="kd-card p-3">
+      <h6 class="fw-bold mb-3"><i class="bi bi-bag-check me-1"></i>Orders</h6>
+      {% if orders %}
+      <div class="table-responsive">
+        <table class="table table-kd table-sm align-middle mb-0">
+          <thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for o in orders %}
+            <tr>
+              <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}">{{ o.order_number }}</a></td>
+              <td class="small text-muted">{{ o.created_at.strftime('%d %b %Y') }}</td>
+              <td>{{ o.total|inr }}</td>
+              <td>
+                {% set kd_badge = {'Placed':'secondary','Confirmed':'info','Packed':'primary','Shipped':'warning','Delivered':'success','Cancelled':'danger'} %}
+                <span class="badge text-bg-{{ kd_badge.get(o.status, 'secondary') }}">{{ o.status }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted small mb-0">No orders placed yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

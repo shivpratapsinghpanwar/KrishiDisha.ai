@@ -1,63 +1,68 @@
 {% extends "base.html" %}
 
 {% block title %}Farmer Registration{% endblock %}
-<link rel="stylesheet" href="/static/css/Framer_Resitration_style.css">
 
 {% block content %}
-     <!-- Flash Messages -->
-     {% with messages = get_flashed_messages(with_categories=True) %}
-     {% if messages %}
-         <div>
-             {% for category, message in messages %}
-                 <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                     {{ message }}
-                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                 </div>
-             {% endfor %}
-         </div>
-     {% endif %}
-     {% endwith %}
-<br>
-<div class="registration-container">
-  <!-- Logo Section -->
-  <div class="logo-container">
-    <img src="/static/images/logo1.png" alt="Logo">
-  </div>
+<div class="container">
+  <div class="kd-auth-wrap kd-form-card">
+    <h1 class="h4 kd-section-title mb-1"><i class="bi bi-person-plus me-1"></i>Create your KrishiDisha account</h1>
+    <p class="text-muted small mb-4">Free for farmers. Get personalised crop, fertilizer and weather advice.</p>
 
-  <!-- Form Section -->
-  <div class="wrapper">
-    <h2 style="color: rgb(17, 204, 17);">Farmer Registration</h2>
-
-    <form method="POST" action="{{ url_for('farmer_registration') }}">
-      <div class="input-box">
-        <input type="text" placeholder="Enter your name" name="name" required>
+    <form method="post">
+      <div class="mb-3">
+        <label for="nameInput" class="form-label">Full name</label>
+        <input type="text" class="form-control" id="nameInput" name="name" value="{{ form.get('name', '') }}" required>
       </div>
-      <div class="input-box">
-        <input type="text" placeholder="Enter your email" name="email" required>
+      <div class="mb-3">
+        <label for="emailInput" class="form-label">Email</label>
+        <input type="email" class="form-control" id="emailInput" name="email" value="{{ form.get('email', '') }}" required>
       </div>
-      <div class="input-box">       
-        <input type="text" placeholder="Enter Phone No." name="phone" required>
+      <div class="mb-3">
+        <label for="phoneInput" class="form-label">Mobile number</label>
+        <input type="tel" class="form-control" id="phoneInput" name="phone" pattern="[6-9][0-9]{9}" title="10-digit Indian mobile number"
+               value="{{ form.get('phone', '') }}" required>
       </div>
-      <div class="input-box">
-        
-        <input type="text" placeholder="Create Username" name="username" required>
+      <div class="mb-3">
+        <label for="usernameInput" class="form-label">Username</label>
+        <input type="text" class="form-control" id="usernameInput" name="username" value="{{ form.get('username', '') }}" required>
       </div>
-      <div class="input-box">
-        <input type="password" placeholder="Create password" name="password" required>
+      <div class="mb-3">
+        <label for="passwordInput" class="form-label">Password</label>
+        <input type="password" class="form-control" id="passwordInput" name="password" minlength="6" required>
       </div>
-      <div class="policy">
-        <input type="checkbox" required>
-        <h3>I accept all terms & condition</h3>
+      <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+          <label for="stateSelect" class="form-label">State</label>
+          <select class="form-select" id="stateSelect" name="state">
+            <option value="">Select state</option>
+            {% for s in states %}
+              <option value="{{ s }}" {% if form.get('state') == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <label for="districtInput" class="form-label">District</label>
+          <input type="text" class="form-control" id="districtInput" name="district" value="{{ form.get('district', '') }}">
+        </div>
       </div>
-      <div class="input-box button">
-        <input type="submit" value="Register Now">
+      <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+          <label for="landInput" class="form-label">Land area (acres, optional)</label>
+          <input type="number" step="0.1" min="0" class="form-control" id="landInput" name="land_area_acres" value="{{ form.get('land_area_acres', '') }}">
+        </div>
+        <div class="col-sm-6">
+          <label for="langSelect" class="form-label">Preferred language</label>
+          <select class="form-select" id="langSelect" name="preferred_language">
+            {% for code, label in languages %}
+              <option value="{{ code }}" {% if form.get('preferred_language', 'en') == code %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
       </div>
-      <div class="text">
-        <h3>Already have an account? <a href="{{ url_for('farmer_login') }}">Login now</a></h3>
-      </div>
+      <p class="kd-help mb-3"><i class="bi bi-info-circle me-1"></i>New accounts are reviewed by an admin before full access is granted, unless auto-verification is enabled.</p>
+      <button type="submit" class="btn btn-success w-100"><i class="bi bi-person-check me-1"></i>Register</button>
     </form>
+    <p class="text-center small mt-3 mb-0">Already have an account? <a href="{{ url_for('auth.farmer_login') }}">Login here</a></p>
   </div>
 </div>
-<br><br>
-
 {% endblock %}

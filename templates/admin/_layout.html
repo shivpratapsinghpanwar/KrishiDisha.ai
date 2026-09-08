@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row g-4">
+    <div class="col-lg-2">
+      <div class="kd-admin-sidebar p-2 sticky-top" style="top: 90px;">
+        <div class="list-group list-group-flush">
+          <a class="list-group-item list-group-item-action {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"
+             href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint in ['admin.farmers', 'admin.farmer_detail', 'admin.create_farmer', 'admin.update_farmer'] %}active{% endif %}"
+             href="{{ url_for('admin.farmers') }}"><i class="bi bi-people me-2"></i>Farmers</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint in ['admin.orders', 'admin.order_detail'] %}active{% endif %}"
+             href="{{ url_for('admin.orders') }}"><i class="bi bi-bag-check me-2"></i>Orders</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint in ['admin.products', 'admin.product_new', 'admin.product_edit'] %}active{% endif %}"
+             href="{{ url_for('admin.products') }}"><i class="bi bi-box-seam me-2"></i>Products</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint == 'admin.activities' %}active{% endif %}"
+             href="{{ url_for('admin.activities') }}"><i class="bi bi-list-check me-2"></i>Activity log</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint in ['admin.chats', 'admin.chat_detail'] %}active{% endif %}"
+             href="{{ url_for('admin.chats') }}"><i class="bi bi-chat-dots me-2"></i>Chat logs</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint == 'admin.create_admin' %}active{% endif %}"
+             href="{{ url_for('admin.create_admin') }}"><i class="bi bi-shield-lock me-2"></i>Admins</a>
+          <a class="list-group-item list-group-item-action text-danger"
+             href="{{ url_for('auth.admin_logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-10">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>{% block admin_title %}{% endblock %}</div>
+      </div>
+      {% block admin_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
