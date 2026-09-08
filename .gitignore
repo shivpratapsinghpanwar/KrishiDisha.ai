@@ -32,6 +32,9 @@ models/*.pth
 models/*.onnx
 models/checkpoints/
 
+# Exported feedback / own-data collection (rebuild with `python -m ml.datasets.export_feedback`)
+data/llm/*.jsonl
+
 # Logs and temp files
 *.log
 *.tmp

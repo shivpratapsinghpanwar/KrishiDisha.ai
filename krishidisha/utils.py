@@ -8,7 +8,7 @@ from typing import Any
 from flask import current_app, flash, g, redirect, request, session, url_for
 
 from .extensions import db
-from .models import Farmer, FarmerActivity
+from .models import DataConsent, Farmer, FarmerActivity
 
 
 def current_farmer() -> Farmer | None:
@@ -53,6 +53,44 @@ def log_activity(activity_type: str, input_data: Any, output_data: Any, farmer: 
     except Exception as exc:  # noqa: BLE001
         db.session.rollback()
         current_app.logger.warning("activity log failed: %s", exc)
+
+
+# --------------------------------------------------------------------------- #
+# Data-use consent
+# --------------------------------------------------------------------------- #
+# Feedback kinds map onto the two consent switches a farmer actually sees.
+CONSENT_FIELD_FOR = {
+    "photos": "photos", "diagnosis": "photos", "image": "photos",
+    "chats": "chats", "chat": "chats", "yield": "chats", "fertilizer": "chats",
+}
+
+
+def consent_row(farmer: Farmer | None) -> DataConsent | None:
+    if farmer is None:
+        return None
+    return DataConsent.query.filter_by(farmer_id=farmer.id).first()
+
+
+def has_consent(farmer: Farmer | None, kind: str) -> bool:
+    """True when *farmer* opted in to reusing this kind of data ("photos"/"chats" or a feedback kind)."""
+    row = consent_row(farmer)
+    if row is None:
+        return False
+    return bool(getattr(row, CONSENT_FIELD_FOR.get(kind, "chats"), False))
+
+
+def set_consent(farmer: Farmer | None, photos: bool, chats: bool, commit: bool = True) -> DataConsent | None:
+    """Create or update the farmer's consent row."""
+    if farmer is None:
+        return None
+    row = consent_row(farmer)
+    if row is None:
+        row = DataConsent(farmer_id=farmer.id)
+        db.session.add(row)
+    row.photos, row.chats = bool(photos), bool(chats)
+    if commit:
+        db.session.commit()
+    return row
 
 
 def form_float(name: str, default: float | None = None) -> float:

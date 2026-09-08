@@ -131,6 +131,10 @@ def send():
     if chat.title == "New conversation" or not chat.title:
         chat.title = (message[:60] + ("…" if len(message) > 60 else "")) or "Leaf photo"
     db.session.commit()
+    if image_bytes:  # feedback loop: keep consented leaf photos for human labelling
+        from .feedback import capture_chat_photo
+
+        capture_chat_photo(chat, image_bytes, image_mime, result)
     if farmer:
         log_activity("Assistant Chat", {"message": message[:200]}, {"provider": result.get("provider"),
                                                                     "tools": result.get("tools_used", [])})
@@ -141,6 +145,7 @@ def send():
         model=result.get("model"), tools_used=result.get("tools_used", []), sources=result.get("sources", []),
         detection=detection if detection and detection.get("available") else None,
         fallback_reason=result.get("fallback_reason"),
+        message_index=len(chat.messages) - 1,  # index of this assistant turn, for /feedback ref_id
     )
 
 

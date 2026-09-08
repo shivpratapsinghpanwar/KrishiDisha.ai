@@ -17,6 +17,10 @@
              href="{{ url_for('admin.activities') }}"><i class="bi bi-list-check me-2"></i>Activity log</a>
           <a class="list-group-item list-group-item-action {% if request.endpoint in ['admin.chats', 'admin.chat_detail'] %}active{% endif %}"
              href="{{ url_for('admin.chats') }}"><i class="bi bi-chat-dots me-2"></i>Chat logs</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint in ['admin.label_queue', 'admin.label_disagreements', 'admin.label_upload'] %}active{% endif %}"
+             href="{{ url_for('admin.label_queue') }}"><i class="bi bi-tags me-2"></i>Labelling</a>
+          <a class="list-group-item list-group-item-action {% if request.endpoint == 'admin.feedback_review' %}active{% endif %}"
+             href="{{ url_for('admin.feedback_review') }}"><i class="bi bi-chat-square-heart me-2"></i>Feedback</a>
           <a class="list-group-item list-group-item-action {% if request.endpoint == 'admin.create_admin' %}active{% endif %}"
              href="{{ url_for('admin.create_admin') }}"><i class="bi bi-shield-lock me-2"></i>Admins</a>
           <a class="list-group-item list-group-item-action text-danger"

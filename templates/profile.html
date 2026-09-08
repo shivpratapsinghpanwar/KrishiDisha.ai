@@ -75,6 +75,27 @@
               <input type="password" class="form-control" id="newPassword" name="new_password" minlength="6" placeholder="Leave blank to keep current">
             </div>
           </div>
+
+          <hr class="my-4">
+          <h2 class="h6 mb-1"><i class="bi bi-shield-check me-1 text-success"></i>Data sharing</h2>
+          <p class="small text-muted mb-2">
+            Sharing is optional and you can switch it off at any time. We never share your name or phone number.
+          </p>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="consentPhotos" name="consent_photos"
+                   {% if consent and consent.photos %}checked{% endif %}>
+            <label class="form-check-label" for="consentPhotos">
+              Use my leaf photos to improve KrishiDisha's disease model
+            </label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="consentChats" name="consent_chats"
+                   {% if consent and consent.chats %}checked{% endif %}>
+            <label class="form-check-label" for="consentChats">
+              Use my chats and ratings to improve the assistant
+            </label>
+          </div>
+
           <button type="submit" class="btn btn-success mt-4"><i class="bi bi-check2-circle me-1"></i>Save changes</button>
         </form>
       </div>
