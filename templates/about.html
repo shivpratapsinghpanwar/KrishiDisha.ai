@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}About &amp; Models{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title">About KrishiDisha</h1>
+  <p class="lead">KrishiDisha is a decision-support platform for Indian farmers that combines machine learning models,
+    live weather &amp; market data, and a conversational AI assistant, so that agronomic decisions that once needed a
+    visit to the Krishi Vigyan Kendra can start right from a phone.</p>
+
+  <h2 class="h4 kd-section-title mt-5">Datasets behind the models</h2>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card kd-card h-100 p-3">
+        <h6><i class="bi bi-flower1 text-success me-1"></i>Crop_recommendation.csv</h6>
+        <p class="small text-muted mb-0">2,200 rows covering 22 crops, with soil N-P-K, temperature, humidity, pH and rainfall.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card kd-card h-100 p-3">
+        <h6><i class="bi bi-droplet-half text-success me-1"></i>Fertilizer Prediction.csv</h6>
+        <p class="small text-muted mb-0">Soil and crop parameters mapped to the recommended fertilizer type.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card kd-card h-100 p-3">
+        <h6><i class="bi bi-graph-up-arrow text-success me-1"></i>crop_yield.csv</h6>
+        <p class="small text-muted mb-0">Yield history across 55 crops and 30 Indian states, used to train the yield predictor.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card kd-card h-100 p-3">
+        <h6><i class="bi bi-camera text-success me-1"></i>PlantVillage</h6>
+        <p class="small text-muted mb-0">Leaf-image dataset with 38 disease/healthy classes, used to train the disease-detection CNN.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h4 kd-section-title mt-5">Model status</h2>
+  <div class="table-responsive">
+    <table class="table table-kd align-middle">
+      <thead><tr><th>Model</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Crop recommendation</td>
+          <td>{% if ml_status.crop_model %}<span class="badge bg-success">Loaded</span>{% else %}<span class="badge bg-danger">Unavailable</span>{% endif %}</td>
+        </tr>
+        <tr>
+          <td>Fertilizer recommendation</td>
+          <td>{% if ml_status.fertilizer_model %}<span class="badge bg-success">Loaded</span>{% else %}<span class="badge bg-danger">Unavailable</span>{% endif %}</td>
+        </tr>
+        <tr>
+          <td>Yield prediction</td>
+          <td>{% if ml_status.yield_model %}<span class="badge bg-success">Loaded</span>{% else %}<span class="badge bg-danger">Unavailable</span>{% endif %}</td>
+        </tr>
+        <tr>
+          <td>Disease detection ({{ detector.backend }} · {{ detector.model }} · {{ detector.num_classes }} classes)</td>
+          <td>{% if detector.available %}<span class="badge bg-success">Loaded</span>{% else %}<span class="badge bg-danger">Unavailable</span>{% endif %}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="h4 kd-section-title mt-5">Team</h2>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card kd-card p-3 text-center">
+        <i class="bi bi-person-circle fs-1 text-success"></i>
+        <h6 class="mt-2 mb-0">Abhishek Chourasia</h6>
+        <p class="small text-muted mb-0">Medi-Caps University</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card kd-card p-3 text-center">
+        <i class="bi bi-person-circle fs-1 text-success"></i>
+        <h6 class="mt-2 mb-0">Goutam Mandloi</h6>
+        <p class="small text-muted mb-0">Medi-Caps University</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card kd-card p-3 text-center">
+        <i class="bi bi-person-circle fs-1 text-success"></i>
+        <h6 class="mt-2 mb-0">Shivpratap Singh Panwar</h6>
+        <p class="small text-muted mb-0">Medi-Caps University</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h4 kd-section-title mt-5">JSON API</h2>
+  <p class="text-muted small">These endpoints return JSON and are intended for programmatic / JS use.</p>
+  <div class="table-responsive">
+    <table class="table table-kd">
+      <thead><tr><th>Method &amp; path</th><th>Fields</th></tr></thead>
+      <tbody>
+        <tr><td><code>GET /api/v1/health</code></td><td>Service and model status.</td></tr>
+        <tr><td><code>POST /api/v1/crop/recommend</code></td><td>N, P, K, temperature, humidity, ph, rainfall</td></tr>
+        <tr><td><code>POST /api/v1/fertilizer/recommend</code></td><td>crop, N, P, K, temperature, humidity, moisture, soil_type</td></tr>
+        <tr><td><code>POST /api/v1/yield/predict</code></td><td>state, crop, season, area, rainfall, fertilizer, pesticide</td></tr>
+        <tr><td><code>POST /api/v1/disease/detect</code></td><td>multipart <code>image</code> file</td></tr>
+        <tr><td><code>POST /api/v1/chat</code></td><td>message, session_key, language</td></tr>
+        <tr><td><code>GET /api/v1/weather</code></td><td>place</td></tr>
+        <tr><td><code>GET /api/v1/mandi</code></td><td>commodity, state, district</td></tr>
+        <tr><td><code>GET /api/v1/schemes</code></td><td>q</td></tr>
+        <tr><td><code>GET /api/v1/products</code></td><td>q, category, sort, organic, page</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert alert-warning mt-4">
+    <i class="bi bi-exclamation-triangle me-1"></i>
+    Recommendations from KrishiDisha are estimates from models trained on public datasets and general agronomic
+    knowledge. They do not replace advice from your local Krishi Vigyan Kendra or agriculture officer, especially
+    before large investments.
+  </div>
+</div>
+{% endblock %}

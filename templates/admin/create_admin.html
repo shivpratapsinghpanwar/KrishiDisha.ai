@@ -1,0 +1,48 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Admins{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-shield-lock me-2"></i>Admin accounts</h4>
+{% endblock %}
+{% block admin_content %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="kd-form-card">
+      <h6 class="fw-bold mb-3">Create new admin</h6>
+      <form method="post">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" name="username" required minlength="3" maxlength="45">
+          <div class="kd-help">3-45 letters, digits, dot or underscore.</div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-success"><i class="bi bi-person-plus"></i> Create admin</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="kd-card p-3">
+      <h6 class="fw-bold mb-3">Existing admins</h6>
+      {% if admins %}
+      <div class="table-responsive">
+        <table class="table table-kd align-middle mb-0">
+          <thead><tr><th>Username</th><th>Created</th></tr></thead>
+          <tbody>
+            {% for a in admins %}
+            <tr>
+              <td>{{ a.username }}</td>
+              <td class="small text-muted">{{ a.created_at.strftime('%d %b %Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No admin accounts yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

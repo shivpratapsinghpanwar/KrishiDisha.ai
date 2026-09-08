@@ -1,0 +1,37 @@
+{% extends "admin/_layout.html" %}
+{% block title %}{{ chat.title or 'Conversation' }}{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-chat-dots me-2"></i>{{ chat.title or 'Conversation' }}</h4>
+  <div class="text-muted small">
+    {% if chat.farmer %}<a href="{{ url_for('admin.farmer_detail', farmer_id=chat.farmer.id) }}">{{ chat.farmer.name }}</a>{% else %}Anonymous{% endif %}
+    · Language: {{ chat.language }} · Started {{ chat.created_at.strftime('%d %b %Y %H:%M') }}
+  </div>
+{% endblock %}
+{% block admin_content %}
+<div class="kd-card p-3">
+  <div class="kd-chat-messages" style="position: static; height: auto; min-height: 200px;">
+    {% for m in chat.messages %}
+    {% if m.role == 'user' %}
+    <div class="kd-msg kd-msg-user">{{ m.content }}</div>
+    {% else %}
+    <div class="kd-msg kd-msg-bot" data-md="{{ m.content }}"></div>
+    {% endif %}
+    <div class="kd-msg-meta {{ 'align-self-end' if m.role == 'user' else '' }}">
+      {{ m.role }}{% if m.provider %} · {{ m.provider }}{% endif %}
+      {% if m.tools_used %} · tools: {{ m.tools_used }}{% endif %}
+      · {{ m.created_at.strftime('%d %b %Y %H:%M') }}
+    </div>
+    {% else %}
+    <p class="text-muted mb-0">No messages in this conversation.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.kd-msg[data-md]').forEach(function (el) {
+    el.innerHTML = window.KDrenderMarkdown(el.dataset.md);
+  });
+</script>
+{% endblock %}

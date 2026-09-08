@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Mandi Prices{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-3"><i class="bi bi-currency-rupee me-1"></i>Mandi Prices</h1>
+  <p class="text-muted">Modal price is the most common trading price, in ₹ per quintal (100 kg), reported by mandis (agricultural markets) across India.</p>
+
+  <datalist id="commodityList">
+    {% for c in ["Wheat", "Rice", "Paddy(Dhan)(Common)", "Maize", "Soyabean", "Cotton", "Tomato", "Onion", "Potato",
+                 "Gram", "Arhar (Tur/Red Gram)(Whole)", "Mustard", "Groundnut", "Sugarcane", "Banana", "Apple"] %}
+      <option value="{{ c }}">
+    {% endfor %}
+  </datalist>
+
+  <form method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-sm-6 col-md-4">
+      <label for="commodityInput" class="form-label">Commodity</label>
+      <input type="text" class="form-control" id="commodityInput" name="commodity" list="commodityList" value="{{ commodity }}" placeholder="e.g. Wheat" required>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <label for="stateInput" class="form-label">State (optional)</label>
+      <input type="text" class="form-control" id="stateInput" name="state" value="{{ state }}" placeholder="e.g. Madhya Pradesh">
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <label for="districtInput" class="form-label">District (optional)</label>
+      <input type="text" class="form-control" id="districtInput" name="district" value="{{ district }}" placeholder="e.g. Indore">
+    </div>
+    <div class="col-sm-6 col-md-2">
+      <button type="submit" class="btn btn-success w-100"><i class="bi bi-search me-1"></i>Search</button>
+    </div>
+  </form>
+
+  {% if result %}
+    {% if result.error %}
+      <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i>{{ result.error }}</div>
+    {% endif %}
+    {% if result.note %}
+      <div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>{{ result.note }}</div>
+    {% endif %}
+    {% if result.source %}
+      <p class="small text-muted">Source: {{ result.source }}{% if result.count is not none %} &middot; {{ result.count }} record(s){% endif %}</p>
+    {% endif %}
+
+    {% if result.records %}
+      <div class="table-responsive mb-4">
+        <table class="table table-kd align-middle">
+          <thead>
+            <tr>
+              <th>Market</th><th>District / State</th><th>Variety</th>
+              <th>Min price</th><th>Max price</th><th>Modal price</th><th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in result.records %}
+              <tr>
+                <td>{{ r.market }}</td>
+                <td>{{ r.district }}, {{ r.state }}</td>
+                <td>{{ r.variety }}</td>
+                <td>{{ r.min_price | inr }}</td>
+                <td>{{ r.max_price | inr }}</td>
+                <td><strong>{{ r.modal_price | inr }}</strong></td>
+                <td>{{ r.date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% elif not result.error %}
+      <p class="text-muted">No mandi records found for this search. Try a broader search (drop state/district).</p>
+    {% endif %}
+
+    {% if result.msp %}
+      <h6 class="text-muted mb-2">Minimum Support Price for this commodity</h6>
+      <div class="table-responsive mb-4">
+        <table class="table table-kd">
+          <thead><tr><th>Commodity</th><th>MSP</th><th>Season</th></tr></thead>
+          <tbody>
+            {% for m in result.msp %}
+              <tr><td>{{ m.commodity }}</td><td>{{ m.msp | inr }} / quintal</td><td>{{ m.season }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="text-muted">Enter a commodity name above to see the latest mandi prices.</p>
+  {% endif %}
+
+  <h2 class="h5 kd-section-title mt-4">MSP reference {% if msp and msp[0].season %}({{ msp[0].season }}){% endif %}</h2>
+  {% if msp %}
+    <div class="table-responsive">
+      <table class="table table-kd align-middle">
+        <thead><tr><th>Commodity</th><th>MSP (₹/quintal)</th><th>Season</th><th>Note</th></tr></thead>
+        <tbody>
+          {% for m in msp %}
+            <tr>
+              <td>{{ m.commodity }}</td>
+              <td>{{ m.msp | inr }}</td>
+              <td>{{ m.season }}</td>
+              <td class="small text-muted">{{ m.note if m.note else '' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted small">MSP reference data is not available right now.</p>
+  {% endif %}
+</div>
+{% endblock %}

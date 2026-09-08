@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Fertilizer Calculator{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-3"><i class="bi bi-calculator me-1"></i>Fertilizer Calculator</h1>
+  <p class="text-muted">Work out how much Urea, DAP and MOP your field needs based on crop, area and (optionally) your soil test values.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <form method="post" class="kd-form-card">
+        <div class="mb-3">
+          <label for="cropSelect" class="form-label">Crop</label>
+          <select class="form-select" id="cropSelect" name="crop" required>
+            <option value="" disabled {% if not form.crop %}selected{% endif %}>Select a crop</option>
+            {% for c in crops %}
+              <option value="{{ c }}" {% if form.crop == c %}selected{% endif %}>{{ c | title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-7">
+            <label for="areaInput" class="form-label">Area</label>
+            <input type="number" step="0.1" min="0.1" class="form-control" id="areaInput" name="area" value="{{ form.area }}" required>
+          </div>
+          <div class="col-5">
+            <label for="unitSelect" class="form-label">Unit</label>
+            <select class="form-select" id="unitSelect" name="unit">
+              <option value="acre" {% if form.unit == 'acre' %}selected{% endif %}>Acre</option>
+              <option value="hectare" {% if form.unit == 'hectare' %}selected{% endif %}>Hectare</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="kd-help mb-2"><i class="bi bi-info-circle me-1"></i>Optional: enter soil N, P, K (kg/ha) from your
+          <strong>Soil Health Card</strong> for a more accurate dose.</p>
+        <div class="row g-2 mb-3">
+          <div class="col-4">
+            <label for="soilN" class="form-label small">Soil N</label>
+            <input type="number" step="0.1" class="form-control form-control-sm" id="soilN" name="soil_n" value="{{ form.soil_n }}">
+          </div>
+          <div class="col-4">
+            <label for="soilP" class="form-label small">Soil P</label>
+            <input type="number" step="0.1" class="form-control form-control-sm" id="soilP" name="soil_p" value="{{ form.soil_p }}">
+          </div>
+          <div class="col-4">
+            <label for="soilK" class="form-label small">Soil K</label>
+            <input type="number" step="0.1" class="form-control form-control-sm" id="soilK" name="soil_k" value="{{ form.soil_k }}">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100"><i class="bi bi-calculator me-1"></i>Calculate</button>
+      </form>
+    </div>
+
+    <div class="col-lg-7">
+      {% if result and result.error %}
+        <div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-1"></i>{{ result.error }}</div>
+      {% elif result %}
+        <div class="kd-result">
+          <h5 class="mb-3">{{ result.crop | title }} &middot; {{ result.area }} {{ result.unit }}{{ 's' if result.area != 1 else '' }} ({{ result.area_ha | round(2) }} ha)</h5>
+
+          <h6 class="text-muted">Nutrient requirement</h6>
+          <div class="table-responsive mb-3">
+            <table class="table table-kd table-sm">
+              <thead><tr><th>N</th><th>P&#8322;O&#8325;</th><th>K&#8322;O</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>{{ result.nutrient_requirement_kg.N }} kg</td>
+                  <td>{{ result.nutrient_requirement_kg.P2O5 }} kg</td>
+                  <td>{{ result.nutrient_requirement_kg.K2O }} kg</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {% if result.soil_status %}
+            <h6 class="text-muted">Soil status</h6>
+            <p class="small mb-3">
+              N: {{ result.soil_status.N }} &middot; P&#8322;O&#8325;: {{ result.soil_status.P2O5 }} &middot; K&#8322;O: {{ result.soil_status.K2O }}
+            </p>
+          {% endif %}
+
+          <h6 class="text-muted">Fertilizer quantity</h6>
+          <div class="table-responsive mb-3">
+            <table class="table table-kd table-sm align-middle">
+              <thead><tr><th>Fertilizer</th><th>Quantity (kg)</th><th>50 kg bags</th></tr></thead>
+              <tbody>
+                {% for name, kg in result.fertilizers_kg.items() %}
+                  <tr>
+                    <td>{{ name }}</td>
+                    <td>{{ kg | round(1) }} kg</td>
+                    <td>{{ result.bags_50kg[name] }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          {% if result.schedule %}
+            <h6 class="text-muted">Application schedule</h6>
+            <ol class="small">
+              {% for step in result.schedule %}<li>{{ step }}</li>{% endfor %}
+            </ol>
+          {% endif %}
+
+          {% if result.note %}
+            <p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>{{ result.note }}</p>
+          {% endif %}
+
+          <canvas id="bagsChart" height="120" class="mt-3"></canvas>
+
+          <a href="{{ url_for('marketplace.index', category='Fertilizer') }}" class="btn btn-outline-success btn-sm mt-3">
+            <i class="bi bi-shop me-1"></i>Buy fertilizers
+          </a>
+        </div>
+      {% else %}
+        <div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>Fill in the form to see your fertilizer requirement.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if result and not result.error %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const bags = {{ result.bags_50kg | tojson }};
+  new Chart(document.getElementById('bagsChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(bags),
+      datasets: [{ label: '50 kg bags', data: Object.values(bags), backgroundColor: ['#1b7f3b', '#f4b400', '#8b5a2b'] }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+</script>
+{% endif %}
+{% endblock %}

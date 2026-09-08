@@ -1,0 +1,186 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</h4>
+  <div class="text-muted small">Overview of farmers, orders and assistant activity.</div>
+{% endblock %}
+{% block admin_content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-xl-2">
+    <div class="kd-stat h-100">
+      <div class="value">{{ farmers_total }}</div>
+      <div class="label"><i class="bi bi-people me-1"></i>Farmers</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <div class="kd-stat h-100" style="border-left-color:#f4b400;">
+      <div class="value">{{ pending|length }}</div>
+      <div class="label"><i class="bi bi-hourglass-split me-1"></i>Pending verification</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <div class="kd-stat h-100">
+      <div class="value">{{ orders_total }}</div>
+      <div class="label"><i class="bi bi-bag-check me-1"></i>Orders</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <div class="kd-stat h-100" style="border-left-color:#0d6efd;">
+      <div class="value">{{ open_orders }}</div>
+      <div class="label"><i class="bi bi-truck me-1"></i>Open orders</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <div class="kd-stat h-100" style="border-left-color:#8b5a2b;">
+      <div class="value">{{ revenue|inr }}</div>
+      <div class="label"><i class="bi bi-cash-coin me-1"></i>Revenue</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <div class="kd-stat h-100" style="border-left-color:#6a994e;">
+      <div class="value">{{ chats }}</div>
+      <div class="label"><i class="bi bi-chat-dots me-1"></i>Chat msgs (30d)</div>
+    </div>
+  </div>
+</div>
+
+<div class="kd-card p-3 mb-4">
+  <h6 class="fw-bold mb-3"><i class="bi bi-hourglass-split me-1 text-warning"></i>Pending verification</h6>
+  {% if pending %}
+  <div class="table-responsive">
+    <table class="table table-kd align-middle mb-0">
+      <thead><tr><th>Name</th><th>Username</th><th>Phone</th><th>State / District</th><th>Registered</th><th></th></tr></thead>
+      <tbody>
+        {% for f in pending %}
+        <tr>
+          <td>{{ f.name }}</td>
+          <td>{{ f.username }}</td>
+          <td>{{ f.phone }}</td>
+          <td>{{ f.state or '-' }} / {{ f.district or '-' }}</td>
+          <td>{{ f.created_at.strftime('%d %b %Y') }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-success" href="{{ url_for('admin.verify_farmer', farmer_id=f.id) }}"><i class="bi bi-check2-circle"></i> Verify</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.farmer_detail', farmer_id=f.id) }}">Details</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-success mb-0"><i class="bi bi-check2-circle me-1"></i>No farmers waiting for verification.</div>
+  {% endif %}
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-7">
+    <div class="kd-card p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-1 text-success"></i>New farmer signups (last 14 days)</h6>
+      <canvas id="signupsChart" height="140"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="kd-card p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-1 text-success"></i>Activity mix (last 30 days)</h6>
+      {% if activity_counts %}
+      <canvas id="activityChart" height="140"></canvas>
+      {% else %}
+      <p class="text-muted small mb-0">No activity recorded in the last 30 days.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="kd-card p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-clock-history me-1"></i>Recent activity</h6>
+      {% if recent_activities %}
+      <div class="table-responsive">
+        <table class="table table-kd table-sm align-middle mb-0">
+          <thead><tr><th>Farmer</th><th>Type</th><th>Time</th></tr></thead>
+          <tbody>
+            {% for a in recent_activities %}
+            <tr>
+              <td>{% if a.farmer %}<a href="{{ url_for('admin.farmer_detail', farmer_id=a.farmer.id) }}">{{ a.farmer.name }}</a>{% else %}-{% endif %}</td>
+              <td><span class="badge bg-kd-light text-success border">{{ a.activity_type }}</span></td>
+              <td class="small text-muted">{{ a.timestamp.strftime('%d %b %Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted small mb-0">No recent activity.</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="kd-card p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="bi bi-bag-check me-1"></i>Recent orders</h6>
+      {% if recent_orders %}
+      <div class="table-responsive">
+        <table class="table table-kd table-sm align-middle mb-0">
+          <thead><tr><th>Order</th><th>Farmer</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for o in recent_orders %}
+            <tr>
+              <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}">{{ o.order_number }}</a></td>
+              <td>{{ o.farmer.name if o.farmer else '-' }}</td>
+              <td>{{ o.total|inr }}</td>
+              <td>
+                {% set kd_badge = {'Placed':'secondary','Confirmed':'info','Packed':'primary','Shipped':'warning','Delivered':'success','Cancelled':'danger'} %}
+                <span class="badge text-bg-{{ kd_badge.get(o.status, 'secondary') }}">{{ o.status }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted small mb-0">No orders yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if low_stock %}
+<div class="kd-card p-3 mt-4">
+  <h6 class="fw-bold mb-3"><i class="bi bi-exclamation-triangle me-1 text-danger"></i>Low stock products</h6>
+  <ul class="list-group list-group-flush">
+    {% for p in low_stock %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>{{ p.name }} <span class="text-danger small">({{ p.stock }} left)</span></span>
+      <a class="btn btn-sm btn-outline-success" href="{{ url_for('admin.product_edit', product_id=p.id) }}"><i class="bi bi-pencil"></i> Edit</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const signups = {{ signups | tojson }};
+  new Chart(document.getElementById('signupsChart'), {
+    type: 'bar',
+    data: {
+      labels: signups.map(s => s.date),
+      datasets: [{ label: 'New farmers', data: signups.map(s => s.count), backgroundColor: '#1b7f3b' }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+  {% if activity_counts %}
+  const activityCounts = {{ activity_counts | tojson }};
+  new Chart(document.getElementById('activityChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(activityCounts),
+      datasets: [{ data: Object.values(activityCounts), backgroundColor: ['#1b7f3b', '#f4b400', '#8b5a2b', '#0d6efd', '#6a994e', '#dc3545', '#6f42c1'] }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+  {% endif %}
+</script>
+{% endblock %}

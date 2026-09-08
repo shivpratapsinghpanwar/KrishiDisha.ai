@@ -1,0 +1,109 @@
+{% extends "admin/_layout.html" %}
+{% block title %}{{ 'Add product' if not product else 'Edit product' }}{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-box-seam me-2"></i>{{ 'Add product' if not product else 'Edit product' }}</h4>
+{% endblock %}
+{% block admin_content %}
+<div class="kd-form-card" style="max-width: 860px;">
+  <form method="post">
+    <div class="row g-3">
+      <div class="col-md-8">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required
+               value="{{ form.get('name') if form.get('name') else (product.name if product else '') }}">
+      </div>
+      <div class="col-md-4">
+        <label for="category" class="form-label">Category</label>
+        {% set current_category = form.get('category') if form.get('category') else (product.category if product else '') %}
+        <select class="form-select" id="category" name="category">
+          {% for c in categories %}
+          <option value="{{ c }}" {% if c == current_category %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="brand" class="form-label">Brand</label>
+        <input type="text" class="form-control" id="brand" name="brand"
+               value="{{ form.get('brand') if form.get('brand') else (product.brand if product and product.brand else '') }}">
+      </div>
+      <div class="col-md-6">
+        <label for="unit" class="form-label">Unit</label>
+        <input type="text" class="form-control" id="unit" name="unit" placeholder="e.g. 50 kg bag, 250 ml"
+               value="{{ form.get('unit') if form.get('unit') else (product.unit if product and product.unit else 'pack') }}">
+      </div>
+      <div class="col-12">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="3">{{ form.get('description') if form.get('description') else (product.description if product and product.description else '') }}</textarea>
+      </div>
+      <div class="col-md-3">
+        <label for="price" class="form-label">Price (Rs.)</label>
+        <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" required
+               value="{{ form.get('price') if form.get('price') else (product.price if product else '') }}">
+      </div>
+      <div class="col-md-3">
+        <label for="mrp" class="form-label">MRP (Rs.)</label>
+        <input type="number" step="0.01" min="0" class="form-control" id="mrp" name="mrp"
+               value="{{ form.get('mrp') if form.get('mrp') else (product.mrp if product and product.mrp else '') }}">
+      </div>
+      <div class="col-md-3">
+        <label for="stock" class="form-label">Stock</label>
+        <input type="number" min="0" class="form-control" id="stock" name="stock"
+               value="{{ form.get('stock') if form.get('stock') else (product.stock if product is not none and product and product.stock is not none else 0) }}">
+      </div>
+      <div class="col-md-3">
+        <label for="rating" class="form-label">Rating</label>
+        <input type="number" step="0.1" min="0" max="5" class="form-control" id="rating" name="rating"
+               value="{{ form.get('rating') if form.get('rating') else (product.rating if product and product.rating else '4.3') }}">
+      </div>
+      <div class="col-md-6">
+        <label for="image_url" class="form-label">Image URL</label>
+        <input type="url" class="form-control" id="image_url" name="image_url" placeholder="https://..."
+               value="{{ form.get('image_url') if form.get('image_url') else (product.image_url if product and product.image_url else '') }}">
+        {% if product and product.image_url %}
+        <div class="mt-2"><img src="{{ product.image_url }}" alt="Current image" style="max-height:80px;background:#fff;border-radius:8px;padding:.25rem;"></div>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <label for="external_url" class="form-label">External vendor link</label>
+        <input type="url" class="form-control" id="external_url" name="external_url" placeholder="https://..."
+               value="{{ form.get('external_url') if form.get('external_url') else (product.external_url if product and product.external_url else '') }}">
+      </div>
+      <div class="col-md-4">
+        <label for="npk" class="form-label">NPK</label>
+        <input type="text" class="form-control" id="npk" name="npk" placeholder="e.g. 46-0-0"
+               value="{{ form.get('npk') if form.get('npk') else (product.npk if product and product.npk else '') }}">
+      </div>
+      <div class="col-md-4">
+        <label for="disease_tags" class="form-label">Disease tags</label>
+        <input type="text" class="form-control" id="disease_tags" name="disease_tags"
+               value="{{ form.get('disease_tags') if form.get('disease_tags') else (product.disease_tags if product and product.disease_tags else '') }}">
+        <div class="kd-help">Comma-separated PlantVillage labels, e.g. Tomato___Late_blight</div>
+      </div>
+      <div class="col-md-4">
+        <label for="crop_tags" class="form-label">Crop tags</label>
+        <input type="text" class="form-control" id="crop_tags" name="crop_tags"
+               value="{{ form.get('crop_tags') if form.get('crop_tags') else (product.crop_tags if product and product.crop_tags else '') }}">
+        <div class="kd-help">Comma-separated lowercase crops, e.g. rice, wheat</div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="is_organic" name="is_organic"
+                 {% if form.get('is_organic') == 'on' or (not form and product and product.is_organic) %}checked{% endif %}>
+          <label class="form-check-label" for="is_organic">Organic</label>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="is_active" name="is_active"
+                 {% if form.get('is_active') == 'on' or (not form and (not product or product.is_active)) %}checked{% endif %}>
+          <label class="form-check-label" for="is_active">Active (visible in marketplace)</label>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-success"><i class="bi bi-check2"></i> {{ 'Add product' if not product else 'Save changes' }}</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.products') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

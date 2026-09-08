@@ -1,0 +1,46 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Orders{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-bag-check me-2"></i>Orders</h4>
+  <div class="text-muted small">{{ orders|length }} order(s) shown.</div>
+{% endblock %}
+{% block admin_content %}
+{% set kd_badge = {'Placed':'secondary','Confirmed':'info','Packed':'primary','Shipped':'warning','Delivered':'success','Cancelled':'danger'} %}
+<div class="mb-3 d-flex flex-wrap gap-2">
+  <a class="btn btn-sm {{ 'btn-success' if status == '' else 'btn-outline-success' }}" href="{{ url_for('admin.orders') }}">
+    All <span class="badge bg-white text-success ms-1">{{ counts.values() | sum }}</span>
+  </a>
+  {% for st in statuses %}
+  <a class="btn btn-sm {{ 'btn-success' if status == st else 'btn-outline-success' }}" href="{{ url_for('admin.orders', status=st) }}">
+    {{ st }} <span class="badge bg-white text-success ms-1">{{ counts.get(st, 0) }}</span>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="kd-card p-3">
+  {% if orders %}
+  <div class="table-responsive">
+    <table class="table table-kd align-middle mb-0">
+      <thead>
+        <tr><th>Order</th><th>Farmer</th><th>Date</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}">{{ o.order_number }}</a></td>
+          <td>{{ o.farmer.name if o.farmer else '-' }}</td>
+          <td class="small text-muted">{{ o.created_at.strftime('%d %b %Y') }}</td>
+          <td>{{ o.items|length }}</td>
+          <td>{{ o.total|inr }}</td>
+          <td class="small">{{ o.payment_method }} · {{ o.payment_status }}</td>
+          <td><span class="badge text-bg-{{ kd_badge.get(o.status, 'secondary') }}">{{ o.status }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted mb-0">No orders found for this filter.</p>
+  {% endif %}
+</div>
+{% endblock %}

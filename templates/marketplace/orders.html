@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-4"><i class="bi bi-bag-check me-2"></i>My Orders</h1>
+
+  {% if orders %}
+  <div class="table-responsive">
+    <table class="table table-kd align-middle bg-white">
+      <thead>
+        <tr>
+          <th scope="col">Order</th>
+          <th scope="col">Date</th>
+          <th scope="col">Items</th>
+          <th scope="col">Total</th>
+          <th scope="col">Payment</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td><a href="{{ url_for('marketplace.order_detail', order_number=order.order_number) }}">{{ order.order_number }}</a></td>
+          <td>{{ order.created_at.strftime('%d %b %Y') }}</td>
+          <td>{{ order.items | length }}</td>
+          <td class="fw-semibold">{{ order.total | inr }}</td>
+          <td>
+            {{ order.payment_method }}
+            <span class="badge {% if order.payment_status in ['Paid', 'Paid (pending verification)'] %}bg-success{% elif order.payment_status == 'Awaiting UPI' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ order.payment_status }}</span>
+          </td>
+          <td>
+            {% set status_colors = {'Placed': 'secondary', 'Confirmed': 'info', 'Packed': 'primary', 'Shipped': 'warning', 'Delivered': 'success', 'Cancelled': 'danger'} %}
+            <span class="badge {% if order.status == 'Shipped' %}text-dark{% endif %} bg-{{ status_colors.get(order.status, 'secondary') }}">{{ order.status }}</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="kd-form-card text-center py-5">
+    <i class="bi bi-bag display-4 text-muted"></i>
+    <p class="mt-3 mb-3">You haven't placed any orders yet.</p>
+    <a href="{{ url_for('marketplace.index') }}" class="btn btn-success">Browse the marketplace</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
