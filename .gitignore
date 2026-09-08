@@ -35,6 +35,10 @@ models/checkpoints/
 # Exported feedback / own-data collection (rebuild with `python -m ml.datasets.export_feedback`)
 data/llm/*.jsonl
 
+# Source PDFs for the knowledge base (retrieval only, not redistributed); the frozen LLM eval set is kept
+docs/pop/
+!data/llm/eval.jsonl
+
 # Logs and temp files
 *.log
 *.tmp
