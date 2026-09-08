@@ -55,6 +55,8 @@ FERTILIZER_REQUIREMENTS: dict[str, dict[str, float]] = {
     "jute": {"N": 60, "P2O5": 30, "K2O": 30},
     "millets": {"N": 60, "P2O5": 30, "K2O": 20},
     "barley": {"N": 60, "P2O5": 30, "K2O": 20},
+    # FCV tobacco: moderate N (excess N spoils leaf quality), potassium-hungry.
+    "tobacco": {"N": 70, "P2O5": 60, "K2O": 120},
     "watermelon": {"N": 100, "P2O5": 50, "K2O": 50},
     "muskmelon": {"N": 100, "P2O5": 50, "K2O": 50},
     "papaya": {"N": 200, "P2O5": 200, "K2O": 250},

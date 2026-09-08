@@ -9,7 +9,6 @@
     "Cardamom",
     "Cashewnut",
     "Castor seed",
-    "Coconut",
     "Coriander",
     "Cotton(lint)",
     "Cowpea(Lobia)",
@@ -95,5 +94,4099 @@
     "Summer",
     "Whole Year",
     "Winter"
-  ]
+  ],
+  "defaults": {
+    "by_state_crop": {
+      "Andhra Pradesh|Arecanut": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.265
+      },
+      "Assam|Arecanut": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Goa|Arecanut": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.29
+      },
+      "Karnataka|Arecanut": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Arecanut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Arecanut": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Puducherry|Arecanut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Arecanut": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.3
+      },
+      "West Bengal|Arecanut": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.25
+      },
+      "Andhra Pradesh|Arhar/Tur": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Arhar/Tur": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Assam|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Arhar/Tur": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Arhar/Tur": {
+        "fert_per_ha": 114.13,
+        "pest_per_ha": 0.215
+      },
+      "Gujarat|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Arhar/Tur": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Arhar/Tur": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Arhar/Tur": {
+        "fert_per_ha": 154.575,
+        "pest_per_ha": 0.165
+      },
+      "Jharkhand|Arhar/Tur": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.245
+      },
+      "Karnataka|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Arhar/Tur": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.34
+      },
+      "Madhya Pradesh|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Arhar/Tur": {
+        "fert_per_ha": 154.535,
+        "pest_per_ha": 0.32
+      },
+      "Meghalaya|Arhar/Tur": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Arhar/Tur": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Nagaland|Arhar/Tur": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Arhar/Tur": {
+        "fert_per_ha": 98.17,
+        "pest_per_ha": 0.26
+      },
+      "Punjab|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Telangana|Arhar/Tur": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Arhar/Tur": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Arhar/Tur": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Uttarakhand|Arhar/Tur": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Arhar/Tur": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Bajra": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Bajra": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Gujarat|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Bajra": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Bajra": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.32
+      },
+      "Jharkhand|Bajra": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Bajra": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.26
+      },
+      "Madhya Pradesh|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Bajra": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Odisha|Bajra": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Bajra": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.32
+      },
+      "Punjab|Bajra": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Tamil Nadu|Bajra": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Telangana|Bajra": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Bajra": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.255
+      },
+      "West Bengal|Bajra": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Banana": {
+        "fert_per_ha": 147.725,
+        "pest_per_ha": 0.26
+      },
+      "Assam|Banana": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Banana": {
+        "fert_per_ha": 100.555,
+        "pest_per_ha": 0.255
+      },
+      "Goa|Banana": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.29
+      },
+      "Gujarat|Banana": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Karnataka|Banana": {
+        "fert_per_ha": 123.815,
+        "pest_per_ha": 0.23
+      },
+      "Kerala|Banana": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Banana": {
+        "fert_per_ha": 152.025,
+        "pest_per_ha": 0.265
+      },
+      "Maharashtra|Banana": {
+        "fert_per_ha": 98.98,
+        "pest_per_ha": 0.24
+      },
+      "Manipur|Banana": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Banana": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Puducherry|Banana": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Banana": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Banana": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Banana": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.32
+      },
+      "Bihar|Barley": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Chhattisgarh|Barley": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Barley": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Haryana|Barley": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Barley": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Barley": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Jharkhand|Barley": {
+        "fert_per_ha": 103.66,
+        "pest_per_ha": 0.225
+      },
+      "Madhya Pradesh|Barley": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Barley": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.29
+      },
+      "Punjab|Barley": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Barley": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttar Pradesh|Barley": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Barley": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Barley": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Black pepper": {
+        "fert_per_ha": 158.125,
+        "pest_per_ha": 0.32
+      },
+      "Assam|Black pepper": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Goa|Black pepper": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.27
+      },
+      "Karnataka|Black pepper": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Black pepper": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Black pepper": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Puducherry|Black pepper": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.255
+      },
+      "Tamil Nadu|Black pepper": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Karnataka|Cardamom": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Cardamom": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Cardamom": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.16
+      },
+      "Tamil Nadu|Cardamom": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "West Bengal|Cardamom": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.24
+      },
+      "Andhra Pradesh|Cashewnut": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Goa|Cashewnut": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.27
+      },
+      "Karnataka|Cashewnut": {
+        "fert_per_ha": 156.63,
+        "pest_per_ha": 0.33
+      },
+      "Kerala|Cashewnut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Cashewnut": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.33
+      },
+      "Meghalaya|Cashewnut": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.33
+      },
+      "Puducherry|Cashewnut": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Cashewnut": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Telangana|Cashewnut": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Andhra Pradesh|Castor seed": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.3
+      },
+      "Assam|Castor seed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Castor seed": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.3
+      },
+      "Chhattisgarh|Castor seed": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Castor seed": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Castor seed": {
+        "fert_per_ha": 154.535,
+        "pest_per_ha": 0.32
+      },
+      "Jharkhand|Castor seed": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Castor seed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Castor seed": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.255
+      },
+      "Maharashtra|Castor seed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Meghalaya|Castor seed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Nagaland|Castor seed": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Odisha|Castor seed": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Castor seed": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Castor seed": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Castor seed": {
+        "fert_per_ha": 98.485,
+        "pest_per_ha": 0.28
+      },
+      "West Bengal|Castor seed": {
+        "fert_per_ha": 135.375,
+        "pest_per_ha": 0.265
+      },
+      "Andhra Pradesh|Coriander": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.29
+      },
+      "Bihar|Coriander": {
+        "fert_per_ha": 107.235,
+        "pest_per_ha": 0.265
+      },
+      "Chhattisgarh|Coriander": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Coriander": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Himachal Pradesh|Coriander": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.28
+      },
+      "Jammu and Kashmir|Coriander": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.16
+      },
+      "Karnataka|Coriander": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Madhya Pradesh|Coriander": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Meghalaya|Coriander": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Odisha|Coriander": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Coriander": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Coriander": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Coriander": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Coriander": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.32
+      },
+      "Andhra Pradesh|Cotton(lint)": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.3
+      },
+      "Assam|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Cotton(lint)": {
+        "fert_per_ha": 96.985,
+        "pest_per_ha": 0.3
+      },
+      "Chhattisgarh|Cotton(lint)": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Cotton(lint)": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Cotton(lint)": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Cotton(lint)": {
+        "fert_per_ha": 143.325,
+        "pest_per_ha": 0.245
+      },
+      "Karnataka|Cotton(lint)": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Kerala|Cotton(lint)": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.26
+      },
+      "Madhya Pradesh|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Cotton(lint)": {
+        "fert_per_ha": 100.465,
+        "pest_per_ha": 0.265
+      },
+      "Meghalaya|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Cotton(lint)": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Nagaland|Cotton(lint)": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Cotton(lint)": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.27
+      },
+      "Puducherry|Cotton(lint)": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Punjab|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Cotton(lint)": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.28
+      },
+      "Telangana|Cotton(lint)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Cotton(lint)": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Uttar Pradesh|Cotton(lint)": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "West Bengal|Cotton(lint)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Cowpea(Lobia)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Jammu and Kashmir|Cowpea(Lobia)": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.33
+      },
+      "Karnataka|Cowpea(Lobia)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Madhya Pradesh|Cowpea(Lobia)": {
+        "fert_per_ha": 160.965,
+        "pest_per_ha": 0.205
+      },
+      "Manipur|Cowpea(Lobia)": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Meghalaya|Cowpea(Lobia)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Mizoram|Cowpea(Lobia)": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.33
+      },
+      "Nagaland|Cowpea(Lobia)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Odisha|Cowpea(Lobia)": {
+        "fert_per_ha": 171.76,
+        "pest_per_ha": 0.37
+      },
+      "Tamil Nadu|Cowpea(Lobia)": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Telangana|Cowpea(Lobia)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Cowpea(Lobia)": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Andhra Pradesh|Dry chillies": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Dry chillies": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Assam|Dry chillies": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Dry chillies": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.25
+      },
+      "Chhattisgarh|Dry chillies": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Dry chillies": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Dry chillies": {
+        "fert_per_ha": 119.92,
+        "pest_per_ha": 0.24
+      },
+      "Himachal Pradesh|Dry chillies": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Dry chillies": {
+        "fert_per_ha": 156.63,
+        "pest_per_ha": 0.33
+      },
+      "Karnataka|Dry chillies": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Dry chillies": {
+        "fert_per_ha": 102.465,
+        "pest_per_ha": 0.28
+      },
+      "Madhya Pradesh|Dry chillies": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Dry chillies": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Dry chillies": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Dry chillies": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.125
+      },
+      "Odisha|Dry chillies": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Dry chillies": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Dry chillies": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Dry chillies": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Dry chillies": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.29
+      },
+      "Uttarakhand|Dry chillies": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.16
+      },
+      "West Bengal|Dry chillies": {
+        "fert_per_ha": 104.13,
+        "pest_per_ha": 0.25
+      },
+      "Andhra Pradesh|Garlic": {
+        "fert_per_ha": 166.11,
+        "pest_per_ha": 0.24
+      },
+      "Bihar|Garlic": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Garlic": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Garlic": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Garlic": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Garlic": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Garlic": {
+        "fert_per_ha": 154.535,
+        "pest_per_ha": 0.265
+      },
+      "Karnataka|Garlic": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Garlic": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Garlic": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Meghalaya|Garlic": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.21
+      },
+      "Odisha|Garlic": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Garlic": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Garlic": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Garlic": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.32
+      },
+      "Uttarakhand|Garlic": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.265
+      },
+      "West Bengal|Garlic": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.16
+      },
+      "Andhra Pradesh|Ginger": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Arunachal Pradesh|Ginger": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Assam|Ginger": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Bihar|Ginger": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Ginger": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Ginger": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.33
+      },
+      "Himachal Pradesh|Ginger": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.26
+      },
+      "Jammu and Kashmir|Ginger": {
+        "fert_per_ha": 154.535,
+        "pest_per_ha": 0.31
+      },
+      "Karnataka|Ginger": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Ginger": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Ginger": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Ginger": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.265
+      },
+      "Meghalaya|Ginger": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Ginger": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.33
+      },
+      "Odisha|Ginger": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Ginger": {
+        "fert_per_ha": 100.555,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Ginger": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Ginger": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Ginger": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "West Bengal|Ginger": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.24
+      },
+      "Andhra Pradesh|Gram": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.265
+      },
+      "Assam|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Gram": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Gram": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Gujarat|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Gram": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Gram": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Gram": {
+        "fert_per_ha": 131.48,
+        "pest_per_ha": 0.26
+      },
+      "Jharkhand|Gram": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.26
+      },
+      "Karnataka|Gram": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.26
+      },
+      "Kerala|Gram": {
+        "fert_per_ha": 166.98,
+        "pest_per_ha": 0.36
+      },
+      "Madhya Pradesh|Gram": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Maharashtra|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Gram": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Meghalaya|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Gram": {
+        "fert_per_ha": 98.98,
+        "pest_per_ha": 0.24
+      },
+      "Nagaland|Gram": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Gram": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Punjab|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Gram": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Gram": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Gram": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Gram": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Groundnut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Groundnut": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Bihar|Groundnut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Groundnut": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Goa|Groundnut": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Gujarat|Groundnut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Groundnut": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Groundnut": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Groundnut": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.25
+      },
+      "Jharkhand|Groundnut": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Groundnut": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Kerala|Groundnut": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Groundnut": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Groundnut": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Manipur|Groundnut": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Mizoram|Groundnut": {
+        "fert_per_ha": 107.235,
+        "pest_per_ha": 0.24
+      },
+      "Nagaland|Groundnut": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Groundnut": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Puducherry|Groundnut": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Punjab|Groundnut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Groundnut": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.3
+      },
+      "Telangana|Groundnut": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Groundnut": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Groundnut": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Groundnut": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Groundnut": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Guar seed": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.35
+      },
+      "Chhattisgarh|Guar seed": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Gujarat|Guar seed": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Guar seed": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Punjab|Guar seed": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Guar seed": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.27
+      },
+      "Uttar Pradesh|Guar seed": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.29
+      },
+      "Andhra Pradesh|Horse-gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Horse-gram": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Horse-gram": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Horse-gram": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.26
+      },
+      "Himachal Pradesh|Horse-gram": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Horse-gram": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.34
+      },
+      "Jharkhand|Horse-gram": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Horse-gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Madhya Pradesh|Horse-gram": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.24
+      },
+      "Nagaland|Horse-gram": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.33
+      },
+      "Odisha|Horse-gram": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Horse-gram": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.3
+      },
+      "Telangana|Horse-gram": {
+        "fert_per_ha": 155.58,
+        "pest_per_ha": 0.34
+      },
+      "Uttarakhand|Horse-gram": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Horse-gram": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Jowar": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Jowar": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Gujarat|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Jowar": {
+        "fert_per_ha": 98.17,
+        "pest_per_ha": 0.26
+      },
+      "Jammu and Kashmir|Jowar": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.25
+      },
+      "Jharkhand|Jowar": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Jowar": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Jowar": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.26
+      },
+      "Maharashtra|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Jowar": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Odisha|Jowar": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Jowar": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.31
+      },
+      "Punjab|Jowar": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.165
+      },
+      "Tamil Nadu|Jowar": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Telangana|Jowar": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Jowar": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.36
+      },
+      "Uttar Pradesh|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Jowar": {
+        "fert_per_ha": 138.915,
+        "pest_per_ha": 0.27
+      },
+      "West Bengal|Jowar": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Jute": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Jute": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Madhya Pradesh|Jute": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.35
+      },
+      "Manipur|Jute": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.29
+      },
+      "Meghalaya|Jute": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Jute": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Odisha|Jute": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tripura|Jute": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Jute": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.27
+      },
+      "West Bengal|Jute": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Khesari": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Khesari": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Madhya Pradesh|Khesari": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.23
+      },
+      "Tripura|Khesari": {
+        "fert_per_ha": 166.98,
+        "pest_per_ha": 0.36
+      },
+      "West Bengal|Khesari": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Andhra Pradesh|Linseed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.26
+      },
+      "Assam|Linseed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Linseed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Linseed": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Himachal Pradesh|Linseed": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Linseed": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Jharkhand|Linseed": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Linseed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Linseed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Linseed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Meghalaya|Linseed": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Nagaland|Linseed": {
+        "fert_per_ha": 146.92,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Linseed": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Punjab|Linseed": {
+        "fert_per_ha": 104.13,
+        "pest_per_ha": 0.26
+      },
+      "Telangana|Linseed": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.33
+      },
+      "Tripura|Linseed": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.365
+      },
+      "Uttar Pradesh|Linseed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Linseed": {
+        "fert_per_ha": 119.92,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Linseed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Maize": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Maize": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.265
+      },
+      "Delhi|Maize": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Gujarat|Maize": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Haryana|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Maize": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Maize": {
+        "fert_per_ha": 142.1,
+        "pest_per_ha": 0.265
+      },
+      "Jharkhand|Maize": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.32
+      },
+      "Karnataka|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Maize": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.34
+      },
+      "Madhya Pradesh|Maize": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Maize": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Maize": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Odisha|Maize": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Punjab|Maize": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Maize": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.265
+      },
+      "Tamil Nadu|Maize": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.32
+      },
+      "Telangana|Maize": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Maize": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Maize": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Maize": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Maize": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Andhra Pradesh|Masoor": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Masoor": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Assam|Masoor": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Bihar|Masoor": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Masoor": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Masoor": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Masoor": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Masoor": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.31
+      },
+      "Jharkhand|Masoor": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.26
+      },
+      "Madhya Pradesh|Masoor": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Masoor": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Meghalaya|Masoor": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.33
+      },
+      "Mizoram|Masoor": {
+        "fert_per_ha": 100.555,
+        "pest_per_ha": 0.245
+      },
+      "Nagaland|Masoor": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.29
+      },
+      "Odisha|Masoor": {
+        "fert_per_ha": 104.13,
+        "pest_per_ha": 0.255
+      },
+      "Punjab|Masoor": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Masoor": {
+        "fert_per_ha": 154.435,
+        "pest_per_ha": 0.33
+      },
+      "Telangana|Masoor": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.33
+      },
+      "Tripura|Masoor": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Masoor": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Uttarakhand|Masoor": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Masoor": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Mesta": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Mesta": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Mesta": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Mesta": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Karnataka|Mesta": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Madhya Pradesh|Mesta": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.31
+      },
+      "Meghalaya|Mesta": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Mesta": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Odisha|Mesta": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Mesta": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Mesta": {
+        "fert_per_ha": 147.725,
+        "pest_per_ha": 0.3
+      },
+      "Tripura|Mesta": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "West Bengal|Mesta": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Moong(Green Gram)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Moong(Green Gram)": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Assam|Moong(Green Gram)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Bihar|Moong(Green Gram)": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Moong(Green Gram)": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Moong(Green Gram)": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Haryana|Moong(Green Gram)": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Moong(Green Gram)": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Moong(Green Gram)": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Jharkhand|Moong(Green Gram)": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Moong(Green Gram)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Madhya Pradesh|Moong(Green Gram)": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.31
+      },
+      "Maharashtra|Moong(Green Gram)": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Moong(Green Gram)": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Mizoram|Moong(Green Gram)": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.24
+      },
+      "Nagaland|Moong(Green Gram)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Moong(Green Gram)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Puducherry|Moong(Green Gram)": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.27
+      },
+      "Punjab|Moong(Green Gram)": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Tamil Nadu|Moong(Green Gram)": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Telangana|Moong(Green Gram)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Moong(Green Gram)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Uttar Pradesh|Moong(Green Gram)": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Uttarakhand|Moong(Green Gram)": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Moong(Green Gram)": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Gujarat|Moth": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Moth": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Moth": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.32
+      },
+      "Jammu and Kashmir|Moth": {
+        "fert_per_ha": 156.63,
+        "pest_per_ha": 0.32
+      },
+      "Punjab|Moth": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.24
+      },
+      "Uttar Pradesh|Moth": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.26
+      },
+      "Uttarakhand|Moth": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "West Bengal|Moth": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.33
+      },
+      "Andhra Pradesh|Niger seed": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Niger seed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Niger seed": {
+        "fert_per_ha": 96.985,
+        "pest_per_ha": 0.3
+      },
+      "Chhattisgarh|Niger seed": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Jharkhand|Niger seed": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Niger seed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Niger seed": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Maharashtra|Niger seed": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Nagaland|Niger seed": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.33
+      },
+      "Odisha|Niger seed": {
+        "fert_per_ha": 104.13,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Niger seed": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Oilseeds total": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Arunachal Pradesh|Oilseeds total": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Oilseeds total": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.29
+      },
+      "Andhra Pradesh|Onion": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Assam|Onion": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Onion": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Onion": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.265
+      },
+      "Gujarat|Onion": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.31
+      },
+      "Haryana|Onion": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Onion": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Onion": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Jharkhand|Onion": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.24
+      },
+      "Karnataka|Onion": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Madhya Pradesh|Onion": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.26
+      },
+      "Maharashtra|Onion": {
+        "fert_per_ha": 98.98,
+        "pest_per_ha": 0.24
+      },
+      "Manipur|Onion": {
+        "fert_per_ha": 98.98,
+        "pest_per_ha": 0.26
+      },
+      "Meghalaya|Onion": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.35
+      },
+      "Mizoram|Onion": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.35
+      },
+      "Odisha|Onion": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Onion": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Tamil Nadu|Onion": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Telangana|Onion": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Onion": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.28
+      },
+      "Uttarakhand|Onion": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Andhra Pradesh|Other  Rabi pulses": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.26
+      },
+      "Arunachal Pradesh|Other  Rabi pulses": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Assam|Other  Rabi pulses": {
+        "fert_per_ha": 114.13,
+        "pest_per_ha": 0.265
+      },
+      "Bihar|Other  Rabi pulses": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Other  Rabi pulses": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Goa|Other  Rabi pulses": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Gujarat|Other  Rabi pulses": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Other  Rabi pulses": {
+        "fert_per_ha": 95.17,
+        "pest_per_ha": 0.31
+      },
+      "Himachal Pradesh|Other  Rabi pulses": {
+        "fert_per_ha": 145.42,
+        "pest_per_ha": 0.295
+      },
+      "Jammu and Kashmir|Other  Rabi pulses": {
+        "fert_per_ha": 152.025,
+        "pest_per_ha": 0.26
+      },
+      "Jharkhand|Other  Rabi pulses": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Other  Rabi pulses": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Kerala|Other  Rabi pulses": {
+        "fert_per_ha": 171.76,
+        "pest_per_ha": 0.37
+      },
+      "Madhya Pradesh|Other  Rabi pulses": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.29
+      },
+      "Maharashtra|Other  Rabi pulses": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Other  Rabi pulses": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Meghalaya|Other  Rabi pulses": {
+        "fert_per_ha": 119.92,
+        "pest_per_ha": 0.24
+      },
+      "Mizoram|Other  Rabi pulses": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Other  Rabi pulses": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.255
+      },
+      "Odisha|Other  Rabi pulses": {
+        "fert_per_ha": 100.555,
+        "pest_per_ha": 0.255
+      },
+      "Puducherry|Other  Rabi pulses": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.27
+      },
+      "Punjab|Other  Rabi pulses": {
+        "fert_per_ha": 98.17,
+        "pest_per_ha": 0.26
+      },
+      "Sikkim|Other  Rabi pulses": {
+        "fert_per_ha": 96.985,
+        "pest_per_ha": 0.3
+      },
+      "Tamil Nadu|Other  Rabi pulses": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Telangana|Other  Rabi pulses": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.33
+      },
+      "Tripura|Other  Rabi pulses": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Other  Rabi pulses": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.19
+      },
+      "Uttarakhand|Other  Rabi pulses": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Other  Rabi pulses": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Gujarat|Other Cereals": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Other Cereals": {
+        "fert_per_ha": 156.63,
+        "pest_per_ha": 0.33
+      },
+      "Kerala|Other Cereals": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.19
+      },
+      "Madhya Pradesh|Other Cereals": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Maharashtra|Other Cereals": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Nagaland|Other Cereals": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Puducherry|Other Cereals": {
+        "fert_per_ha": 119.92,
+        "pest_per_ha": 0.21
+      },
+      "Sikkim|Other Cereals": {
+        "fert_per_ha": 148.145,
+        "pest_per_ha": 0.23
+      },
+      "Tamil Nadu|Other Cereals": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttarakhand|Other Cereals": {
+        "fert_per_ha": 146.92,
+        "pest_per_ha": 0.255
+      },
+      "Andhra Pradesh|Other Kharif pulses": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Arunachal Pradesh|Other Kharif pulses": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Bihar|Other Kharif pulses": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Other Kharif pulses": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Other Kharif pulses": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.22
+      },
+      "Goa|Other Kharif pulses": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Gujarat|Other Kharif pulses": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Other Kharif pulses": {
+        "fert_per_ha": 98.17,
+        "pest_per_ha": 0.26
+      },
+      "Himachal Pradesh|Other Kharif pulses": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Other Kharif pulses": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.28
+      },
+      "Jharkhand|Other Kharif pulses": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Other Kharif pulses": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Kerala|Other Kharif pulses": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Madhya Pradesh|Other Kharif pulses": {
+        "fert_per_ha": 136.1,
+        "pest_per_ha": 0.265
+      },
+      "Maharashtra|Other Kharif pulses": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Manipur|Other Kharif pulses": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.26
+      },
+      "Mizoram|Other Kharif pulses": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Other Kharif pulses": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Other Kharif pulses": {
+        "fert_per_ha": 98.98,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Other Kharif pulses": {
+        "fert_per_ha": 154.535,
+        "pest_per_ha": 0.32
+      },
+      "Sikkim|Other Kharif pulses": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Tamil Nadu|Other Kharif pulses": {
+        "fert_per_ha": 119.92,
+        "pest_per_ha": 0.26
+      },
+      "Telangana|Other Kharif pulses": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.33
+      },
+      "Tripura|Other Kharif pulses": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.28
+      },
+      "Uttar Pradesh|Other Kharif pulses": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.22
+      },
+      "Uttarakhand|Other Kharif pulses": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Other Kharif pulses": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Other Summer Pulses": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Puducherry|Other Summer Pulses": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Uttarakhand|Other Summer Pulses": {
+        "fert_per_ha": 157.725,
+        "pest_per_ha": 0.35
+      },
+      "Arunachal Pradesh|Peas & beans (Pulses)": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Assam|Peas & beans (Pulses)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Bihar|Peas & beans (Pulses)": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Peas & beans (Pulses)": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Peas & beans (Pulses)": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Himachal Pradesh|Peas & beans (Pulses)": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Peas & beans (Pulses)": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.27
+      },
+      "Jharkhand|Peas & beans (Pulses)": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Karnataka|Peas & beans (Pulses)": {
+        "fert_per_ha": 119.92,
+        "pest_per_ha": 0.26
+      },
+      "Madhya Pradesh|Peas & beans (Pulses)": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.29
+      },
+      "Manipur|Peas & beans (Pulses)": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Peas & beans (Pulses)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Mizoram|Peas & beans (Pulses)": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.24
+      },
+      "Nagaland|Peas & beans (Pulses)": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Peas & beans (Pulses)": {
+        "fert_per_ha": 171.76,
+        "pest_per_ha": 0.37
+      },
+      "Punjab|Peas & beans (Pulses)": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.3
+      },
+      "Tripura|Peas & beans (Pulses)": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Peas & beans (Pulses)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Uttarakhand|Peas & beans (Pulses)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Peas & beans (Pulses)": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Andhra Pradesh|Potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Arunachal Pradesh|Potato": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Assam|Potato": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Potato": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.28
+      },
+      "Chhattisgarh|Potato": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.29
+      },
+      "Delhi|Potato": {
+        "fert_per_ha": 130.555,
+        "pest_per_ha": 0.255
+      },
+      "Gujarat|Potato": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Potato": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Jammu and Kashmir|Potato": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Jharkhand|Potato": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.24
+      },
+      "Karnataka|Potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Kerala|Potato": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Madhya Pradesh|Potato": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Manipur|Potato": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Mizoram|Potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Nagaland|Potato": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Potato": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Potato": {
+        "fert_per_ha": 96.825,
+        "pest_per_ha": 0.245
+      },
+      "Tamil Nadu|Potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Telangana|Potato": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Potato": {
+        "fert_per_ha": 98.98,
+        "pest_per_ha": 0.26
+      },
+      "Uttar Pradesh|Potato": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "West Bengal|Potato": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.28
+      },
+      "Andhra Pradesh|Ragi": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Ragi": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Ragi": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Goa|Ragi": {
+        "fert_per_ha": 123.815,
+        "pest_per_ha": 0.255
+      },
+      "Gujarat|Ragi": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Ragi": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Jammu and Kashmir|Ragi": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Jharkhand|Ragi": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Karnataka|Ragi": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Ragi": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Ragi": {
+        "fert_per_ha": 126.66,
+        "pest_per_ha": 0.245
+      },
+      "Maharashtra|Ragi": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Ragi": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Odisha|Ragi": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Puducherry|Ragi": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Ragi": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.3
+      },
+      "Telangana|Ragi": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Ragi": {
+        "fert_per_ha": 98.89,
+        "pest_per_ha": 0.26
+      },
+      "Uttarakhand|Ragi": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Ragi": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.265
+      },
+      "Andhra Pradesh|Rapeseed &Mustard": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Rapeseed &Mustard": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Assam|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Rapeseed &Mustard": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Rapeseed &Mustard": {
+        "fert_per_ha": 171.76,
+        "pest_per_ha": 0.37
+      },
+      "Gujarat|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Rapeseed &Mustard": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Rapeseed &Mustard": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Jharkhand|Rapeseed &Mustard": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.26
+      },
+      "Karnataka|Rapeseed &Mustard": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Rapeseed &Mustard": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.26
+      },
+      "Manipur|Rapeseed &Mustard": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Meghalaya|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Rapeseed &Mustard": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.31
+      },
+      "Nagaland|Rapeseed &Mustard": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Rapeseed &Mustard": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Puducherry|Rapeseed &Mustard": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Punjab|Rapeseed &Mustard": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Rapeseed &Mustard": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.33
+      },
+      "Tripura|Rapeseed &Mustard": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Rapeseed &Mustard": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Rapeseed &Mustard": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.265
+      },
+      "Chhattisgarh|Rice": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Rice": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Goa|Rice": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Gujarat|Rice": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Rice": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Rice": {
+        "fert_per_ha": 142.1,
+        "pest_per_ha": 0.265
+      },
+      "Jharkhand|Rice": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.25
+      },
+      "Karnataka|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Rice": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Rice": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Rice": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Rice": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Rice": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Nagaland|Rice": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Odisha|Rice": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Puducherry|Rice": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Punjab|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Rice": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.3
+      },
+      "Telangana|Rice": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Rice": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.33
+      },
+      "Uttar Pradesh|Rice": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Rice": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Rice": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Safflower": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Safflower": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Safflower": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Jharkhand|Safflower": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Safflower": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Safflower": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Maharashtra|Safflower": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Odisha|Safflower": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Telangana|Safflower": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "West Bengal|Safflower": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Bihar|Sannhamp": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.28
+      },
+      "Chhattisgarh|Sannhamp": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Sannhamp": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.24
+      },
+      "Himachal Pradesh|Sannhamp": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.22
+      },
+      "Jammu and Kashmir|Sannhamp": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.26
+      },
+      "Karnataka|Sannhamp": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Madhya Pradesh|Sannhamp": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.255
+      },
+      "Odisha|Sannhamp": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Sannhamp": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.27
+      },
+      "Uttar Pradesh|Sannhamp": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Sannhamp": {
+        "fert_per_ha": 94.67,
+        "pest_per_ha": 0.25
+      },
+      "West Bengal|Sannhamp": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Sesamum": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Sesamum": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Assam|Sesamum": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Sesamum": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Sesamum": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Sesamum": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Haryana|Sesamum": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Himachal Pradesh|Sesamum": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Sesamum": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.265
+      },
+      "Jharkhand|Sesamum": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Sesamum": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Kerala|Sesamum": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Madhya Pradesh|Sesamum": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Sesamum": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Sesamum": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.25
+      },
+      "Meghalaya|Sesamum": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Sesamum": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.29
+      },
+      "Nagaland|Sesamum": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Sesamum": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Puducherry|Sesamum": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Punjab|Sesamum": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Sesamum": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Telangana|Sesamum": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Sesamum": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Sesamum": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Uttarakhand|Sesamum": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Sesamum": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Small millets": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.265
+      },
+      "Arunachal Pradesh|Small millets": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Small millets": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Small millets": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Small millets": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Small millets": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Small millets": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Small millets": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.33
+      },
+      "Karnataka|Small millets": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Kerala|Small millets": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.34
+      },
+      "Madhya Pradesh|Small millets": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Maharashtra|Small millets": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.25
+      },
+      "Meghalaya|Small millets": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Nagaland|Small millets": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Small millets": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Small millets": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Small millets": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Tamil Nadu|Small millets": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.33
+      },
+      "Telangana|Small millets": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Small millets": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Uttar Pradesh|Small millets": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.31
+      },
+      "Uttarakhand|Small millets": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.29
+      },
+      "West Bengal|Small millets": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Soyabean": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.33
+      },
+      "Arunachal Pradesh|Soyabean": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Bihar|Soyabean": {
+        "fert_per_ha": 171.76,
+        "pest_per_ha": 0.37
+      },
+      "Chhattisgarh|Soyabean": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Soyabean": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.33
+      },
+      "Himachal Pradesh|Soyabean": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jharkhand|Soyabean": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Soyabean": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Kerala|Soyabean": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.32
+      },
+      "Madhya Pradesh|Soyabean": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Soyabean": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Manipur|Soyabean": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Soyabean": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.28
+      },
+      "Mizoram|Soyabean": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.29
+      },
+      "Nagaland|Soyabean": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Soyabean": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Soyabean": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Soyabean": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.33
+      },
+      "Tripura|Soyabean": {
+        "fert_per_ha": 160.055,
+        "pest_per_ha": 0.36
+      },
+      "Uttar Pradesh|Soyabean": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Soyabean": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Soyabean": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Sugarcane": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Sugarcane": {
+        "fert_per_ha": 123.815,
+        "pest_per_ha": 0.245
+      },
+      "Goa|Sugarcane": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Gujarat|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Sugarcane": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Sugarcane": {
+        "fert_per_ha": 142.1,
+        "pest_per_ha": 0.26
+      },
+      "Jharkhand|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.22
+      },
+      "Karnataka|Sugarcane": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Sugarcane": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Sugarcane": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Maharashtra|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Sugarcane": {
+        "fert_per_ha": 127.71,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Sugarcane": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Sugarcane": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.25
+      },
+      "Odisha|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Puducherry|Sugarcane": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Punjab|Sugarcane": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.29
+      },
+      "Tamil Nadu|Sugarcane": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Telangana|Sugarcane": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Sugarcane": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Uttar Pradesh|Sugarcane": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Sugarcane": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Sunflower": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.29
+      },
+      "Arunachal Pradesh|Sunflower": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Bihar|Sunflower": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Sunflower": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Sunflower": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Jharkhand|Sunflower": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Karnataka|Sunflower": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Kerala|Sunflower": {
+        "fert_per_ha": 171.76,
+        "pest_per_ha": 0.37
+      },
+      "Madhya Pradesh|Sunflower": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.26
+      },
+      "Maharashtra|Sunflower": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Mizoram|Sunflower": {
+        "fert_per_ha": 101.755,
+        "pest_per_ha": 0.26
+      },
+      "Nagaland|Sunflower": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Sunflower": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Sunflower": {
+        "fert_per_ha": 149.43,
+        "pest_per_ha": 0.165
+      },
+      "Punjab|Sunflower": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Tamil Nadu|Sunflower": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Telangana|Sunflower": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Sunflower": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Sunflower": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "West Bengal|Sunflower": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Andhra Pradesh|Sweet potato": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Assam|Sweet potato": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Sweet potato": {
+        "fert_per_ha": 104.13,
+        "pest_per_ha": 0.245
+      },
+      "Chhattisgarh|Sweet potato": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Goa|Sweet potato": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Haryana|Sweet potato": {
+        "fert_per_ha": 119.92,
+        "pest_per_ha": 0.22
+      },
+      "Karnataka|Sweet potato": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Kerala|Sweet potato": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Sweet potato": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Manipur|Sweet potato": {
+        "fert_per_ha": 98.8,
+        "pest_per_ha": 0.26
+      },
+      "Meghalaya|Sweet potato": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Sweet potato": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Odisha|Sweet potato": {
+        "fert_per_ha": 106.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Sweet potato": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.33
+      },
+      "Tamil Nadu|Sweet potato": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Sweet potato": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Sweet potato": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.29
+      },
+      "Andhra Pradesh|Tapioca": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Assam|Tapioca": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Karnataka|Tapioca": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.265
+      },
+      "Kerala|Tapioca": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Tapioca": {
+        "fert_per_ha": 98.89,
+        "pest_per_ha": 0.26
+      },
+      "Meghalaya|Tapioca": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Tapioca": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Nagaland|Tapioca": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Puducherry|Tapioca": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.28
+      },
+      "Tamil Nadu|Tapioca": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Tobacco": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.31
+      },
+      "Assam|Tobacco": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Tobacco": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Tobacco": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Tobacco": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.3
+      },
+      "Himachal Pradesh|Tobacco": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.29
+      },
+      "Jammu and Kashmir|Tobacco": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.25
+      },
+      "Karnataka|Tobacco": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Kerala|Tobacco": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Madhya Pradesh|Tobacco": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.245
+      },
+      "Maharashtra|Tobacco": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Meghalaya|Tobacco": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Mizoram|Tobacco": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Odisha|Tobacco": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Tobacco": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.33
+      },
+      "Tamil Nadu|Tobacco": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Tobacco": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Tobacco": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.28
+      },
+      "Uttarakhand|Tobacco": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Tobacco": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Arunachal Pradesh|Turmeric": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Assam|Turmeric": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Turmeric": {
+        "fert_per_ha": 108.34,
+        "pest_per_ha": 0.26
+      },
+      "Chhattisgarh|Turmeric": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Haryana|Turmeric": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.33
+      },
+      "Himachal Pradesh|Turmeric": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Jammu and Kashmir|Turmeric": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.31
+      },
+      "Karnataka|Turmeric": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Turmeric": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Madhya Pradesh|Turmeric": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Manipur|Turmeric": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.27
+      },
+      "Meghalaya|Turmeric": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Nagaland|Turmeric": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.125
+      },
+      "Odisha|Turmeric": {
+        "fert_per_ha": 102.13,
+        "pest_per_ha": 0.26
+      },
+      "Puducherry|Turmeric": {
+        "fert_per_ha": 156.63,
+        "pest_per_ha": 0.33
+      },
+      "Tamil Nadu|Turmeric": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Turmeric": {
+        "fert_per_ha": 155.345,
+        "pest_per_ha": 0.35
+      },
+      "Uttar Pradesh|Turmeric": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Turmeric": {
+        "fert_per_ha": 152.105,
+        "pest_per_ha": 0.29
+      },
+      "West Bengal|Turmeric": {
+        "fert_per_ha": 104.13,
+        "pest_per_ha": 0.245
+      },
+      "Andhra Pradesh|Urad": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Urad": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Assam|Urad": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "Bihar|Urad": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Chhattisgarh|Urad": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Gujarat|Urad": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.31
+      },
+      "Haryana|Urad": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Himachal Pradesh|Urad": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.27
+      },
+      "Jammu and Kashmir|Urad": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Jharkhand|Urad": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Karnataka|Urad": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Madhya Pradesh|Urad": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Urad": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Urad": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Mizoram|Urad": {
+        "fert_per_ha": 105.235,
+        "pest_per_ha": 0.23
+      },
+      "Nagaland|Urad": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.32
+      },
+      "Odisha|Urad": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Puducherry|Urad": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Punjab|Urad": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Urad": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Tamil Nadu|Urad": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Telangana|Urad": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Urad": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.29
+      },
+      "Uttar Pradesh|Urad": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.28
+      },
+      "Uttarakhand|Urad": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Urad": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|Wheat": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.27
+      },
+      "Arunachal Pradesh|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Assam|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Bihar|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Chhattisgarh|Wheat": {
+        "fert_per_ha": 147.645,
+        "pest_per_ha": 0.26
+      },
+      "Delhi|Wheat": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Gujarat|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Haryana|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Himachal Pradesh|Wheat": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Jammu and Kashmir|Wheat": {
+        "fert_per_ha": 138.22,
+        "pest_per_ha": 0.255
+      },
+      "Jharkhand|Wheat": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Karnataka|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Kerala|Wheat": {
+        "fert_per_ha": 157.675,
+        "pest_per_ha": 0.35
+      },
+      "Madhya Pradesh|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maharashtra|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Manipur|Wheat": {
+        "fert_per_ha": 155.82,
+        "pest_per_ha": 0.33
+      },
+      "Meghalaya|Wheat": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Mizoram|Wheat": {
+        "fert_per_ha": 102.465,
+        "pest_per_ha": 0.28
+      },
+      "Nagaland|Wheat": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Odisha|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Punjab|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Sikkim|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Telangana|Wheat": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Tripura|Wheat": {
+        "fert_per_ha": 143.765,
+        "pest_per_ha": 0.265
+      },
+      "Uttar Pradesh|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Uttarakhand|Wheat": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.26
+      },
+      "West Bengal|Wheat": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Andhra Pradesh|other oilseeds": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Arunachal Pradesh|other oilseeds": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.36
+      },
+      "Goa|other oilseeds": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.37
+      },
+      "Gujarat|other oilseeds": {
+        "fert_per_ha": 166.815,
+        "pest_per_ha": 0.285
+      },
+      "Haryana|other oilseeds": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.35
+      },
+      "Jammu and Kashmir|other oilseeds": {
+        "fert_per_ha": 146.92,
+        "pest_per_ha": 0.255
+      },
+      "Maharashtra|other oilseeds": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Mizoram|other oilseeds": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.17
+      },
+      "Nagaland|other oilseeds": {
+        "fert_per_ha": 157.91,
+        "pest_per_ha": 0.35
+      },
+      "Punjab|other oilseeds": {
+        "fert_per_ha": 171.76,
+        "pest_per_ha": 0.37
+      },
+      "Sikkim|other oilseeds": {
+        "fert_per_ha": 98.98,
+        "pest_per_ha": 0.24
+      },
+      "Telangana|other oilseeds": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.33
+      },
+      "Tripura|other oilseeds": {
+        "fert_per_ha": 162.2,
+        "pest_per_ha": 0.35
+      },
+      "Uttarakhand|other oilseeds": {
+        "fert_per_ha": 150.88,
+        "pest_per_ha": 0.265
+      }
+    },
+    "by_crop": {
+      "Arecanut": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Arhar/Tur": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Bajra": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Banana": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Barley": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Black pepper": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Cardamom": {
+        "fert_per_ha": 133.4,
+        "pest_per_ha": 0.26
+      },
+      "Cashewnut": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.28
+      },
+      "Castor seed": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Coriander": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Cotton(lint)": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Cowpea(Lobia)": {
+        "fert_per_ha": 157.44,
+        "pest_per_ha": 0.33
+      },
+      "Dry chillies": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Garlic": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Ginger": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Gram": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Groundnut": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Guar seed": {
+        "fert_per_ha": 150.96,
+        "pest_per_ha": 0.27
+      },
+      "Horse-gram": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Jowar": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Jute": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Khesari": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.26
+      },
+      "Linseed": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Maize": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Masoor": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Mesta": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Moong(Green Gram)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Moth": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Niger seed": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Oilseeds total": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Onion": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Other  Rabi pulses": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Other Cereals": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.31
+      },
+      "Other Kharif pulses": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Other Summer Pulses": {
+        "fert_per_ha": 159.82,
+        "pest_per_ha": 0.35
+      },
+      "Peas & beans (Pulses)": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Potato": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Ragi": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Rapeseed &Mustard": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Rice": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Safflower": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Sannhamp": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.26
+      },
+      "Sesamum": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Small millets": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Soyabean": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.29
+      },
+      "Sugarcane": {
+        "fert_per_ha": 143.04,
+        "pest_per_ha": 0.27
+      },
+      "Sunflower": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Sweet potato": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Tapioca": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Tobacco": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Turmeric": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "Urad": {
+        "fert_per_ha": 150.8,
+        "pest_per_ha": 0.27
+      },
+      "Wheat": {
+        "fert_per_ha": 144.49,
+        "pest_per_ha": 0.27
+      },
+      "other oilseeds": {
+        "fert_per_ha": 153.25,
+        "pest_per_ha": 0.33
+      }
+    },
+    "global": {
+      "fert_per_ha": 144.49,
+      "pest_per_ha": 0.27
+    }
+  }
 }

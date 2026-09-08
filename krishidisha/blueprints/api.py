@@ -78,11 +78,9 @@ def fertilizer_recommend():
         raise ValueError(f"soil_type must be one of {SOIL_TYPES}")
     if crop not in FERT_CROP_TYPES:
         raise ValueError(f"crop_type must be one of {FERT_CROP_TYPES}")
-    result = current_app.ml.recommend_fertilizer(soil_type=soil, crop_type=crop, **nums)
-    if data.get("area"):
-        crop_key = {"Paddy": "rice", "Ground Nuts": "groundnut", "Oil seeds": "mustard", "Pulses": "chickpea"} \
-            .get(crop, crop.lower())
-        result["calculator"] = fertilizer_calculator(crop_key, float(data["area"]), data.get("unit", "acre"))
+    result = current_app.ml.recommend_fertilizer(
+        soil_type=soil, crop_type=crop, **nums,
+        area=float(data["area"]) if data.get("area") else None, unit=data.get("unit", "acre"))
     log_activity("Fertilizer Recommendation", {**nums, "soil_type": soil, "crop_type": crop},
                  {"fertilizer": result["recommended_fertilizer"], "confidence": result["confidence"]})
     return jsonify(result)
@@ -104,7 +102,11 @@ def fert_calc():
 @bp.route("/yield/predict", methods=["POST"])
 def yield_predict():
     data = _payload()
-    nums = _floats(data, ("area", "production", "annual_rainfall", "fertilizer", "pesticide"))
+    nums = _floats(data, ("area", "annual_rainfall"))
+    # fertilizer/pesticide are optional: omitted values fall back to regional medians.
+    # "production" is accepted and ignored - it used to leak the target.
+    for k in ("fertilizer", "pesticide"):
+        nums[k] = float(data[k]) if data.get(k) not in (None, "") else None
     for k in ("crop", "season", "state", "crop_year"):
         if not data.get(k):
             raise ValueError(f"{k} is required")

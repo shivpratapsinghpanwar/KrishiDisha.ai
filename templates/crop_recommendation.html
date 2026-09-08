@@ -66,6 +66,14 @@
 
     <div class="col-lg-7">
       {% if result %}
+        {% if result.warnings %}
+          <div class="alert alert-warning small">
+            <i class="bi bi-exclamation-triangle me-1"></i><strong>Outside the model's experience</strong>
+            <ul class="mb-0 mt-1">
+              {% for w in result.warnings %}<li>{{ w }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
         <div class="kd-result">
           <div class="row g-3 align-items-center mb-3">
             <div class="col-auto">
