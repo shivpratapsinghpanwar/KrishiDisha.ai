@@ -5,8 +5,6 @@ import io
 
 from PIL import Image
 
-from tests.conftest import FARMER
-
 
 # ----------------------------------------------------------------- public
 def test_public_pages_render(client):
@@ -35,8 +33,8 @@ def test_login_required_redirects(client):
 
 
 # ------------------------------------------------------------------- auth
-def test_registration_validation(client):
-    bad = dict(FARMER, username="x", phone="123", password="abc", email="other@example.com")
+def test_registration_validation(client, farmer_data):
+    bad = dict(farmer_data, username="x", phone="123", password="abc", email="other@example.com")
     r = client.post("/farmer_registration", data=bad)
     assert r.status_code == 200
     assert b"valid 10-digit" in r.data and b"at least 6" in r.data
