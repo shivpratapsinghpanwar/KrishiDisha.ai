@@ -1,0 +1,13 @@
+{
+  "id": "sspanwar/krishidisha-train-disease",
+  "title": "KrishiDisha field disease classifier - training",
+  "code_file": "../kaggle_train_disease.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["sspanwar/krishidisha-disease-unified"],
+  "competition_sources": [],
+  "kernel_sources": []
+}
