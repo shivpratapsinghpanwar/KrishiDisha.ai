@@ -15,6 +15,11 @@ FARMER = dict(name="Test Farmer", email="farmer@example.com", phone="9876543210"
               preferred_language="en")
 
 
+@pytest.fixture()
+def farmer_data():
+    return dict(FARMER)
+
+
 @pytest.fixture(scope="session")
 def app():
     app = create_app(TestConfig)
