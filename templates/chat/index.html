@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Assistant{% endblock %}
+{% block body_class %}kd-chat-body{% endblock %}
+{% block meta_description %}Ask the KrishiDisha assistant about crops, fertilizers, plant diseases, weather, mandi prices and government schemes.{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="max-width:1200px;">
+  <h1 class="kd-section-title mb-3"><i class="bi bi-robot me-2"></i>KrishiDisha Assistant</h1>
+
+  <div class="kd-chat-page">
+    <!-- Sidebar -->
+    <aside class="d-flex flex-column gap-3">
+      <a href="{{ url_for('chat.new') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>New conversation</a>
+
+      <div class="kd-admin-sidebar p-2 flex-grow-1" style="overflow-y:auto;max-height:50vh;">
+        {% if sessions %}
+        <div class="list-group list-group-flush">
+          {% for s in sessions %}
+          <div class="list-group-item d-flex justify-content-between align-items-center gap-2 {% if chat and chat.key == s.session_key %}active{% endif %}">
+            <a href="{{ url_for('chat.page', s=s.session_key) }}" class="text-decoration-none flex-grow-1 {% if chat and chat.key == s.session_key %}text-white{% else %}text-dark{% endif %}">
+              <div class="small fw-semibold text-truncate" style="max-width:170px;">{{ s.title or 'New conversation' }}</div>
+              <div class="small {% if chat and chat.key == s.session_key %}text-white-50{% else %}text-muted{% endif %}">{{ s.updated_at.strftime('%d %b, %I:%M %p') }}</div>
+            </a>
+            <form method="post" action="{{ url_for('chat.session_delete', key=s.session_key) }}" onsubmit="return true;">
+              <button type="submit" class="btn btn-sm btn-outline-danger border-0" aria-label="Delete conversation {{ s.title }}"><i class="bi bi-trash"></i></button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="small text-muted p-2 mb-0">No conversations yet. Ask a question to get started.</p>
+        {% endif %}
+      </div>
+
+      <div class="kd-form-card small">
+        <p class="mb-1"><i class="bi bi-cpu me-1 text-success"></i><strong>{{ assistant.provider }}</strong>{% if assistant.model %} · {{ assistant.model }}{% endif %}</p>
+        <p class="text-muted mb-0">Answers use the KrishiDisha ML models (crop, fertilizer, disease, yield) and knowledge base for grounded, India-specific advice.</p>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="d-flex flex-column">
+      <div class="kd-chat-messages flex-grow-1" id="chatMessages">
+        {% if chat and chat.messages %}
+          {% for m in chat.messages %}
+            {% if m.role == 'user' %}
+              <div class="kd-msg kd-msg-user">{{ m.content }}</div>
+            {% else %}
+              <div class="kd-msg kd-msg-bot" data-md="{{ m.content }}"></div>
+              <div class="kd-msg-meta">
+                {{ m.provider or '' }}
+                {% if m.tools_used %} · {{ m.tools_used | join(', ') }}{% endif %}
+                <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-copy-btn" aria-label="Copy reply"><i class="bi bi-clipboard"></i></button>
+                <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-speak-btn" aria-label="Read reply aloud"><i class="bi bi-volume-up"></i></button>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <div class="kd-msg kd-msg-bot">
+            Namaste! I'm your KrishiDisha Sahayak. Ask me about crop choice, fertilizer doses, plant diseases (attach a leaf photo), weather, mandi prices or government schemes.
+          </div>
+          <div class="d-flex flex-wrap gap-2 mt-2" id="chatSuggestions">
+            {% for s in suggestions %}
+            <button type="button" class="btn btn-sm btn-outline-success kd-suggestion">{{ s }}</button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <form class="kd-chat-form mt-2 flex-wrap" id="chatForm" autocomplete="off">
+        <div class="d-flex align-items-center gap-2 w-100">
+          <label for="chatLanguage" class="visually-hidden">Reply language</label>
+          <select class="form-select form-select-sm" id="chatLanguage" style="max-width:150px;">
+            {% for code, name in languages.items() %}
+            <option value="{{ code }}" {% if code == language %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+
+          <label class="btn btn-light btn-sm mb-0" title="Attach leaf photo">
+            <i class="bi bi-image"></i>
+            <span class="visually-hidden">Attach leaf photo</span>
+            <input type="file" id="chatImage" accept="image/*" hidden>
+          </label>
+
+          <label for="chatInput" class="visually-hidden">Your message</label>
+          <textarea class="form-control form-control-sm" id="chatInput" rows="1" placeholder="Type your question…" maxlength="2000" style="resize:none;"></textarea>
+
+          <button class="btn btn-success btn-sm" type="submit" aria-label="Send message"><i class="bi bi-send-fill"></i></button>
+        </div>
+        <div class="small text-muted mt-1" id="chatImageStatus"></div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  "use strict";
+  var chatKey = {{ (chat.key if chat else '') | tojson }};
+  var sendUrl = {{ url_for('chat.send') | tojson }};
+  var defaultLanguage = {{ language | tojson }};
+
+  var messagesEl = document.getElementById('chatMessages');
+  var form = document.getElementById('chatForm');
+  var input = document.getElementById('chatInput');
+  var imageInput = document.getElementById('chatImage');
+  var imageStatus = document.getElementById('chatImageStatus');
+  var languageSelect = document.getElementById('chatLanguage');
+
+  function renderExisting() {
+    document.querySelectorAll('.kd-msg-bot[data-md]').forEach(function (el) {
+      var md = el.getAttribute('data-md');
+      el.innerHTML = window.KDrenderMarkdown ? window.KDrenderMarkdown(md) : md;
+    });
+  }
+  renderExisting();
+  scrollToBottom();
+
+  function scrollToBottom() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function addUserMessage(text) {
+    var div = document.createElement('div');
+    div.className = 'kd-msg kd-msg-user';
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+  }
+
+  function addTyping() {
+    var div = document.createElement('div');
+    div.className = 'kd-msg kd-msg-bot';
+    div.innerHTML = '<span class="kd-typing"><span></span><span></span><span></span></span>';
+    messagesEl.appendChild(div);
+    scrollToBottom();
+    return div;
+  }
+
+  function addBotMessage(markdown, meta, detection) {
+    var wrap = document.createElement('div');
+    wrap.className = 'kd-msg kd-msg-bot';
+    var html = window.KDrenderMarkdown ? window.KDrenderMarkdown(markdown) : escapeHtml(markdown);
+    if (detection && detection.top) {
+      html = '<div class="small text-success mb-1"><i class="bi bi-camera"></i> ' + escapeHtml(detection.top.name) +
+        ' (' + Math.round((detection.top.confidence || 0) * 100) + '%)</div>' + html;
+    }
+    wrap.innerHTML = html;
+    messagesEl.appendChild(wrap);
+
+    var metaDiv = document.createElement('div');
+    metaDiv.className = 'kd-msg-meta';
+    metaDiv.innerHTML = escapeHtml(meta || '') +
+      ' <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-copy-btn" aria-label="Copy reply"><i class="bi bi-clipboard"></i></button>' +
+      ' <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-speak-btn" aria-label="Read reply aloud"><i class="bi bi-volume-up"></i></button>';
+    metaDiv.dataset.raw = markdown;
+    messagesEl.appendChild(metaDiv);
+    scrollToBottom();
+  }
+
+  function updateUrl(key) {
+    if (!chatKey && window.history && window.history.replaceState) {
+      var url = new URL(window.location.href);
+      url.searchParams.set('s', key);
+      window.history.replaceState({}, '', url);
+    }
+    chatKey = key;
+  }
+
+  function send(text, file) {
+    if (!text && !file) return;
+    addUserMessage(text || '(photo)');
+    var typing = addTyping();
+    var language = languageSelect.value || defaultLanguage || 'en';
+
+    var requestPromise;
+    if (file) {
+      var fd = new FormData();
+      fd.append('message', text || '');
+      fd.append('image', file);
+      fd.append('language', language);
+      if (chatKey) fd.append('session_key', chatKey);
+      requestPromise = fetch(sendUrl, { method: 'POST', body: fd });
+    } else {
+      requestPromise = fetch(sendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, session_key: chatKey, language: language })
+      });
+    }
+
+    requestPromise.then(function (r) {
+      return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+    }).then(function (res) {
+      typing.remove();
+      if (!res.ok) {
+        addBotMessage('Sorry, ' + (res.data.error || 'something went wrong') + '.', '');
+        return;
+      }
+      var data = res.data;
+      updateUrl(data.session_key);
+      var meta = (data.provider || '');
+      if (data.tools_used && data.tools_used.length) meta += ' · ' + data.tools_used.join(', ');
+      addBotMessage(data.reply, meta, data.detection);
+    }).catch(function () {
+      typing.remove();
+      addBotMessage('Network error. Please try again.', '');
+    }).finally(function () {
+      imageInput.value = '';
+      imageStatus.textContent = '';
+    });
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var text = input.value.trim();
+    var file = imageInput.files && imageInput.files[0];
+    if (!text && !file) return;
+    input.value = '';
+    send(text, file);
+  });
+
+  input.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' && !ev.shiftKey) {
+      ev.preventDefault();
+      form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+  });
+
+  imageInput.addEventListener('change', function () {
+    if (imageInput.files && imageInput.files[0]) {
+      imageStatus.textContent = 'Photo attached: ' + imageInput.files[0].name;
+    }
+  });
+
+  document.querySelectorAll('.kd-suggestion').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      input.value = btn.textContent;
+      form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true }));
+    });
+  });
+
+  messagesEl.addEventListener('click', function (ev) {
+    var copyBtn = ev.target.closest('.kd-copy-btn');
+    if (copyBtn) {
+      var metaDiv = copyBtn.closest('.kd-msg-meta');
+      var bubble = metaDiv ? metaDiv.previousElementSibling : null;
+      var text = metaDiv && metaDiv.dataset.raw ? metaDiv.dataset.raw : (bubble ? bubble.textContent : '');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          if (window.KDtoast) window.KDtoast('Copied to clipboard', 'success');
+        }).catch(function () { /* ignore */ });
+      }
+      return;
+    }
+    var speakBtn = ev.target.closest('.kd-speak-btn');
+    if (speakBtn) {
+      var bubbleForSpeak = speakBtn.closest('.kd-msg-meta') ? speakBtn.closest('.kd-msg-meta').previousElementSibling : null;
+      var spokenText = bubbleForSpeak ? bubbleForSpeak.textContent : '';
+      if ('speechSynthesis' in window && spokenText) {
+        var lang = languageSelect.value || defaultLanguage || 'en';
+        var utter = new SpeechSynthesisUtterance(spokenText);
+        utter.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      }
+    }
+  });
+})();
+</script>
+{% endblock %}

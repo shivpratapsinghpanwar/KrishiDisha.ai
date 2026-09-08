@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-4"><i class="bi bi-cart3 me-2"></i>Your Cart</h1>
+
+  {% if items %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="table-responsive">
+        <table class="table table-kd align-middle bg-white">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Unit price</th>
+              <th scope="col" style="width:160px;">Quantity</th>
+              <th scope="col">Line total</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td class="d-flex align-items-center gap-2">
+                <img src="{{ item.product.image_url or url_for('static', filename='images/plant.png') }}"
+                     onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/plant.png') }}';"
+                     alt="{{ item.product.name }}" style="width:56px;height:56px;object-fit:contain;background:#fff;border-radius:8px;">
+                <div>
+                  <a href="{{ url_for('marketplace.product', slug=item.product.slug) }}" class="text-decoration-none fw-semibold">{{ item.product.name }}</a>
+                  <div class="small text-muted">{{ item.product.unit }}</div>
+                </div>
+              </td>
+              <td>{{ item.product.price | inr }}</td>
+              <td>
+                <form method="post" action="{{ url_for('marketplace.cart_update') }}" class="d-flex gap-1">
+                  <input type="hidden" name="item_id" value="{{ item.id }}">
+                  <label for="qty{{ item.id }}" class="visually-hidden">Quantity for {{ item.product.name }}</label>
+                  <input type="number" class="form-control form-control-sm" id="qty{{ item.id }}" name="quantity" min="1" max="{{ item.product.stock }}" value="{{ item.quantity }}" style="width:70px;">
+                  <button type="submit" class="btn btn-outline-success btn-sm">Update</button>
+                </form>
+              </td>
+              <td class="fw-semibold">{{ item.line_total | inr }}</td>
+              <td>
+                <form method="post" action="{{ url_for('marketplace.cart_remove', item_id=item.id) }}">
+                  <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Remove {{ item.product.name }}"><i class="bi bi-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{{ url_for('marketplace.index') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-arrow-left me-1"></i>Continue shopping</a>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="kd-form-card kd-sticky-summary">
+        <h2 class="h5 mb-3">Order summary</h2>
+        <div class="d-flex justify-content-between mb-2">
+          <span>Subtotal</span><span>{{ totals.subtotal | inr }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span>Delivery</span>
+          <span>{% if totals.delivery == 0 %}<span class="text-success fw-semibold">Free</span>{% else %}{{ totals.delivery | inr }}{% endif %}</span>
+        </div>
+        {% if totals.delivery > 0 %}
+        <p class="small text-muted">Free delivery above {{ totals.free_delivery_above | inr }}</p>
+        {% endif %}
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+          <span>Total</span><span>{{ totals.total | inr }}</span>
+        </div>
+        <a href="{{ url_for('marketplace.checkout') }}" class="btn btn-success w-100">Proceed to checkout</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="kd-form-card text-center py-5">
+    <i class="bi bi-cart-x display-4 text-muted"></i>
+    <p class="mt-3 mb-3">Your cart is empty.</p>
+    <a href="{{ url_for('marketplace.index') }}" class="btn btn-success">Browse the marketplace</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

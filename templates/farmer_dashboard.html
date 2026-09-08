@@ -1,295 +1,174 @@
-{% extends "base_Crop_Fertilizer.html" %}
+{% extends "base.html" %}
+
+{% block title %}My Dashboard{% endblock %}
 
 {% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-4"><i class="bi bi-speedometer2 me-2"></i>My Dashboard</h1>
 
-<div class="container mt-5">
-    <br>
-    <h1 style="text-align: center;">Welcome, {{ farmer.name }}</h1>
-</div>
-    <!-- Flash Messages -->
-<br>
-    {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages and messages|length > 0 %}
-    <div>
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category|default('info') }} alert-dismissible fade show" role="alert">
-            {{ message|default('An unexpected error occurred.') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+  {% set total_activities = activities|length %}
+  {% set most_used = (activity_counts.items()|list|sort(attribute='1', reverse=true)|first) if activity_counts else none %}
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="kd-stat">
+        <div class="value">{{ total_activities }}</div>
+        <div class="label">Total activities</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kd-stat">
+        <div class="value">{{ orders|length }}</div>
+        <div class="label">Orders placed</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kd-stat">
+        <div class="value" style="font-size:1.1rem;">{{ most_used[0] if most_used else '—' }}</div>
+        <div class="label">Most used tool</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kd-stat">
+        <div class="value" style="font-size:1.1rem;">{{ farmer.created_at.strftime('%b %Y') if farmer.created_at else '—' }}</div>
+        <div class="label">Member since</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-4">
+      <div class="card kd-card p-3">
+        <h6 class="mb-2">Activity mix</h6>
+        <canvas id="activityChart" height="220"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card kd-card p-3">
+        <h6 class="mb-2">Top crops by average yield</h6>
+        <canvas id="yieldChart" height="220"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card kd-card p-3">
+        <h6 class="mb-2">Top producing states</h6>
+        <canvas id="stateChart" height="220"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card kd-card p-3">
+        <h6 class="mb-2">Season distribution (dataset)</h6>
+        <canvas id="seasonChart" height="220"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card kd-card p-3">
+        <h6 class="mb-2">Fertilizer usage (dataset)</h6>
+        <canvas id="fertChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <h5 class="kd-section-title mb-3">Activity history</h5>
+  <div class="table-responsive mb-4">
+    <table class="table table-kd align-middle">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>When</th>
+          <th>Inputs</th>
+          <th>Result</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in activities %}
+          <tr>
+            <td><span class="badge bg-success">{{ a.activity_type }}</span></td>
+            <td class="small text-muted">{{ a.timestamp.strftime('%d %b %Y %H:%M') }}</td>
+            <td>
+              {% for k, v in a.input_dict().items() %}
+                {% if loop.index <= 6 %}<span class="badge bg-light text-dark border me-1 mb-1">{{ k }}: {{ v }}</span>{% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for k, v in a.output_dict().items() %}
+                {% if loop.index <= 6 %}<span class="badge bg-light text-dark border me-1 mb-1">{{ k }}: {{ v }}</span>{% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              <form method="post" action="{{ url_for('farmer.dashboard') }}" class="d-inline">
+                <input type="hidden" name="activity_id" value="{{ a.id }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Remove</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No activity yet.</td></tr>
         {% endfor %}
-    </div>
-    {% endif %}
-    {% endwith %}
-    
+      </tbody>
+    </table>
+  </div>
 
-<!-- Table Box Container -->
-<div class="table-box">
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Activity Type</th>
-                    <th>Input Data</th>
-                    <th>Output Data</th>
-                    <th>Timestamp</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for activity in activities %}
-                    <tr class="table-row">
-                        <td>{{ activity.activity_type }}</td>
-                        <td>
-                            <button class="btn btn-outline-light view-input-btn" data-bs-toggle="modal" data-bs-target="#inputModal{{ loop.index }}">
-                                View Input
-                            </button>
-                        </td>
-                        <td>
-                            <p class="output-data-text">
-                                {{ activity.output_data if activity.output_data else 'No output data available' }}
-                            </p>
-                        </td>
-                        <td>{{ activity.timestamp }}</td>
-                        <td>
-                            {% if not activity.deleted %}
-                                <form action="{{ url_for('farmer_dashboard') }}" method="POST" style="display:inline;">
-                                    <input type="hidden" name="activity_id" value="{{ activity.id }}">  
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
-                            {% else %}
-                                <span class="text-muted">Activity deleted</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-
-                    <!-- Modal for Viewing Input Data -->
-                    <div class="modal fade" id="inputModal{{ loop.index }}" tabindex="-1" aria-labelledby="inputModalLabel{{ loop.index }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="inputModalLabel{{ loop.index }}">Activity Input Data</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <textarea readonly>{{ activity.input_data }}</textarea>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn" data-bs-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <h5 class="kd-section-title mb-3">Recent orders</h5>
+  <div class="table-responsive">
+    <table class="table table-kd align-middle">
+      <thead>
+        <tr><th>Order</th><th>Date</th><th>Status</th><th>Payment</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td><a href="{{ url_for('marketplace.order_detail', order_number=order.order_number) }}">{{ order.order_number }}</a></td>
+            <td class="small text-muted">{{ order.created_at.strftime('%d %b %Y') }}</td>
+            <td><span class="badge bg-success">{{ order.status }}</span></td>
+            <td><span class="badge bg-secondary">{{ order.payment_status }}</span></td>
+            <td>{{ order.total | inr }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No orders yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
-
-{% if activities|length == 0 %}
-    <p>No activities found.</p>
-{% endif %}
-<br>
-<div class="charts-container">
-    <!-- Row 1 -->
-    <div class="charts">
-        <div class="chart-card">
-            <h3>Fertilizer Usage</h3>
-            <canvas id="fertilizerChart"></canvas>
-            <p>Breakdown of fertilizer usage across regions.</p>
-        </div>
-        <div class="chart-card">
-            <h3>Disease Frequency</h3>
-            <canvas id="diseaseChart"></canvas>
-            <p>Occurrences of crop diseases by type.</p>
-        </div>
-    </div>
-
-    <!-- Row 2 -->
-    <div class="charts">
-        <div class="chart-card">
-            <h3>Crop Yield</h3>
-            <canvas id="cropYieldChart"></canvas>
-            <p>Average yield per crop in kilograms per hectare.</p>
-        </div>
-        <div class="chart-card">
-            <h3>Temperature and Crops</h3>
-            <canvas id="tempChart"></canvas>
-            <p>Number of crops recommended by temperature range.</p>
-        </div>
-    </div>
-
-    <!-- Row 3 -->
-    <div class="charts">
-        <div class="chart-card">
-            <h3>State Crop Production</h3>
-            <canvas id="stateProductionChart"></canvas>
-            <p>Total crop production by state in tons.</p>
-        </div>
-        <div class="chart-card">
-            <h3>Seasonal Production</h3>
-            <canvas id="seasonProductionChart"></canvas>
-            <p>Crop production distribution by season.</p>
-        </div>
-    </div>
-
-    <!-- Row 4 -->
-    <div class="charts row-large">
-        <div class="chart-card">
-            <h3>State vs. Crop Production</h3>
-            <canvas id="stateCropChart"></canvas>
-            <p>Detailed breakdown of crop production by state and crop.</p>
-        </div>
-    </div>
-</div>
-
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    const cropYieldStats = JSON.parse('{{ crop_yield_stats| default({})|tojson|safe }}');
-    const fertilizerStats = JSON.parse('{{ fertilizer_stats| default({})|tojson|safe }}');
-    const diseaseStats = JSON.parse('{{ disease_stats| default({})|tojson|safe }}');
-    const topCropsByYield = JSON.parse('{{ top_crops_by_yield | default({})| tojson | safe }}');
-    const yieldDistribution = JSON.parse('{{ yield_distribution | default({})| tojson | safe }}');
-    const topFertilizers = JSON.parse('{{ top_fertilizers | default({})| tojson | safe }}');
-    const frequentDiseases = JSON.parse('{{ frequent_diseases | default({})| tojson | safe }}');
+  var palette = ['#1b7f3b', '#f4b400', '#8b5a2b', '#2a9d8f', '#e76f51', '#457b9d', '#9b5de5', '#f77f00', '#06d6a0', '#ef476f'];
 
-    console.log('Crop Yield Stats:', cropYieldStats);
-    console.log('Fertilizer Stats:', fertilizerStats);
-    console.log('Disease Stats:', diseaseStats);
-    console.log('Top Crops By Yield',topCropsByYield);
-    console.log('Yield Distribution',yieldDistribution);
-    console.log('Top Fertilizers',topFertilizers);
-    console.log('Frequent Disease',frequentDiseases)
+  function makeChart(id, type, labels, data, options) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var ctx = el.getContext('2d');
+    if (!labels.length) {
+      el.parentElement.insertAdjacentHTML('beforeend', '<p class="text-muted small text-center mb-0">No data yet.</p>');
+      return;
+    }
+    new Chart(ctx, Object.assign({
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [{ data: data, backgroundColor: palette, borderColor: type === 'bar' ? '#1b7f3b' : undefined }]
+      },
+      options: Object.assign({ plugins: { legend: { display: type !== 'bar', position: 'bottom' } } }, options || {})
+    }, {}));
+  }
 
-    new Chart(document.getElementById('cropYieldChart'), {
-        type: 'bar',
-        data: {
-            labels: Object.keys(cropYieldStats),
-            datasets: [{
-                label: 'Average Yield',
-                data: Object.values(cropYieldStats),
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        }
-    });
+  var activityCounts = {{ activity_counts | tojson }};
+  makeChart('activityChart', 'doughnut', Object.keys(activityCounts), Object.values(activityCounts));
 
-    new Chart(document.getElementById('fertilizerChart'), {
-        type: 'pie',
-        data: {
-            labels: Object.keys(fertilizerStats),
-            datasets: [{
-                data: Object.values(fertilizerStats),
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
-            }]
-        }
-    });
+  var topCrops = {{ top_crops_by_yield | tojson }};
+  makeChart('yieldChart', 'bar', Object.keys(topCrops), Object.values(topCrops), { indexAxis: 'y' });
 
-    new Chart(document.getElementById('diseaseChart'), {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(diseaseStats),
-            datasets: [{
-                data: Object.values(diseaseStats),
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
-            }]
-        }
-    });
+  var stateProd = {{ state_production | tojson }};
+  makeChart('stateChart', 'bar', Object.keys(stateProd), Object.values(stateProd), { indexAxis: 'y' });
 
-    new Chart(document.getElementById('topCropsChart'), {
-        type: 'bar',
-        data: {
-            labels: Object.keys(topCropsByYield),
-            datasets: [{
-                label: 'Average Yield',
-                data: Object.values(topCropsByYield),
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: true }
-            }
-        }
-    });
+  var seasonCounts = {{ season_counts | tojson }};
+  makeChart('seasonChart', 'doughnut', Object.keys(seasonCounts), Object.values(seasonCounts));
 
-    // Chart: Yield Distribution
-    new Chart(document.getElementById('yieldDistributionChart'), {
-        type: 'bar',
-        data: {
-            labels: Object.keys(yieldDistribution),
-            datasets: [{
-                label: 'Frequency',
-                data: Object.values(yieldDistribution),
-                backgroundColor: 'rgba(255, 206, 86, 0.5)',
-                borderColor: 'rgba(255, 206, 86, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: true }
-            }
-        }
-    });
-
-    // Chart: Fertilizer Usage Frequency
-    new Chart(document.getElementById('fertilizerChart'), {
-        type: 'pie',
-        data: {
-            labels: Object.keys(topFertilizers),
-            datasets: [{
-                data: Object.values(topFertilizers),
-                backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-                    '#FF9F40', '#FF6384'
-                ],
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right' },
-                tooltip: { enabled: true }
-            }
-        }
-    });
-
-    // Chart: Frequent Diseases
-    new Chart(document.getElementById('diseaseChart'), {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(frequentDiseases),
-            datasets: [{
-                data: Object.values(frequentDiseases),
-                backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-                    '#FF9F40', '#FF6384'
-                ],
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right' },
-                tooltip: { enabled: true }
-            }
-        }
-    });
+  var fertUsage = {{ fertilizer_usage | tojson }};
+  makeChart('fertChart', 'bar', Object.keys(fertUsage), Object.values(fertUsage));
 </script>
-
 {% endblock %}

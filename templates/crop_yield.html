@@ -1,95 +1,110 @@
-{% extends "base_Crop_Fertilizer.html" %}
+{% extends "base.html" %}
 
-{% block title %}Crop Yield Prediction{% endblock %}
+{% block title %}Yield Prediction{% endblock %}
 
 {% block content %}
-<div class="container mt-5"><br>
-    <h1 class="text-center" style="color: rgb(17, 204, 17);">🌾 Crop Yield Prediction 🌾</h1>
-    <form action="/crop_yield" method="POST" class="mt-4">
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="crop" class="form-label"><b>Crop</b></label>
-                <select name="crop" id="crop" class="form-select" required>
-                    <option value="" disabled selected>Select a crop</option>
-                    {% for crop in crops %}
-                    <option value="{{ crop }}">{{ crop }}</option>
-                    {% endfor %}
-                </select>
+<div class="container py-4">
+  <h1 class="kd-section-title mb-1"><i class="bi bi-graph-up-arrow me-2"></i>Crop Yield Prediction</h1>
+  <p class="text-muted mb-4">Estimate tonnes-per-hectare yield and total production, based on a model trained on state-level historical crop data across India.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="kd-form-card">
+        <h5 class="mb-3">Field details</h5>
+        <form method="post" action="{{ url_for('farmer.crop_yield') }}">
+          <div class="row g-3">
+            <div class="col-6">
+              <label for="crop" class="form-label">Crop</label>
+              <select class="form-select" id="crop" name="crop" required>
+                {% for c in crops %}
+                  <option value="{{ c }}" {% if inputs.crop == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="col-md-4">
-                <label for="crop_year" class="form-label"><b>Crop Year</b></label>
-                <input type="number" name="crop_year" id="crop_year" class="form-control" required>
+            <div class="col-6">
+              <label for="crop_year" class="form-label">Crop year</label>
+              <input type="number" class="form-control" id="crop_year" name="crop_year" min="1997" max="2030" value="{{ inputs.crop_year or 2024 }}" required>
             </div>
-            <div class="col-md-4">
-                <label for="season" class="form-label"><b>Season</b></label>
-                <select name="season" id="season" class="form-select" required>
-                    <option value="" disabled selected>Select a season</option>
-                    {% for season in seasons %}
-                    <option value="{{ season }}">{{ season }}</option>
-                    {% endfor %}
-                </select>
+            <div class="col-6">
+              <label for="season" class="form-label">Season</label>
+              <select class="form-select" id="season" name="season" required>
+                {% for s in seasons %}
+                  <option value="{{ s }}" {% if inputs.season == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
             </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="state" class="form-label"><b>State</b></label>
-                <select name="state" id="state" class="form-select" required>
-                    <option value="" disabled selected>Select a state</option>
-                    {% for state in states %}
-                    <option value="{{ state }}">{{ state }}</option>
-                    {% endfor %}
-                </select>
+            <div class="col-6">
+              <label for="state" class="form-label">State</label>
+              <select class="form-select" id="state" name="state" required>
+                {% for s in states %}
+                  <option value="{{ s }}" {% if inputs.state == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="col-md-6">
-                <label for="area" class="form-label"><b>Area (in hectares)</b></label>
-                <input type="number" step="0.01" name="area" id="area" class="form-control" required>
+            <div class="col-6">
+              <label for="area" class="form-label">Area</label>
+              <input type="number" step="any" min="0" class="form-control" id="area" name="area" value="{{ inputs.area if inputs.area is not none else '' }}" required>
+              <div class="kd-help">hectares</div>
             </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="production" class="form-label"><b>Production (in tonnes)</b></label>
-                <input type="number" step="0.01" name="production" id="production" class="form-control" required>
+            <div class="col-6">
+              <label for="production" class="form-label">Historical production</label>
+              <input type="number" step="any" min="0" class="form-control" id="production" name="production" value="{{ inputs.production if inputs.production is not none else '' }}" required>
+              <div class="kd-help">tonnes, from a similar past season</div>
             </div>
-            <div class="col-md-4">
-                <label for="annual_rainfall" class="form-label"><b>Annual Rainfall (mm)</b></label>
-                <input type="number" step="0.01" name="annual_rainfall" id="annual_rainfall" class="form-control" required>
+            <div class="col-6">
+              <label for="annual_rainfall" class="form-label">Annual rainfall</label>
+              <input type="number" step="any" min="0" class="form-control" id="annual_rainfall" name="annual_rainfall" value="{{ inputs.annual_rainfall if inputs.annual_rainfall is not none else '' }}" required>
+              <div class="kd-help">mm</div>
             </div>
-            <div class="col-md-4">
-                <label for="fertilizer" class="form-label"><b>Fertilizer Used (kg)</b></label>
-                <input type="number" step="0.01" name="fertilizer" id="fertilizer" class="form-control" required>
+            <div class="col-6">
+              <label for="fertilizer" class="form-label">Fertilizer used</label>
+              <input type="number" step="any" min="0" class="form-control" id="fertilizer" name="fertilizer" value="{{ inputs.fertilizer if inputs.fertilizer is not none else '' }}" required>
+              <div class="kd-help">kg, total for the area</div>
             </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="pesticide" class="form-label"><b>Pesticide Used (kg)</b></label>
-                <input type="number" step="0.01" name="pesticide" id="pesticide" class="form-control" required>
+            <div class="col-12">
+              <label for="pesticide" class="form-label">Pesticide used</label>
+              <input type="number" step="any" min="0" class="form-control" id="pesticide" name="pesticide" value="{{ inputs.pesticide if inputs.pesticide is not none else '' }}" required>
+              <div class="kd-help">kg, total for the area</div>
             </div>
-        </div>
-        <div class="row mt-4">
-          <div class="col-md-12 text-center">
-              <button class="bttn-pill">
-                  Predict Yield
-              </button>
           </div>
+          <button type="submit" class="btn btn-success w-100 mt-4"><i class="bi bi-search me-1"></i>Predict yield</button>
+        </form>
+        <p class="small text-muted mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>The model learns patterns from state-level historical records (area, rainfall, fertilizer and pesticide use), so results are indicative, not a field-level guarantee.</p>
       </div>
-    </form>
-
-    {% if prediction %}
-    <div class="alert alert-success mt-4 text-center">
-        <h4>Predicted Yield: {{ prediction }} tonnes/hectare</h4>
     </div>
-    {% endif %}
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <div class="alert alert-danger mt-4">
-        <ul>
-            {% for category, message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
+    <div class="col-lg-6">
+      {% if result %}
+        <div class="kd-result">
+          <div class="text-center mb-3">
+            <div class="small text-muted">Predicted yield</div>
+            <div class="display-5 fw-bold text-success">{{ result.predicted_yield | round(2) }}</div>
+            <div class="text-muted">{{ result.unit }}</div>
+          </div>
+          {% if result.estimated_production is not none %}
+            <div class="text-center mb-3">
+              <span class="badge bg-success fs-6">Estimated production: {{ result.estimated_production | round(2) }} tonnes</span>
+            </div>
+          {% endif %}
+          {% if result.tips %}
+            <hr>
+            <h6 class="mb-2"><i class="bi bi-lightbulb me-1"></i>Tips</h6>
+            <ul class="mb-0">
+              {% for tip in result.tips %}<li>{{ tip }}</li>{% endfor %}
+            </ul>
+          {% endif %}
+          <form method="post" action="{{ url_for('farmer.download_yield_report') }}" class="mt-3">
+            <button type="submit" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>Download PDF report</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="card kd-card p-5 text-center h-100 d-flex flex-column justify-content-center">
+          <i class="bi bi-graph-up-arrow display-3 text-success mb-3"></i>
+          <h4>Plan your season with data</h4>
+          <p class="text-muted mb-0">Fill in your crop, season, state and input usage to get an expected yield and production figure, drawn from historical patterns across Indian states.</p>
+        </div>
+      {% endif %}
     </div>
-    {% endif %}
-    {% endwith %}
+  </div>
 </div>
 {% endblock %}

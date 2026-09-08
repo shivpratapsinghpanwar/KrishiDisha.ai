@@ -1,22 +1,44 @@
-```gitignore
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+.pytest_cache/
 
-# Dependencies
+# Virtual environments
 venv/
 .venv/
+.venv-train/
+.venv*/
+
+# Secrets / local config
 .env
 .env.local
 *.env.*
+!.env.example
+
+# Runtime data
+instance/
+static/uploads/
+*.db
+*.sqlite3
+
+# Trained model artefacts (rebuild with `python -m ml.train_all`; keep the
+# small metrics / meta files and the report images so the docs stay useful)
+models/*.pkl
+models/*.pt
+models/*.pth
+models/*.onnx
+models/checkpoints/
 
 # Logs and temp files
 *.log
 *.tmp
+.tmp/
 
-# Editors
+# Editors / OS
 .vscode/
 .idea/
-```
+.DS_Store
+Thumbs.db

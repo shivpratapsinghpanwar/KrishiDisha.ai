@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}{{ crop | title }} Guide{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  {% if not guide %}
+    <h1 class="kd-section-title mb-2">No guide yet for "{{ crop }}"</h1>
+    <p class="text-muted">We don't have a cultivation guide for this crop yet. Try one of these:</p>
+    <div class="d-flex flex-wrap gap-2">
+      {% for c in all_crops %}
+        <a href="{{ url_for('main.crop_guide_page', crop=c) }}" class="btn btn-outline-success btn-sm">{{ c | title }}</a>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% set fields = [
+      ('season', 'Season', 'bi-calendar3'),
+      ('climate', 'Climate', 'bi-thermometer-half'),
+      ('soil', 'Soil', 'bi-layers'),
+      ('sowing_time', 'Sowing time', 'bi-clock-history'),
+      ('seed_rate', 'Seed rate', 'bi-basket'),
+      ('spacing', 'Spacing', 'bi-arrows-angle-expand'),
+      ('irrigation', 'Irrigation', 'bi-droplet'),
+      ('fertilizer_schedule', 'Fertilizer schedule', 'bi-droplet-half'),
+      ('major_pests_diseases', 'Major pests & diseases', 'bi-bug'),
+      ('harvest', 'Harvest', 'bi-scissors'),
+      ('expected_yield', 'Expected yield', 'bi-graph-up-arrow'),
+      ('improved_varieties', 'Improved varieties', 'bi-star')
+    ] %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.calendar_page') }}">Crop calendar</a></li>
+        <li class="breadcrumb-item active">{{ crop | title }}</li>
+      </ol>
+    </nav>
+    <h1 class="kd-section-title mb-4"><i class="bi bi-flower1 me-1"></i>{{ crop | title }} cultivation guide</h1>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="row g-3">
+          {% for key, label, icon in fields %}
+            {% if guide.get(key) %}
+              <div class="col-md-6">
+                <div class="card kd-card h-100 p-3">
+                  <div class="d-flex align-items-start">
+                    <div class="kd-feature-icon me-3 flex-shrink-0"><i class="bi {{ icon }}"></i></div>
+                    <div>
+                      <h6 class="mb-1">{{ label }}</h6>
+                      <p class="small text-muted mb-0">{{ guide.get(key) }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="kd-sticky-summary d-flex flex-column gap-3">
+          {% if calendar %}
+            <div class="kd-result">
+              <h6 class="text-muted mb-2">Calendar</h6>
+              {% for row in calendar %}
+                <div class="mb-2 small">
+                  <span class="badge {{ 'bg-success' if row.season == 'Kharif' else ('bg-primary' if row.season == 'Rabi' else 'bg-warning text-dark') }}">{{ row.season }}</span>
+                  Sow: {{ row.sowing }} &middot; Harvest: {{ row.harvest }} &middot; {{ row.duration_days }} days
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="kd-result">
+            <h6 class="text-muted mb-2">Tools</h6>
+            <div class="d-grid gap-2">
+              <a href="{{ url_for('chat.page') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-robot me-1"></i>Ask the assistant about {{ crop }}</a>
+              <a href="{{ url_for('farmer.crop_recommendation') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-flower1 me-1"></i>Crop recommendation</a>
+              <a href="{{ url_for('main.fert_calc') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-calculator me-1"></i>Fertilizer calculator</a>
+            </div>
+          </div>
+
+          {% if products %}
+            <div class="kd-result">
+              <h6 class="text-muted mb-2">Recommended inputs</h6>
+              <div class="row g-2">
+                {% for p in products %}
+                  <div class="col-6">
+                    <div class="card kd-card h-100">
+                      <a href="{{ url_for('marketplace.product', slug=p.slug) }}" class="text-decoration-none text-reset">
+                        {% if p.image_url %}
+                          <img src="{{ p.image_url }}" class="kd-product-img w-100" alt="{{ p.name }}" style="height:100px;">
+                        {% endif %}
+                        <div class="card-body p-2">
+                          <div class="small">{{ p.name }}</div>
+                          <div class="kd-price small">{{ p.price | inr }}</div>
+                        </div>
+                      </a>
+                      <div class="card-body pt-0 p-2">
+                        <button type="button" class="btn btn-success btn-sm w-100" data-add-to-cart="{{ p.id }}" {% if p.stock <= 0 %}disabled{% endif %}>
+                          <i class="bi bi-cart-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-4">
+    <h6 class="text-muted">Other crops</h6>
+    <div class="d-flex flex-wrap gap-2">
+      {% for c in all_crops %}
+        {% if c != crop | lower %}
+          <a href="{{ url_for('main.crop_guide_page', crop=c) }}" class="btn btn-outline-success btn-sm rounded-pill">{{ c | title }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

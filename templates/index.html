@@ -1,102 +1,193 @@
 {% extends "base.html" %}
 
-{% block title %}Home - KrishiDisha: Empowering Farmers with AI{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-
-  <div class="content-box" id="content-box-1">
-    <div class="dark-overlay"></div>
-      <img src="static/images/crop1.png" alt="Image 1">
-      <div class="text-content">
-          <h1 class="animate-text">Welcome to KrishiDisha</h1>
-          <p class="animate-text">
-            Unlock the full potential of your farm with KrishiDisha, an AI-powered crop and fertilizer recommendation system. Get personalized insights to optimize yields, enhance resource management, and practice sustainable farming.
-          </p>
-          <div class="container">
-            <a href="{{ url_for('farmer_registration') }}" class="btn btn-success btn-lg animated bounceIn">Get Started</a>
-          </div>
+<section class="kd-hero">
+  <div class="container">
+    {% if current_farmer %}
+      <div class="d-flex flex-wrap align-items-center justify-content-between bg-white bg-opacity-10 rounded-3 p-3 mb-4">
+        <div class="text-white">
+          <i class="bi bi-person-check-fill me-2"></i>Welcome back, <strong>{{ current_farmer.name.split(' ')[0] }}</strong>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-sm-0">
+          <a href="{{ url_for('farmer.home') }}" class="btn btn-light btn-sm"><i class="bi bi-house-door me-1"></i>My Farm</a>
+          <a href="{{ url_for('farmer.dashboard') }}" class="btn btn-outline-light btn-sm"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+        </div>
       </div>
+    {% endif %}
+    <h1 class="display-5">Smart farming decisions, in your language</h1>
+    <p class="lead">KrishiDisha combines machine learning, live weather and mandi data with an AI assistant to help you
+      pick the right crop, dose fertilizer correctly, spot leaf disease early and sell at a fair price.</p>
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      {% if not current_farmer %}
+        <a href="{{ url_for('auth.farmer_registration') }}" class="btn btn-warning btn-lg fw-semibold"><i class="bi bi-person-plus me-1"></i>Register</a>
+      {% endif %}
+      <a href="{{ url_for('chat.page') }}" class="btn btn-outline-light btn-lg"><i class="bi bi-robot me-1"></i>Ask the assistant</a>
+      <a href="{{ url_for('marketplace.index') }}" class="btn btn-success btn-lg"><i class="bi bi-shop me-1"></i>Open marketplace</a>
+    </div>
   </div>
+</section>
 
-  <div class="content-box" id="content-box-2">
-    <div class="dark-overlay"></div>
-      <img src="static/images/crop2.jpeg" alt="Image 2">
-      <div class="text-content">
-          <h1 class="animate-text">AI for Precision Agriculture</h1>
-          <p class="animate-text">
-            Make data-driven decisions with KrishiDisha’s personalized crop, fertilizer recommendations and yield prediction. Powered by machine learning, we help you select the right crops and fertilizers tailored to your unique soil and climate conditions.
-          </p>
-          <div class="container">
-            <a href="{{ url_for('farmer_registration') }}" class="btn btn-success btn-lg animated bounceIn">Get Started</a>
-          </div>
+<section class="container py-5">
+  <h2 class="kd-section-title text-center mb-1">What KrishiDisha does</h2>
+  <p class="text-center text-muted mb-4">Six tools built for the Indian farm, powered by models trained on public agricultural datasets.</p>
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+      <a href="{{ url_for('farmer.crop_recommendation') }}" class="text-decoration-none text-reset">
+        <div class="card kd-card h-100 p-3">
+          <div class="kd-feature-icon mb-3"><i class="bi bi-flower1"></i></div>
+          <h5>Crop recommendation</h5>
+          <p class="text-muted mb-0 small">Tell us your soil N-P-K, pH, rainfall and climate — get the best-fit crop with expected profit.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <a href="{{ url_for('farmer.fertilizer_recommendation') }}" class="text-decoration-none text-reset">
+        <div class="card kd-card h-100 p-3">
+          <div class="kd-feature-icon mb-3"><i class="bi bi-droplet-half"></i></div>
+          <h5>Fertilizer recommendation</h5>
+          <p class="text-muted mb-0 small">Get the right fertilizer and exact quantity for your crop, soil and land size.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <a href="{{ url_for('farmer.crop_detection') }}" class="text-decoration-none text-reset">
+        <div class="card kd-card h-100 p-3">
+          <div class="kd-feature-icon mb-3"><i class="bi bi-camera"></i></div>
+          <h5>Disease detection</h5>
+          <p class="text-muted mb-0 small">Snap a leaf photo and our vision model flags the disease with prevention tips.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <a href="{{ url_for('farmer.crop_yield') }}" class="text-decoration-none text-reset">
+        <div class="card kd-card h-100 p-3">
+          <div class="kd-feature-icon mb-3"><i class="bi bi-graph-up-arrow"></i></div>
+          <h5>Yield prediction</h5>
+          <p class="text-muted mb-0 small">Estimate tonnes-per-hectare and total production before you sow.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <a href="{{ url_for('main.weather_page') }}" class="text-decoration-none text-reset">
+        <div class="card kd-card h-100 p-3">
+          <div class="kd-feature-icon mb-3"><i class="bi bi-cloud-sun"></i></div>
+          <h5>Weather &amp; mandi prices</h5>
+          <p class="text-muted mb-0 small">7-day forecast with farm advisories, plus live mandi (market) prices near you.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <a href="{{ url_for('marketplace.index') }}" class="text-decoration-none text-reset">
+        <div class="card kd-card h-100 p-3">
+          <div class="kd-feature-icon mb-3"><i class="bi bi-shop"></i></div>
+          <h5>Marketplace</h5>
+          <p class="text-muted mb-0 small">Buy seeds, fertilizer and crop-protection inputs matched to your needs.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="bg-kd-light py-5">
+  <div class="container">
+    <h2 class="kd-section-title text-center mb-4">How it works</h2>
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="kd-feature-icon mb-3 mx-auto"><i class="bi bi-1-circle"></i></div>
+        <h5>Tell us about your farm</h5>
+        <p class="text-muted small">Soil test values, land size, location or a leaf photo — whatever you have.</p>
       </div>
-  </div>
-
-  <div class="content-box" id="content-box-3">
-    <div class="dark-overlay"></div>
-      <img src="static/images/crop3.png" alt="Image 3">
-      <div class="text-content">
-          <h1 class="animate-text">Sustainability through Smart Farming</h1>
-          <p class="animate-text">
-            Our cutting-edge AI algorithms guide you towards sustainable farming practices, ensuring optimal water use, fertilizer application, and crop selection to increase productivity while reducing environmental impact.
-          </p>
-          <div class="container">
-            <a href="{{ url_for('farmer_registration') }}" class="btn btn-success btn-lg animated bounceIn">Get Started</a>
-          </div>
+      <div class="col-md-4">
+        <div class="kd-feature-icon mb-3 mx-auto"><i class="bi bi-2-circle"></i></div>
+        <h5>Get an instant recommendation</h5>
+        <p class="text-muted small">Our ML models and assistant turn your inputs into a clear, actionable answer.</p>
       </div>
-  </div>
-
-  <div class="content-box" id="content-box-4">
-    <div class="dark-overlay"></div>
-      <img src="static/images/crop4.png" alt="Image 4">
-      <div class="text-content">
-          <h1 class="animate-text">Crop Disease Detection with AI</h1>
-          <p class="animate-text">
-            Upload crop images and let KrishiDisha’s AI-powered disease detection engine identify diseases, offer real-time solutions, and recommend appropriate supplements to restore plant health. Prevent loss and increase yield with precision.
-          </p>
-          <ul class="animate-text">
-            <li>Ensure optimal soil pH and nutrient levels.</li>
-            <li>Practice proper irrigation techniques.</li>
-            <li>Monitor crops for early disease detection.</li>
-            <li>Rotate crops for healthier soil.</li>
-          </ul>
-          <div class="container">
-            <a href="{{ url_for('farmer_registration') }}" class="btn btn-success btn-lg animated bounceIn">Get Started</a>
-          </div>
+      <div class="col-md-4">
+        <div class="kd-feature-icon mb-3 mx-auto"><i class="bi bi-3-circle"></i></div>
+        <h5>Act on it</h5>
+        <p class="text-muted small">Download the report, buy the right inputs from the marketplace, and track your farm's history.</p>
       </div>
+    </div>
   </div>
+</section>
 
-  <div class="content-box" id="content-box-5">
-    <div class="dark-overlay"></div>
-      <img src="static/images/crop5.png" alt="Image 5">
-      <div class="text-content">
-          <h1 class="animate-text">Healthy Plants, Healthy Yields</h1>
-          <p class="animate-text">
-            Grow your crops with confidence by following essential farming tips. From soil health to pest management, KrishiDisha provides actionable insights to help you maintain robust plants and maximize yield using prediction.
-          </p>
-        
-          <div class="container">
-            <a href="{{ url_for('farmer_registration') }}" class="btn btn-success btn-lg animated bounceIn">Get Started</a>
+{% if featured %}
+<section class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="kd-section-title mb-0">Popular in the marketplace</h2>
+    <a href="{{ url_for('marketplace.index') }}" class="btn btn-outline-success btn-sm">View all <i class="bi bi-arrow-right"></i></a>
+  </div>
+  <div class="row g-4">
+    {% for product in featured %}
+      <div class="col-6 col-md-3">
+        <div class="card kd-card h-100">
+          <a href="{{ url_for('marketplace.product', slug=product.slug) }}" class="text-decoration-none text-reset">
+            {% if product.image_url %}
+              <img src="{{ product.image_url }}" class="kd-product-img w-100" alt="{{ product.name }}">
+            {% else %}
+              <div class="kd-product-img w-100 d-flex align-items-center justify-content-center bg-kd-light">
+                <i class="bi bi-box-seam fs-1 text-success"></i>
+              </div>
+            {% endif %}
+            <div class="card-body pb-2">
+              <div class="small text-muted">{{ product.category }}</div>
+              <h6 class="mb-1">{{ product.name }}</h6>
+            </div>
+          </a>
+          <div class="card-body pt-0">
+            <div class="mb-2">
+              <span class="kd-price">{{ product.price | inr }}</span>
+              {% if product.mrp and product.mrp > product.price %}
+                <span class="kd-mrp ms-1">{{ product.mrp | inr }}</span>
+              {% endif %}
+            </div>
+            <button type="button" class="btn btn-success btn-sm w-100" data-add-to-cart="{{ product.id }}" {% if product.stock <= 0 %}disabled{% endif %}>
+              <i class="bi bi-cart-plus"></i> Add to cart
+            </button>
           </div>
+        </div>
       </div>
+    {% endfor %}
   </div>
+</section>
+{% endif %}
 
-  <div class="content-box" id="content-box-5">
-    <div class="dark-overlay"></div>
-      <img src="static/images/crop2.jpeg" alt="Image 5">
-      <div class="text-content">
-          <h1 class="animate-text">Crop Supplements: Boost Growth</h1>
-          <p class="animate-text">
-            KrishiDisha offers a range of crop supplements designed to enhance plant health and yield. Protect your crops from diseases and stress factors with the right supplements.
-          </p>
-          <div class="container">
-            <a href="{{ url_for('farmer_registration') }}" class="btn btn-success btn-lg animated bounceIn">Get Started</a>
-          </div>
-      </div>
+<section class="container pb-5">
+  <div class="row g-3">
+    <div class="col-6 col-md-3">
+      <a href="{{ url_for('main.weather_page') }}" class="kd-stat d-block text-decoration-none text-reset">
+        <i class="bi bi-cloud-sun text-success me-1"></i><span class="label">Weather</span>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{{ url_for('main.mandi_page') }}" class="kd-stat d-block text-decoration-none text-reset">
+        <i class="bi bi-currency-rupee text-success me-1"></i><span class="label">Mandi Prices</span>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{{ url_for('main.schemes_page') }}" class="kd-stat d-block text-decoration-none text-reset">
+        <i class="bi bi-bank text-success me-1"></i><span class="label">Govt. Schemes</span>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{{ url_for('main.calendar_page') }}" class="kd-stat d-block text-decoration-none text-reset">
+        <i class="bi bi-calendar3 text-success me-1"></i><span class="label">Crop Calendar</span>
+      </a>
+    </div>
   </div>
+</section>
 
-<!-- Content Box for Footer --> 
- 
-
-
+<section class="container pb-5">
+  <div class="kd-form-card">
+    <h5 class="kd-section-title mb-2"><i class="bi bi-robot me-1"></i>Ask the assistant</h5>
+    <p class="text-muted small mb-3">Type a question in your own language, any time.</p>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-success btn-sm" href="{{ url_for('chat.page') }}">"Which crop suits sandy soil in Madhya Pradesh?"</a>
+      <a class="btn btn-outline-success btn-sm" href="{{ url_for('chat.page') }}">"How much urea for 2 acres of wheat?"</a>
+      <a class="btn btn-outline-success btn-sm" href="{{ url_for('chat.page') }}">"What is the mandi price of onion today?"</a>
+    </div>
+  </div>
+</section>
 {% endblock %}

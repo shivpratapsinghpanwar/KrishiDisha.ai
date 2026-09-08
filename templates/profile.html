@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="kd-admin-sidebar list-group mb-3">
+        <a href="{{ url_for('farmer.dashboard') }}" class="list-group-item list-group-item-action"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+        <a href="{{ url_for('marketplace.orders') }}" class="list-group-item list-group-item-action"><i class="bi bi-bag-check me-2"></i>Orders</a>
+        <a href="{{ url_for('chat.sessions') }}" class="list-group-item list-group-item-action"><i class="bi bi-chat-left-text me-2"></i>Chat history</a>
+        <a href="{{ url_for('auth.profile') }}" class="list-group-item list-group-item-action active"><i class="bi bi-gear me-2"></i>Profile</a>
+      </div>
+      <div class="kd-result">
+        <p class="mb-2">
+          {% if farmer.verified %}
+            <span class="badge bg-success"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>
+          {% else %}
+            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pending verification</span>
+          {% endif %}
+        </p>
+        <p class="small text-muted mb-0">Joined {{ farmer.created_at.strftime('%d %b %Y') if farmer.created_at else '' }}</p>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="kd-form-card">
+        <h1 class="h4 kd-section-title mb-3">My Profile</h1>
+        <form method="post">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="nameInput" class="form-label">Name</label>
+              <input type="text" class="form-control" id="nameInput" name="name" value="{{ farmer.name }}" required>
+            </div>
+            <div class="col-md-6">
+              <label for="emailInput" class="form-label">Email</label>
+              <input type="email" class="form-control" id="emailInput" value="{{ farmer.email }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label for="phoneInput" class="form-label">Phone</label>
+              <input type="text" class="form-control" id="phoneInput" value="{{ farmer.phone }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label for="usernameInput" class="form-label">Username</label>
+              <input type="text" class="form-control" id="usernameInput" value="{{ farmer.username }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label for="stateSelect" class="form-label">State</label>
+              <select class="form-select" id="stateSelect" name="state">
+                <option value="">Select state</option>
+                {% for s in states %}
+                  <option value="{{ s }}" {% if farmer.state == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="districtInput" class="form-label">District</label>
+              <input type="text" class="form-control" id="districtInput" name="district" value="{{ farmer.district or '' }}">
+            </div>
+            <div class="col-md-6">
+              <label for="landInput" class="form-label">Land area (acres)</label>
+              <input type="number" step="0.1" min="0" class="form-control" id="landInput" name="land_area_acres" value="{{ farmer.land_area_acres or '' }}">
+            </div>
+            <div class="col-md-6">
+              <label for="langSelect" class="form-label">Preferred language</label>
+              <select class="form-select" id="langSelect" name="preferred_language">
+                {% for code, label in languages %}
+                  <option value="{{ code }}" {% if farmer.preferred_language == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="newPassword" class="form-label">New password</label>
+              <input type="password" class="form-control" id="newPassword" name="new_password" minlength="6" placeholder="Leave blank to keep current">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success mt-4"><i class="bi bi-check2-circle me-1"></i>Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
