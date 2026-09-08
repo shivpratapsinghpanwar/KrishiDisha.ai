@@ -1,154 +1,78 @@
-# Test script for KrishiDisha FastAPI
+"""Smoke tests for the standalone FastAPI service (run: pytest api/test_api.py).
 
-import requests
-import json
+Uses FastAPI's in-process TestClient, the offline assistant and the stub disease
+model so no network or GPU is required.
+"""
+from __future__ import annotations
 
-BASE_URL = "http://localhost:8000"
+import io
+import os
 
-def test_health():
-    """Test health endpoint"""
-    print("\n=== Testing Health Endpoint ===")
-    response = requests.get(f"{BASE_URL}/health")
-    print(f"Status: {response.status_code}")
-    print(f"Response: {json.dumps(response.json(), indent=2)}")
-    return response.status_code == 200
+os.environ.setdefault("LLM_PROVIDER", "rules")
+os.environ.setdefault("DISEASE_MODEL_BACKEND", "stub")
+os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 
-def test_chat():
-    """Test chat endpoint"""
-    print("\n=== Testing Chat Endpoint ===")
-    response = requests.post(
-        f"{BASE_URL}/chat",
-        json={"message": "Hello, what crops grow well in Punjab?"}
-    )
-    print(f"Status: {response.status_code}")
-    print(f"Response: {json.dumps(response.json(), indent=2)}")
-    return response.status_code == 200
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from PIL import Image  # noqa: E402
 
-def test_crop_recommendation():
-    """Test crop recommendation endpoint"""
-    print("\n=== Testing Crop Recommendation Endpoint ===")
-    payload = {
-        "N": 90,
-        "P": 42,
-        "K": 43,
-        "temperature": 20.5,
-        "humidity": 82,
-        "ph": 6.5,
-        "rainfall": 202
-    }
-    response = requests.post(
-        f"{BASE_URL}/crop/recommend",
-        json=payload
-    )
-    print(f"Status: {response.status_code}")
-    if response.status_code == 200:
-        print(f"Response: {json.dumps(response.json(), indent=2)}")
-    else:
-        print(f"Error: {response.text}")
-    return response.status_code in [200, 503]  # 503 is OK if model not loaded
+from api.main import app  # noqa: E402
 
-def test_fertilizer_recommendation():
-    """Test fertilizer recommendation endpoint"""
-    print("\n=== Testing Fertilizer Recommendation Endpoint ===")
-    payload = {
-        "N": 60,
-        "P": 30,
-        "K": 40,
-        "soil_type": "loamy",
-        "crop_type": "rice"
-    }
-    response = requests.post(
-        f"{BASE_URL}/fertilizer/recommend",
-        json=payload
-    )
-    print(f"Status: {response.status_code}")
-    if response.status_code == 200:
-        print(f"Response: {json.dumps(response.json(), indent=2)}")
-    else:
-        print(f"Error: {response.text}")
-    return response.status_code in [200, 503]
 
-def test_reference_data():
-    """Test reference data endpoints"""
-    print("\n=== Testing Reference Data Endpoints ===")
-    
-    # Test crops
-    response = requests.get(f"{BASE_URL}/crops")
-    print(f"Crops - Status: {response.status_code}, Count: {len(response.json().get('crops', []))}")
-    
-    # Test states
-    response = requests.get(f"{BASE_URL}/states")
-    print(f"States - Status: {response.status_code}, Count: {len(response.json().get('states', []))}")
-    
-    # Test seasons
-    response = requests.get(f"{BASE_URL}/seasons")
-    print(f"Seasons - Status: {response.status_code}, Response: {response.json()}")
-    
-    # Test diseases
-    response = requests.get(f"{BASE_URL}/diseases")
-    print(f"Diseases - Status: {response.status_code}, Count: {len(response.json().get('diseases', []))}")
-    
-    return True
+@pytest.fixture(scope="module")
+def client():
+    with TestClient(app) as c:
+        yield c
 
-def test_activity_log():
-    """Test activity logging endpoint"""
-    print("\n=== Testing Activity Logging Endpoint ===")
-    payload = {
-        "farmer_id": 123,
-        "activity_type": "crop_recommendation",
-        "input_data": {"N": 90, "P": 42, "K": 43},
-        "output_data": {"recommended_crop": "Rice"}
-    }
-    response = requests.post(
-        f"{BASE_URL}/activity/log",
-        json=payload
-    )
-    print(f"Status: {response.status_code}")
-    print(f"Response: {json.dumps(response.json(), indent=2)}")
-    return response.status_code == 200
 
-def main():
-    """Run all tests"""
-    print("=" * 60)
-    print("KrishiDisha FastAPI Test Suite")
-    print("=" * 60)
-    
-    try:
-        results = []
-        
-        # Run tests
-        results.append(("Health Check", test_health()))
-        results.append(("Chat", test_chat()))
-        results.append(("Crop Recommendation", test_crop_recommendation()))
-        results.append(("Fertilizer Recommendation", test_fertilizer_recommendation()))
-        results.append(("Reference Data", test_reference_data()))
-        results.append(("Activity Logging", test_activity_log()))
-        
-        # Summary
-        print("\n" + "=" * 60)
-        print("Test Summary")
-        print("=" * 60)
-        
-        passed = sum(1 for _, result in results if result)
-        total = len(results)
-        
-        for name, result in results:
-            status = "✅ PASS" if result else "❌ FAIL"
-            print(f"{status} - {name}")
-        
-        print(f"\nTotal: {passed}/{total} tests passed")
-        
-        if passed == total:
-            print("\n🎉 All tests passed!")
-        else:
-            print(f"\n⚠️  {total - passed} test(s) failed")
-            
-    except requests.exceptions.ConnectionError:
-        print("\n❌ Error: Could not connect to API server")
-        print("Make sure the server is running:")
-        print("  cd /workspace && python -m uvicorn api.main:app --reload")
-    except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+def test_root_and_health(client):
+    assert client.get("/").json()["name"] == "KrishiDisha API"
+    body = client.get("/health").json()
+    assert body["status"] == "ok" and body["assistant"]["provider"] == "rules"
 
-if __name__ == "__main__":
-    main()
+
+def test_crop_recommend(client):
+    r = client.post("/crop/recommend", json={"N": 90, "P": 42, "K": 43, "temperature": 21, "humidity": 82,
+                                             "ph": 6.5, "rainfall": 203})
+    assert r.status_code == 200 and r.json()["recommended_crop"] == "rice"
+    assert client.post("/crop/recommend", json={"N": 90}).status_code == 422
+
+
+def test_fertilizer_and_calculator(client):
+    r = client.post("/fertilizer/recommend", json={"temperature": 26, "humidity": 52, "moisture": 38,
+                                                   "soil_type": "Sandy", "crop_type": "Maize", "N": 37, "P": 0,
+                                                   "K": 0, "area": 2})
+    assert r.status_code == 200 and r.json()["recommended_fertilizer"] == "Urea"
+    assert r.json()["calculator"]["bags_50kg"]["Urea"] > 0
+    r = client.post("/fertilizer/calculator", json={"crop": "wheat", "area": 1, "unit": "hectare"})
+    assert r.status_code == 200 and r.json()["nutrient_requirement_kg"]["N"] == 120
+    assert client.post("/fertilizer/calculator", json={"crop": "dragonfruit", "area": 1}).status_code == 400
+
+
+def test_yield(client):
+    r = client.post("/yield/predict", json={"crop": "Wheat", "crop_year": 2020, "season": "Rabi", "state": "Punjab",
+                                            "area": 100, "production": 400, "annual_rainfall": 600,
+                                            "fertilizer": 15000, "pesticide": 30})
+    assert r.status_code == 200 and r.json()["predicted_yield"] > 0
+
+
+def test_disease_stub(client):
+    buf = io.BytesIO()
+    Image.new("RGB", (32, 32)).save(buf, format="JPEG")
+    r = client.post("/disease/detect", files={"image": ("leaf.jpg", buf.getvalue(), "image/jpeg")})
+    assert r.status_code == 503
+    r = client.post("/disease/detect", files={"image": ("x.jpg", b"nope", "image/jpeg")})
+    assert r.status_code == 400
+
+
+def test_chat_and_data(client):
+    r = client.post("/chat", json={"message": "How much urea for 2 acres of wheat?", "plain": True})
+    assert r.status_code == 200 and "Urea" in r.json()["reply"] and "**" not in r.json()["reply_plain"]
+    assert client.get("/reference").json()["soil_types"][0] == "Black"
+    assert client.get("/schemes", params={"q": "kisan"}).json()["schemes"]
+    assert client.get("/crop-guide/rice").json()["guide"]["season"]
+    assert client.get("/crop-guide/none").status_code == 404
+    assert client.get("/crop-calendar", params={"season": "Kharif"}).json()["rows"]
+    assert client.get("/knowledge/search", params={"q": "blight"}).json()["results"]
+    assert client.get("/msp", params={"commodity": "wheat"}).json()["prices"][0]["msp"] == 2585
+    assert client.get("/products", params={"disease": "Tomato___Late_blight"}).json()["products"]
