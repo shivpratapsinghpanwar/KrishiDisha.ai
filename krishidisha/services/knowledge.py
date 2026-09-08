@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -204,6 +205,22 @@ class KnowledgeBase:
                                  text=f"Recommended nutrient dose for {crop}: {req['N']} kg N, {req['P2O5']} kg P2O5, "
                                       f"{req['K2O']} kg K2O per hectare.", source="Fertilizer schedule",
                                  meta={"kind": "fertilizer"}))
+
+        # Packages-of-practices chunks produced by ml/kb/ingest_pdfs.py (retrieval only, cited by page)
+        self.chunks_loaded = 0
+        for path in sorted((self.kdir / "chunks").glob("*.jsonl")):
+            try:
+                with open(path, encoding="utf-8") as fh:
+                    for line in fh:
+                        if not line.strip():
+                            continue
+                        c = json.loads(line)
+                        self.docs.append(Doc(id=c["id"], title=c["title"], text=c["text"], source=c.get("source", path.stem),
+                                             meta={"kind": "pop", "url": c.get("url"), "crop": c.get("crop"),
+                                                   "page": c.get("page_start")}))
+                        self.chunks_loaded += 1
+            except Exception as exc:  # noqa: BLE001
+                log.warning("bad chunk file %s: %s", path, exc)
         self._build_index()
 
     def _load_json(self, name: str, default):
@@ -225,6 +242,18 @@ class KnowledgeBase:
         except Exception as exc:  # pragma: no cover
             log.warning("TF-IDF index unavailable: %s", exc)
             self._vectorizer = None
+        # Optional dense multilingual leg (KB_EMBEDDING_MODEL); TF-IDF keeps exact matches like "PM-KISAN".
+        self._dense = None
+        model_name = os.getenv("KB_EMBEDDING_MODEL", "").strip()
+        if model_name and self.docs:
+            try:
+                from .embeddings import DenseIndex
+
+                self._dense = DenseIndex(model_name, cache_dir=self.data_dir.parent / "models")
+                self._dense.build([f"{d.title}. {d.text}" for d in self.docs])
+            except Exception as exc:  # noqa: BLE001 - never block startup on the optional model
+                log.warning("dense KB index unavailable (%s); TF-IDF only", exc)
+                self._dense = None
 
     # --------------------------------------------------------------- search
     def search(self, query: str, k: int = 4, kinds: tuple[str, ...] | None = None) -> list[dict[str, Any]]:
@@ -239,6 +268,26 @@ class KnowledgeBase:
         qv = self._vectorizer.transform([query])
         sims = cosine_similarity(qv, self._matrix)[0]
         order = sims.argsort()[::-1]
+        dense = getattr(self, "_dense", None)
+        if dense is not None:
+            # hybrid: reciprocal-rank fusion of TF-IDF (exact terms) and dense multilingual similarity
+            from .embeddings import fuse
+
+            try:
+                tfidf_rank = [(int(i), float(sims[i])) for i in order[: k * 5] if sims[i] > 0.02]
+                dense_rank = dense.search(query, k=k * 5)
+                fused = fuse([tfidf_rank, dense_rank])
+                out = []
+                for i, score in fused:
+                    d = self.docs[i]
+                    if kinds and d.meta.get("kind") not in kinds:
+                        continue
+                    out.append(self._doc_dict(d, float(score)))
+                    if len(out) >= k:
+                        break
+                return out
+            except Exception as exc:  # noqa: BLE001 - fall back to TF-IDF only
+                log.warning("dense search failed: %s", exc)
         out = []
         for i in order:
             d = self.docs[i]
