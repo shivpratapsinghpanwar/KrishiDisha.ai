@@ -6,12 +6,22 @@ Built by Abhishek Chourasia, Goutam Mandloi and Shivpratap Singh Panwar.
 
 ## Quick start
 
+With [uv](https://docs.astral.sh/uv/) (recommended, one command creates the environment from `pyproject.toml` + `uv.lock`):
+
+```bash
+uv sync --extra api               # creates .venv with CPU-only PyTorch; drop --extra api if you don't need FastAPI
+copy .env.example .env            # optional: add API keys, switch DB, etc.
+uv run app.py                     # http://localhost:5000
+uv run pytest                     # tests
+```
+
+With plain pip:
+
 ```bash
 python -m venv .venv
 .venv\Scripts\activate            # Windows   (source .venv/bin/activate on Linux/macOS)
 pip install -r requirements.txt
-copy .env.example .env            # optional: add API keys, switch DB, etc.
-python app.py                     # http://localhost:5000
+python app.py
 ```
 
 * Default admin: `admin` / `admin123` (change with `DEFAULT_ADMIN_*` in `.env` or `flask --app app create-admin NAME PASS`).
