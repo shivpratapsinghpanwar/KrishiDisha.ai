@@ -1,0 +1,175 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Labelling queue{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-tags me-2"></i>Labelling queue</h4>
+  <div class="text-muted small">Every photo needs two labellers who agree. You are labelling as <strong>{{ me }}</strong>.</div>
+{% endblock %}
+
+{% macro label_select(id, selected='') %}
+  <select class="form-select form-select-sm kd-label-select" id="{{ id }}" name="label">
+    <option value="">Choose the correct class…</option>
+    {% for crop, items in grouped.items() | sort %}
+      {% if items | length %}
+        <optgroup label="{{ crop }}">
+          {% for label in items %}
+            {% if label != 'unsure' %}
+              <option value="{{ label }}" {% if label == selected %}selected{% endif %}>
+                {{ label.split('___')[1].replace('_', ' ') if '___' in label else label }}
+              </option>
+            {% endif %}
+          {% endfor %}
+        </optgroup>
+      {% endif %}
+    {% endfor %}
+  </select>
+{% endmacro %}
+
+{% block admin_content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="kd-stat h-100"><div class="value">{{ counts.get('queued', 0) }}</div>
+      <div class="label"><i class="bi bi-inbox me-1"></i>Queued</div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kd-stat h-100" style="border-left-color:#f4b400;"><div class="value">{{ counts.get('needs_second', 0) }}</div>
+      <div class="label"><i class="bi bi-person-plus me-1"></i>Needs 2nd label</div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kd-stat h-100" style="border-left-color:#6a994e;"><div class="value">{{ counts.get('labelled', 0) }}</div>
+      <div class="label"><i class="bi bi-check2-all me-1"></i>Agreed</div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kd-stat h-100" style="border-left-color:#dc3545;"><div class="value">{{ counts.get('disagreement', 0) }}</div>
+      <div class="label"><i class="bi bi-exclamation-diamond me-1"></i>Disagreements</div></div>
+  </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.label_disagreements') }}">
+    <i class="bi bi-exclamation-diamond me-1"></i>Resolve disagreements ({{ counts.get('disagreement', 0) }})</a>
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.label_upload') }}">
+    <i class="bi bi-upload me-1"></i>Bulk upload (collection drive)</a>
+  <form method="post" action="{{ url_for('admin.label_export') }}" class="d-inline">
+    <button class="btn btn-sm btn-outline-success" type="submit">
+      <i class="bi bi-box-arrow-up-right me-1"></i>Export agreed photos ({{ counts.get('labelled', 0) }})</button>
+  </form>
+  {% if skipped %}
+  <form method="post" action="{{ url_for('admin.label_reset_skips') }}" class="d-inline">
+    <button class="btn btn-sm btn-link text-muted" type="submit">Bring back {{ skipped }} skipped photo(s)</button>
+  </form>
+  {% endif %}
+  <div class="ms-auto small text-muted">
+    <a href="{{ url_for('admin.label_queue', n=1) }}">1 at a time</a> ·
+    <a href="{{ url_for('admin.label_queue', n=5) }}">5 at a time</a>
+  </div>
+</div>
+
+{% if not tasks %}
+  <div class="alert alert-success"><i class="bi bi-check2-circle me-1"></i>
+    Nothing left to label right now. Photos arrive as farmers consent to sharing them.</div>
+{% endif %}
+
+{% for task in tasks %}
+<div class="kd-card p-3 mb-4 kd-label-card" data-task="{{ task.id }}">
+  <form method="post" action="{{ url_for('admin.label_queue') }}">
+    <input type="hidden" name="task_id" value="{{ task.id }}">
+    <input type="hidden" name="n" value="{{ n }}">
+    <div class="row g-3">
+      <div class="col-lg-6 text-center">
+        {% set src = image_url(task.image_path) %}
+        {% if src %}
+          <img src="{{ src }}" alt="Photo awaiting a label" class="img-fluid rounded" style="max-height:420px;object-fit:contain;">
+        {% else %}
+          <div class="alert alert-warning mb-0">Image file not available: <code>{{ task.image_path }}</code></div>
+        {% endif %}
+        <div class="small text-muted mt-2">
+          Task #{{ task.id }} · source {{ task.source }} · {{ task.created_at.strftime('%d %b %Y %H:%M') }}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        {% if task.model_label %}
+          <p class="mb-1"><span class="badge text-bg-light border">Model suggests</span>
+            <strong>{{ task.model_label.replace('___', ' — ').replace('_', ' ') }}</strong>
+            {% if task.model_confidence %}<span class="text-muted">({{ task.model_confidence | pct }})</span>{% endif %}
+          </p>
+        {% else %}
+          <p class="text-muted mb-1">No model suggestion for this photo.</p>
+        {% endif %}
+        {% if task.status == 'needs_second' %}
+          <div class="alert alert-warning py-2 small">
+            First labeller ({{ task.labeller_1 }}) chose
+            <strong>{{ task.label_1.replace('___', ' — ').replace('_', ' ') if task.label_1 else '-' }}</strong>.
+            Their choice is hidden from the shortcuts on purpose — label what you see.
+          </div>
+        {% endif %}
+
+        <label for="label{{ task.id }}" class="form-label small mb-1">Correct class</label>
+        {{ label_select('label' ~ task.id, task.model_label or '') }}
+
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <button class="btn btn-success btn-sm" type="submit" name="action" value="label">
+            <i class="bi bi-check2 me-1"></i>Save label</button>
+          <button class="btn btn-outline-secondary btn-sm" type="submit" name="action" value="unsure">
+            <i class="bi bi-question-circle me-1"></i>Unsure</button>
+          <button class="btn btn-outline-secondary btn-sm" type="submit" name="action" value="not_leaf">
+            <i class="bi bi-image me-1"></i>Not a leaf</button>
+          <button class="btn btn-outline-danger btn-sm" type="submit" name="action" value="discard">
+            <i class="bi bi-trash me-1"></i>Discard</button>
+          <button class="btn btn-outline-secondary btn-sm" type="submit" name="action" value="skip">
+            <i class="bi bi-skip-forward me-1"></i>Skip</button>
+        </div>
+
+        {% if loop.first %}
+        <div class="mt-3" id="quickPicks">
+          <div class="small text-muted mb-1">Quick picks (press 1-9)</div>
+          <div class="d-flex flex-wrap gap-1" id="quickPickButtons"></div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    // Keyboard shortcuts 1-9 pick one of the first nine classes of the suggested crop.
+    var card = document.querySelector('.kd-label-card');
+    var holder = document.getElementById('quickPickButtons');
+    if (!card || !holder) return;
+    var select = card.querySelector('.kd-label-select');
+    if (!select) return;
+
+    var suggested = select.value;
+    var group = null;
+    Array.prototype.forEach.call(select.querySelectorAll('optgroup'), function (g) {
+      if (!group && Array.prototype.some.call(g.children, function (o) { return o.value === suggested; })) group = g;
+    });
+    var options = Array.prototype.slice.call((group || select).querySelectorAll('option'))
+      .filter(function (o) { return o.value; }).slice(0, 9);
+
+    options.forEach(function (opt, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-sm btn-outline-success';
+      btn.textContent = (i + 1) + '. ' + opt.textContent.trim();
+      btn.addEventListener('click', function () {
+        select.value = opt.value;
+        card.querySelector('button[value="label"]').click();
+      });
+      holder.appendChild(btn);
+    });
+
+    document.addEventListener('keydown', function (ev) {
+      if (ev.target.matches('input, textarea, select')) return;
+      var i = parseInt(ev.key, 10);
+      if (i >= 1 && i <= options.length) {
+        ev.preventDefault();
+        holder.children[i - 1].click();
+      }
+    });
+  })();
+</script>
+{% endblock %}
