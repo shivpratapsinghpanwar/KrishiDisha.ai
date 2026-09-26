@@ -1,0 +1,47 @@
+[
+ {
+  "name": "plant_disease",
+  "version": 1,
+  "path": "plant_disease_model.onnx",
+  "sha256": "19997c643bf578ce10204946cecad14957b654573629844a25d7141d3f7d7f2f",
+  "size_mb": 111.52,
+  "git_sha": "9d4ee0f",
+  "registered_at": "2026-09-26T23:14:23",
+  "arch": "timm:convnext_tiny",
+  "metrics": {
+   "val_top1": 0.9957,
+   "own_field_test": {
+    "n": 0,
+    "top1": null,
+    "top3": null
+   },
+   "public_field_test": {
+    "n": 1650,
+    "top1": 0.9563636363636364,
+    "top3": 0.9927272727272727
+   },
+   "all_test": {
+    "n": 1875,
+    "top1": 0.9605333333333334,
+    "top3": 0.9936,
+    "macro_f1": 0.8566019230769231
+   }
+  },
+  "extra": {
+   "classes": 54,
+   "img_size": 224,
+   "sources": [
+    "coco_val_subset",
+    "cotton_leaf",
+    "mango_leaf",
+    "plantdoc",
+    "rice_leaf_4",
+    "sugarcane_leaf",
+    "wheat_leaf",
+    "wheat_rust_cgiar"
+   ],
+   "trained_on": "Kaggle T4, convnext_tiny 12 ep + 4 ep stage B"
+  },
+  "card": "reports/plant_disease_card.md"
+ }
+]

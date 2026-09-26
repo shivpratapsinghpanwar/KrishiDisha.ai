@@ -90,7 +90,21 @@ Latest tabular results (`models/metrics_tabular.json`, per-task model cards in `
 
 Plots are in `models/reports/`.
 
-For disease detection without training: `DISEASE_MODEL_BACKEND=hf` downloads a pretrained PlantVillage MobileNet from the Hugging Face Hub on first use. The original `plant_disease_model_1_latest.pt` from `CNN.py` is also supported (`legacy`).
+### Disease detection: KrishiDisha's own field model
+
+The served model is trained only on **field photographs** of crops Indian farmers grow (rice, sugarcane, mango, cotton, wheat, plus PlantDoc field images for tomato, potato, maize and others, and a "not a leaf" class). PlantVillage lab photos are excluded from training and from every number below.
+
+```bash
+python -m ml datasets download --all            # Kaggle/GitHub sources listed in ml/datasets/sources.yaml
+python -m ml build disease-manifest --resize 320 # unified manifest, dedup, per-source splits
+python -m ml train disease --manifest <DATA_ROOT>/disease_unified/manifest.csv --arch timm:efficientnet_b0 --ema --calibrate
+python -m ml eval disease --manifest ...        # per-crop report, coverage tiers, model card
+python -m ml export disease                     # ONNX for the app + models/registry.json
+```
+
+Current model (`models/reports/disease_eval.md`, ConvNeXt-Tiny trained on Kaggle, 13,858 images / 54 classes): **95.6 % top-1, 99.3 % top-3 on 1,650 held-out field photos**; rice, mango and sugarcane 98-100 % (tier A), cotton and wheat 97-99 % (tier B), PlantDoc crops 60-90 % (tier C, shown as experimental in the app); non-leaf photos rejected 99 % of the time. The app serves the ONNX export (`DISEASE_MODEL_BACKEND=auto`) and flags low-confidence or non-leaf uploads. Larger backbones train in `notebooks/kaggle_train_disease.ipynb`; the RTX 2050 handles `efficientnet_b0` locally.
+
+Fallbacks without a trained model: `DISEASE_MODEL_BACKEND=hf` downloads a pretrained PlantVillage MobileNet from the Hugging Face Hub (lab data, demo only); the original `plant_disease_model_1_latest.pt` from `CNN.py` is also supported (`legacy`).
 
 ## Tests
 
