@@ -203,8 +203,8 @@ third-party libraries keep their own licences (see `ml/datasets/sources.yaml` an
 
 ## Team
 
-Abhishek Chourasia, Goutam Mandloi and Shivpratap Singh Panwar, the founding team behind
-KrishiDisha, started the project at Medi-Caps University.
+Abhishek Chourasia, Goutam Mandloi and Shivpratap Singh Panwar - the founding team behind
+KrishiDisha.
 
 ## Citation
 
