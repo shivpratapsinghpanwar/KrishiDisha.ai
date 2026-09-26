@@ -108,13 +108,18 @@ def run_eval(ckpt_path: Path, manifest: Path, output: Path, batch_size: int = 64
     own = src == "own_photos"
     leaf = np.array([classes[t] != NOT_A_LEAF for t in yn])
     ood_thr = float(ckpt.get("ood_threshold", 0.0))
-    # OOD: how well does max-softmax separate not-a-leaf from leaves (AUROC via rank statistic)
+    # Not-a-leaf handling: the served decision is `is_plant` = (top class != Other___not_a_leaf and conf >= ood_thr).
+    # Report the rates of that decision directly; the max-softmax AUROC is kept only as a secondary signal.
+    not_leaf_idx = classes.index(NOT_A_LEAF) if NOT_A_LEAF in classes else -1
+    is_plant_pred = (pred != not_leaf_idx) & (conf >= ood_thr if ood_thr else True)
+    non_leaf_rejected = float((~is_plant_pred[~leaf]).mean()) if (~leaf).any() else None
+    leaf_accepted = float(is_plant_pred[leaf].mean()) if leaf.any() else None
     auroc = None
     if leaf.any() and (~leaf).any():
         pos, neg = conf[leaf], conf[~leaf]
         ranks = np.argsort(np.argsort(np.concatenate([pos, neg]))) + 1
         auroc = float((ranks[:len(pos)].sum() - len(pos) * (len(pos) + 1) / 2) / (len(pos) * len(neg)))
-    fpr95 = float((conf[~leaf] >= ood_thr).mean()) if (~leaf).any() and ood_thr else None
+    fpr95 = (1.0 - non_leaf_rejected) if non_leaf_rejected is not None else None
 
     per_source = {}
     for s in sorted(set(src)):
@@ -155,8 +160,8 @@ def run_eval(ckpt_path: Path, manifest: Path, output: Path, batch_size: int = 64
                          "top3": _top3(probs, yn, np.ones_like(field)), "macro_f1": macro_f1},
         },
         "ece": round(expected_calibration_error(probs, yn), 4),
-        "ood": {"auroc": auroc, "threshold": ood_thr, "fpr_at_threshold": fpr95,
-                "n_not_leaf": int((~leaf).sum())},
+        "ood": {"non_leaf_rejected": non_leaf_rejected, "leaf_accepted": leaf_accepted, "auroc_max_softmax": auroc,
+                "threshold": ood_thr, "fpr_at_threshold": fpr95, "n_not_leaf": int((~leaf).sum())},
         "latency_ms_per_image": round(latency_ms, 2), "device": str(device),
         "per_source": per_source, "per_crop": per_crop, "per_class": per_class, "crop_tiers": tiers,
     }
@@ -184,8 +189,8 @@ def run_eval(ckpt_path: Path, manifest: Path, output: Path, batch_size: int = 64
              f"| **KrishiDisha own field test** | {h['own_field_test']['n']} | {pct(h['own_field_test']['top1'])} | {pct(h['own_field_test']['top3'])} |",
              f"| Public field test (all sources) | {h['public_field_test']['n']} | {pct(h['public_field_test']['top1'])} | {pct(h['public_field_test']['top3'])} |",
              f"| All test incl. not-a-leaf | {h['all_test']['n']} | {pct(h['all_test']['top1'])} | {pct(h['all_test']['top3'])} |",
-             "", f"Macro-F1 {pct(macro_f1)}; ECE {metrics['ece']}; not-a-leaf AUROC {pct(auroc)}"
-             + (f", leaf-pass threshold {ood_thr:.3f} lets {pct(fpr95)} of non-leaves through" if fpr95 is not None else ""),
+             "", f"Macro-F1 {pct(macro_f1)}; ECE {metrics['ece']}; non-leaf photos rejected {pct(non_leaf_rejected)}, "
+             f"real leaves accepted {pct(leaf_accepted)} (max-softmax AUROC {pct(auroc)}, secondary)",
              "", "## Per source", "", "| Source | Images | Top-1 | Top-3 |", "|---|---|---|---|"]
     lines += [f"| {s} | {v['n']} | {pct(v['top1'])} | {pct(v['top3'])} |" for s, v in per_source.items()]
     lines += ["", "## Per crop (field test)", "", "| Crop | Tier | Train field imgs | Test imgs | Top-1 | Top-3 | Classes |", "|---|---|---|---|---|---|---|"]
