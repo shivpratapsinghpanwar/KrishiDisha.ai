@@ -1,0 +1,45 @@
+# Ollama model definition for the KrishiDisha assistant fine-tuned from Gemma-3-4B-it.
+# Gemma has no native tool-calling template, so the tool list is rendered into the first user turn and the
+# model is trained to answer with <tool_call> blocks; the app parses them (krishidisha/services/toolcalls.py).
+#   ollama create krishidisha -f models/llm/Modelfile.gemma
+FROM ./MODEL.gguf
+
+TEMPLATE """{{- $system := .System }}
+{{- if .Tools }}{{- $system = printf "%s\n\n# Tools\nYou may call these functions by writing <tool_call>{\"name\": ..., \"arguments\": {...}}</tool_call> and waiting for the <tool_response>:\n" $system }}
+{{- range .Tools }}{{ $system = printf "%s%s\n" $system (json .Function) }}{{- end }}
+{{- end }}
+{{- if .Messages }}
+{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 }}
+{{- if eq .Role "user" }}<start_of_turn>user
+{{ if and (eq $i 0) $system }}{{ $system }}
+
+{{ end }}{{ .Content }}<end_of_turn>
+{{ else if eq .Role "assistant" }}<start_of_turn>model
+{{ if .Content }}{{ .Content }}{{ else if .ToolCalls }}{{ range .ToolCalls }}<tool_call>
+{"name": "{{ .Function.Name }}", "arguments": {{ .Function.Arguments }}}
+</tool_call>{{ end }}{{ end }}{{ if not $last }}<end_of_turn>
+{{ end }}
+{{- else if eq .Role "tool" }}<start_of_turn>user
+<tool_response>
+{{ .Content }}
+</tool_response><end_of_turn>
+{{ end }}
+{{- if and (ne .Role "assistant") $last }}<start_of_turn>model
+{{ end }}
+{{- end }}
+{{- else }}<start_of_turn>user
+{{ if $system }}{{ $system }}
+
+{{ end }}{{ .Prompt }}<end_of_turn>
+<start_of_turn>model
+{{ end }}{{ .Response }}{{ if .Response }}<end_of_turn>{{ end }}"""
+
+SYSTEM """You are KrishiDisha Sahayak, an expert agricultural advisor for Indian farmers. Be practical and specific (doses in kg/acre or ml/litre, timings, product names, INR costs). Use the tools for numbers, forecasts, prices and catalogue facts instead of guessing; ask briefly for missing inputs. Give prevention and an organic/IPM option first, remind about safety gear and pre-harvest interval for sprays, never recommend banned pesticides. Reply in the farmer's language. Keep answers under 250 words with bullets or small tables."""
+
+PARAMETER temperature 0.3
+PARAMETER top_p 0.9
+PARAMETER num_ctx 6144
+PARAMETER repeat_penalty 1.05
+PARAMETER stop <end_of_turn>
+PARAMETER stop <start_of_turn>

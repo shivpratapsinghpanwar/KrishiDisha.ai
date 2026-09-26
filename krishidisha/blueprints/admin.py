@@ -5,12 +5,13 @@ import re
 from collections import Counter
 from datetime import datetime, timedelta
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
-from ..models import ORDER_STATUSES, Admin, ChatMessage, ChatSession, Farmer, FarmerActivity, Order, Product
+from ..models import (FEEDBACK_KINDS, ORDER_STATUSES, UNSURE, Admin, ChatMessage, ChatSession, Farmer,
+                      FarmerActivity, Feedback, LabelTask, Order, Product)
 from ..utils import admin_required
 from .auth import INDIAN_STATES, LANGUAGES
 from .marketplace import CATEGORIES
@@ -35,6 +36,9 @@ def dashboard():
         .order_by(FarmerActivity.timestamp.desc()).limit(10).all()
     recent_orders = Order.query.order_by(Order.created_at.desc()).limit(6).all()
     chats = ChatMessage.query.filter(ChatMessage.created_at >= since, ChatMessage.role == "user").count()
+    label_queued = LabelTask.query.filter(LabelTask.status.in_(["queued", "needs_second"])).count()
+    label_disagreements = LabelTask.query.filter_by(status="disagreement").count()
+    feedback_pending = Feedback.query.filter_by(status="pending").count()
     low_stock = Product.query.filter(Product.is_active.is_(True), Product.stock <= 10).order_by(Product.stock).limit(8).all()
 
     # registrations per day for the last 14 days (for a small chart)
@@ -45,7 +49,9 @@ def dashboard():
     return render_template("admin/dashboard.html", farmers_total=farmers_total, pending=pending,
                            orders_total=orders_total, revenue=revenue, open_orders=open_orders,
                            activity_counts=dict(activity_counts), recent_activities=recent_activities,
-                           recent_orders=recent_orders, chats=chats, low_stock=low_stock, signups=signups)
+                           recent_orders=recent_orders, chats=chats, low_stock=low_stock, signups=signups,
+                           label_queued=label_queued, label_disagreements=label_disagreements,
+                           feedback_pending=feedback_pending)
 
 
 # -------------------------------------------------------------------- farmers
@@ -371,3 +377,196 @@ def create_admin():
             return redirect(url_for("admin.dashboard"))
     admins = Admin.query.order_by(Admin.created_at).all()
     return render_template("admin/create_admin.html", admins=admins)
+
+
+# --------------------------------------------------------------- labelling
+def _admin_name() -> str:
+    """Identify the labeller. Falls back to the admin id so two admins never share a name."""
+    admin = db.session.get(Admin, session.get("admin_id")) if session.get("admin_id") else None
+    return admin.username if admin else f"admin:{session.get('admin_id', 'unknown')}"
+
+
+def _label_counts() -> dict:
+    rows = db.session.query(LabelTask.status, db.func.count(LabelTask.id)).group_by(LabelTask.status).all()
+    counts = {status: n for status, n in rows}
+    counts["open"] = counts.get("queued", 0) + counts.get("needs_second", 0)
+    return counts
+
+
+def _skipped() -> list[int]:
+    return session.get("label_skipped", [])
+
+
+@bp.route("/admin/label", methods=["GET", "POST"])
+@admin_required
+def label_queue():
+    from .feedback import canonical_labels, grouped_labels, image_url, not_a_leaf_label
+
+    me = _admin_name()
+    if request.method == "POST":
+        action = (request.form.get("action") or "label").strip()
+        task = db.session.get(LabelTask, request.form.get("task_id", type=int))
+        if task is None:
+            flash("That labelling task no longer exists.", "warning")
+        elif action == "skip":
+            session["label_skipped"] = (_skipped() + [task.id])[-100:]
+        elif action == "discard":
+            task.status = "discarded"
+            task.notes = ((task.notes or "") + f" discarded by {me};").strip()
+            db.session.commit()
+            flash("Photo discarded.", "info")
+        else:
+            label = {"not_leaf": not_a_leaf_label(), "unsure": UNSURE}.get(action) or \
+                (request.form.get("label") or "").strip()
+            if not label:
+                flash("Choose a class first.", "warning")
+            elif task.labeller_1 == me or task.labeller_2 == me:
+                flash("You already labelled that photo - it needs a second labeller.", "warning")
+            else:
+                status = task.record_label(label, me)
+                db.session.commit()
+                flash({"needs_second": "Saved - waiting for a second labeller.",
+                       "labelled": "Agreed! Photo is ready for export.",
+                       "disagreement": "Labels disagree - sent to the disagreement queue.",
+                       "discarded": "Both labellers were unsure - discarded."}.get(status, "Saved."), "success")
+        return redirect(url_for("admin.label_queue", n=request.form.get("n", 1)))
+
+    n = min(max(request.args.get("n", 1, type=int) or 1, 1), 12)
+    query = LabelTask.query.filter(LabelTask.status.in_(["queued", "needs_second"])) \
+        .filter(or_(LabelTask.labeller_1.is_(None), LabelTask.labeller_1 != me)) \
+        .filter(or_(LabelTask.labeller_2.is_(None), LabelTask.labeller_2 != me))
+    skipped = _skipped()
+    if skipped:
+        query = query.filter(~LabelTask.id.in_(skipped))
+    tasks = query.order_by(LabelTask.status.asc(), LabelTask.created_at.asc()).limit(n).all()
+    labels = canonical_labels()
+    return render_template("admin/label.html", tasks=tasks, labels=labels, grouped=grouped_labels(labels),
+                           counts=_label_counts(), n=n, me=me, image_url=image_url,
+                           not_a_leaf=not_a_leaf_label(), skipped=len(skipped))
+
+
+@bp.route("/admin/label/reset_skips", methods=["POST"])
+@admin_required
+def label_reset_skips():
+    session.pop("label_skipped", None)
+    flash("Skipped photos are back in the queue.", "info")
+    return redirect(url_for("admin.label_queue"))
+
+
+@bp.route("/admin/label/disagreements", methods=["GET", "POST"])
+@admin_required
+def label_disagreements():
+    from .feedback import canonical_labels, grouped_labels, image_url
+
+    if request.method == "POST":
+        task = db.session.get(LabelTask, request.form.get("task_id", type=int))
+        if task is None:
+            flash("That labelling task no longer exists.", "warning")
+        else:
+            task.resolve(request.form.get("final_label", ""), _admin_name())
+            db.session.commit()
+            flash(f"Task #{task.id} resolved as {task.final_label or 'discarded'}.", "success")
+        return redirect(url_for("admin.label_disagreements"))
+
+    tasks = LabelTask.query.filter_by(status="disagreement").order_by(LabelTask.updated_at.asc()).limit(100).all()
+    labels = canonical_labels()
+    return render_template("admin/label_disagreements.html", tasks=tasks, labels=labels,
+                           grouped=grouped_labels(labels), counts=_label_counts(), image_url=image_url)
+
+
+@bp.route("/admin/label/upload", methods=["GET", "POST"])
+@admin_required
+def label_upload():
+    from .feedback import ALLOWED_EXT, canonical_labels, create_label_task, grouped_labels, store_bytes
+
+    if request.method == "POST":
+        me = _admin_name()
+        label = (request.form.get("label") or "").strip()
+        trusted = request.form.get("trust_label") == "on" and label and label != UNSURE
+        saved, rejected = 0, 0
+        for file in request.files.getlist("images"):
+            if not file or not file.filename:
+                continue
+            ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+            data = file.read()
+            if ext not in ALLOWED_EXT or not data:
+                rejected += 1
+                continue
+            rel = store_bytes(data, "drive", ext)
+            task = create_label_task(rel, "drive", model_label=label or None, consent=True, commit=False,
+                                     notes=f"collection drive upload by {me}")
+            if trusted:
+                task.label_1 = task.label_2 = task.final_label = label
+                task.labeller_1 = task.labeller_2 = me
+                task.status = "labelled"
+            saved += 1
+        db.session.commit()
+        flash(f"{saved} photo(s) added{' as labelled ' + label if trusted else ' to the labelling queue'}."
+              + (f" {rejected} file(s) rejected." if rejected else ""), "success" if saved else "warning")
+        return redirect(url_for("admin.label_upload"))
+
+    labels = canonical_labels()
+    return render_template("admin/label_upload.html", labels=labels, grouped=grouped_labels(labels),
+                           counts=_label_counts())
+
+
+@bp.route("/admin/label/export", methods=["POST"])
+@admin_required
+def label_export():
+    from ml.datasets.export_feedback import run_export
+
+    try:
+        summary = run_export()
+    except Exception as exc:  # noqa: BLE001 - surface the reason instead of a 500
+        db.session.rollback()
+        flash(f"Export failed: {exc}", "danger")
+        return redirect(request.referrer or url_for("admin.label_queue"))
+    if request.is_json or request.args.get("format") == "json":
+        return jsonify(summary)
+    flash(f"Exported {summary['exported']} photo(s) to {summary['out_dir']} "
+          f"({summary['chat_turns']} rated chat turns written).", "success")
+    return redirect(request.referrer or url_for("admin.label_queue"))
+
+
+# ---------------------------------------------------------------- feedback
+@bp.route("/admin/feedback", methods=["GET", "POST"])
+@admin_required
+def feedback_review():
+    from .feedback import create_label_task, image_url
+
+    if request.method == "POST":
+        row = db.session.get(Feedback, request.form.get("feedback_id", type=int))
+        action = request.form.get("action", "")
+        if row is None or action not in ("accept", "reject"):
+            flash("Nothing to do.", "warning")
+            return redirect(request.referrer or url_for("admin.feedback_review"))
+        me = _admin_name()
+        row.status = "accepted" if action == "accept" else "rejected"
+        row.reviewer, row.reviewed_at = me, datetime.utcnow()
+        if action == "accept" and row.kind == "diagnosis" and row.corrected_label and \
+                row.corrected_label != UNSURE and row.image_path:
+            task = LabelTask.query.filter_by(image_path=row.image_path).first()
+            if task is None:
+                task = create_label_task(row.image_path, "app_upload", model_label=row.model_label,
+                                         model_confidence=row.model_confidence, consent=bool(row.consent),
+                                         commit=False, notes=f"from feedback #{row.id}")
+            task.final_label = row.corrected_label
+            task.status = "labelled"
+            task.label_1 = task.label_1 or row.corrected_label
+            task.labeller_1 = task.labeller_1 or "farmer"
+            task.label_2, task.labeller_2 = row.corrected_label, me
+        db.session.commit()
+        flash(f"Feedback #{row.id} {row.status}.", "success")
+        return redirect(request.referrer or url_for("admin.feedback_review"))
+
+    kind = request.args.get("kind", "")
+    status = request.args.get("status", "")
+    query = Feedback.query
+    if kind:
+        query = query.filter_by(kind=kind)
+    if status:
+        query = query.filter_by(status=status)
+    rows = query.order_by(Feedback.created_at.desc()).limit(300).all()
+    counts = dict(db.session.query(Feedback.status, db.func.count(Feedback.id)).group_by(Feedback.status).all())
+    return render_template("admin/feedback.html", rows=rows, kind=kind, status=status, kinds=FEEDBACK_KINDS,
+                           counts=counts, image_url=image_url)

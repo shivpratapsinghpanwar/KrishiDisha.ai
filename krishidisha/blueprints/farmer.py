@@ -15,7 +15,6 @@ from werkzeug.utils import secure_filename
 from ..extensions import db
 from ..models import FarmerActivity, Order
 from ..services import reports
-from ..services.knowledge import fertilizer_calculator
 from ..services.ml import FERT_CROP_TYPES, SOIL_TYPES
 from ..utils import current_farmer, farmer_required, form_float, log_activity
 
@@ -93,12 +92,9 @@ def fertilizer_recommendation():
             }
             if inputs["soil_type"] not in SOIL_TYPES or inputs["crop_type"] not in FERT_CROP_TYPES:
                 raise ValueError("unknown soil or crop type")
-            result = current_app.ml.recommend_fertilizer(**inputs)
             area = request.form.get("area")
-            if area:
-                crop_key = {"Paddy": "rice", "Ground Nuts": "groundnut", "Oil seeds": "mustard", "Pulses": "chickpea"} \
-                    .get(inputs["crop_type"], inputs["crop_type"].lower())
-                result["calculator"] = fertilizer_calculator(crop_key, float(area), request.form.get("unit", "acre"))
+            result = current_app.ml.recommend_fertilizer(
+                **inputs, area=float(area) if area else None, unit=request.form.get("unit", "acre"))
             session["fert_inputs"] = inputs
             session["fert_result"] = result
             log_activity("Fertilizer Recommendation", inputs, {"fertilizer": result["recommended_fertilizer"],
@@ -136,9 +132,10 @@ def crop_yield():
             inputs = {
                 "crop": request.form["crop"], "crop_year": int(request.form["crop_year"]),
                 "season": request.form["season"], "state": request.form["state"],
-                "area": form_float("area"), "production": form_float("production"),
-                "annual_rainfall": form_float("annual_rainfall"), "fertilizer": form_float("fertilizer"),
-                "pesticide": form_float("pesticide"),
+                "area": form_float("area"), "annual_rainfall": form_float("annual_rainfall"),
+                # optional: blank fields fall back to State x Crop per-hectare medians
+                "fertilizer": form_float("fertilizer") if request.form.get("fertilizer") else None,
+                "pesticide": form_float("pesticide") if request.form.get("pesticide") else None,
             }
             result = current_app.ml.predict_yield(**inputs)
             session["yield_inputs"] = inputs
@@ -204,13 +201,17 @@ def submit():
         flash(result.get("message", "Disease model unavailable."), "danger")
         return redirect(url_for("farmer.crop_detection"))
     top = result["top"]
-    info = current_app.kb.disease_by_label(top["label"])
+    is_plant = result.get("is_plant", True)
+    info = current_app.kb.disease_by_label(top["label"]) if is_plant else None
     from .marketplace import search_products
 
-    products = search_products(disease=top["label"], crop=top["crop"], limit=4)
+    # never recommend products for a photo the model does not recognise as a leaf
+    products = search_products(disease=top["label"], crop=top["crop"], limit=4) if is_plant and not top["is_healthy"] else []
     session["disease_result"] = {"result": result, "info": info, "image_path": path, "image_url": url,
                                  "product_ids": [p.id for p in products]}
-    log_activity("Crop Disease Detection", {"image": url}, {"disease": top["name"], "confidence": top["confidence"]})
+    log_activity("Crop Disease Detection", {"image": url},
+                 {"disease": top["name"], "confidence": top["confidence"], "uncertain": result.get("uncertain"),
+                  "is_plant": is_plant, "model": result.get("model")})
     return render_template("submit.html", result=result, top=top, info=info, image_url=url, products=products)
 
 

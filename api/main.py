@@ -99,13 +99,9 @@ def fertilizer_recommend(body: FertilizerRecommendationInput):
         raise HTTPException(400, f"soil_type must be one of {SOIL_TYPES}")
     if body.crop_type not in FERT_CROP_TYPES:
         raise HTTPException(400, f"crop_type must be one of {FERT_CROP_TYPES}")
-    result = ml.recommend_fertilizer(temperature=body.temperature, humidity=body.humidity, moisture=body.moisture,
-                                     soil_type=body.soil_type, crop_type=body.crop_type, N=body.N, K=body.K, P=body.P)
-    if body.area:
-        crop_key = {"Paddy": "rice", "Ground Nuts": "groundnut", "Oil seeds": "mustard", "Pulses": "chickpea"} \
-            .get(body.crop_type, body.crop_type.lower())
-        result["calculator"] = fertilizer_calculator(crop_key, body.area, body.unit)
-    return result
+    return ml.recommend_fertilizer(temperature=body.temperature, humidity=body.humidity, moisture=body.moisture,
+                                   soil_type=body.soil_type, crop_type=body.crop_type, N=body.N, K=body.K, P=body.P,
+                                   area=body.area, unit=body.unit)
 
 
 @app.post("/fertilizer/calculator", tags=["Models"])

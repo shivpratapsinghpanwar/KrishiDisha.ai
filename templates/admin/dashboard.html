@@ -44,6 +44,26 @@
   </div>
 </div>
 
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-4">
+    <a class="text-decoration-none text-reset" href="{{ url_for('admin.label_queue') }}">
+      <div class="kd-stat h-100" style="border-left-color:#8b5a2b;">
+        <div class="value">{{ label_queued }}</div>
+        <div class="label"><i class="bi bi-tags me-1"></i>Photos waiting for a label{% if label_disagreements %}
+          <span class="badge text-bg-danger ms-1">{{ label_disagreements }} disagreement(s)</span>{% endif %}</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-xl-4">
+    <a class="text-decoration-none text-reset" href="{{ url_for('admin.feedback_review', status='pending') }}">
+      <div class="kd-stat h-100" style="border-left-color:#f4b400;">
+        <div class="value">{{ feedback_pending }}</div>
+        <div class="label"><i class="bi bi-chat-square-heart me-1"></i>Feedback awaiting review</div>
+      </div>
+    </a>
+  </div>
+</div>
+
 <div class="kd-card p-3 mb-4">
   <h6 class="fw-bold mb-3"><i class="bi bi-hourglass-split me-1 text-warning"></i>Pending verification</h6>
   {% if pending %}

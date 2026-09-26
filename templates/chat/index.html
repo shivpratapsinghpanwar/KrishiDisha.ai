@@ -48,11 +48,13 @@
               <div class="kd-msg kd-msg-user">{{ m.content }}</div>
             {% else %}
               <div class="kd-msg kd-msg-bot" data-md="{{ m.content }}"></div>
-              <div class="kd-msg-meta">
+              <div class="kd-msg-meta" data-session="{{ chat.key }}" data-index="{{ loop.index0 }}">
                 {{ m.provider or '' }}
                 {% if m.tools_used %} · {{ m.tools_used | join(', ') }}{% endif %}
                 <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-copy-btn" aria-label="Copy reply"><i class="bi bi-clipboard"></i></button>
                 <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-speak-btn" aria-label="Read reply aloud"><i class="bi bi-volume-up"></i></button>
+                <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-rate-btn" data-rating="1" aria-label="This reply was helpful"><i class="bi bi-hand-thumbs-up"></i></button>
+                <button type="button" class="btn btn-sm btn-link p-0 ms-1 kd-rate-btn" data-rating="-1" aria-label="This reply was not helpful"><i class="bi bi-hand-thumbs-down"></i></button>
               </div>
             {% endif %}
           {% endfor %}
@@ -146,7 +148,7 @@
     return div;
   }
 
-  function addBotMessage(markdown, meta, detection) {
+  function addBotMessage(markdown, meta, detection, messageIndex) {
     var wrap = document.createElement('div');
     wrap.className = 'kd-msg kd-msg-bot';
     var html = window.KDrenderMarkdown ? window.KDrenderMarkdown(markdown) : escapeHtml(markdown);
@@ -161,10 +163,61 @@
     metaDiv.className = 'kd-msg-meta';
     metaDiv.innerHTML = escapeHtml(meta || '') +
       ' <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-copy-btn" aria-label="Copy reply"><i class="bi bi-clipboard"></i></button>' +
-      ' <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-speak-btn" aria-label="Read reply aloud"><i class="bi bi-volume-up"></i></button>';
+      ' <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-speak-btn" aria-label="Read reply aloud"><i class="bi bi-volume-up"></i></button>' +
+      ' <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-rate-btn" data-rating="1" aria-label="This reply was helpful"><i class="bi bi-hand-thumbs-up"></i></button>' +
+      ' <button type="button" class="btn btn-sm btn-link p-0 ms-1 kd-rate-btn" data-rating="-1" aria-label="This reply was not helpful"><i class="bi bi-hand-thumbs-down"></i></button>';
     metaDiv.dataset.raw = markdown;
+    if (chatKey) metaDiv.dataset.session = chatKey;
+    if (messageIndex !== undefined && messageIndex !== null) metaDiv.dataset.index = messageIndex;
     messagesEl.appendChild(metaDiv);
     scrollToBottom();
+  }
+
+  // ------------------------------------------------------------- feedback
+  function sendFeedback(meta, rating, comment) {
+    var key = meta.dataset.session || chatKey;
+    if (!key) return Promise.resolve();
+    var ref = key + (meta.dataset.index !== undefined ? '#' + meta.dataset.index : '');
+    return fetch('/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        kind: 'chat', ref_id: ref, rating: rating, comment: comment || null,
+        language: languageSelect ? languageSelect.value : defaultLanguage
+      })
+    });
+  }
+
+  function markRated(meta, rating) {
+    meta.querySelectorAll('.kd-rate-btn').forEach(function (b) { b.disabled = true; });
+    var note = document.createElement('span');
+    note.className = 'ms-2 text-success small';
+    note.textContent = rating > 0 ? 'Thanks for the feedback!' : 'Thanks — we will look into it.';
+    meta.appendChild(note);
+  }
+
+  function showCommentBox(meta) {
+    if (meta.querySelector('.kd-feedback-comment')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'kd-feedback-comment d-flex gap-2 mt-1';
+    wrap.innerHTML = '<input type="text" class="form-control form-control-sm" maxlength="300" ' +
+      'placeholder="What was wrong? (optional)" aria-label="What was wrong with this reply?">' +
+      '<button type="button" class="btn btn-sm btn-outline-success kd-feedback-send">Send</button>';
+    meta.appendChild(wrap);
+    var box = wrap.querySelector('input');
+    var sent = false;
+    function done() {
+      if (sent) return;
+      sent = true;
+      sendFeedback(meta, -1, box.value.trim());
+      wrap.remove();
+      markRated(meta, -1);
+    }
+    box.focus();
+    wrap.querySelector('.kd-feedback-send').addEventListener('click', done);
+    box.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); done(); } });
+    // never lose the rating if the farmer walks away from the box
+    box.addEventListener('blur', function () { setTimeout(done, 250); });
   }
 
   function updateUrl(key) {
@@ -210,7 +263,7 @@
       updateUrl(data.session_key);
       var meta = (data.provider || '');
       if (data.tools_used && data.tools_used.length) meta += ' · ' + data.tools_used.join(', ');
-      addBotMessage(data.reply, meta, data.detection);
+      addBotMessage(data.reply, meta, data.detection, data.message_index);
     }).catch(function () {
       typing.remove();
       addBotMessage('Network error. Please try again.', '');
@@ -250,6 +303,20 @@
   });
 
   messagesEl.addEventListener('click', function (ev) {
+    var rateBtn = ev.target.closest('.kd-rate-btn');
+    if (rateBtn) {
+      var rMeta = rateBtn.closest('.kd-msg-meta');
+      var rating = parseInt(rateBtn.dataset.rating, 10);
+      if (rMeta) {
+        if (rating < 0) {
+          showCommentBox(rMeta);
+        } else {
+          sendFeedback(rMeta, 1, null);
+          markRated(rMeta, 1);
+        }
+      }
+      return;
+    }
     var copyBtn = ev.target.closest('.kd-copy-btn');
     if (copyBtn) {
       var metaDiv = copyBtn.closest('.kd-msg-meta');

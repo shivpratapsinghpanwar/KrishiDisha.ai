@@ -73,10 +73,11 @@ def _register_blueprints(app: Flask) -> None:
     from .blueprints.auth import bp as auth_bp
     from .blueprints.chat import bp as chat_bp
     from .blueprints.farmer import bp as farmer_bp
+    from .blueprints.feedback import bp as feedback_bp
     from .blueprints.main import bp as main_bp
     from .blueprints.marketplace import bp as market_bp
 
-    for bp in (main_bp, auth_bp, farmer_bp, market_bp, admin_bp, chat_bp, api_bp):
+    for bp in (main_bp, auth_bp, farmer_bp, market_bp, admin_bp, chat_bp, api_bp, feedback_bp):
         app.register_blueprint(bp)
 
 

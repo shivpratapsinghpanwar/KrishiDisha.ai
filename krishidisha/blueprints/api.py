@@ -78,11 +78,9 @@ def fertilizer_recommend():
         raise ValueError(f"soil_type must be one of {SOIL_TYPES}")
     if crop not in FERT_CROP_TYPES:
         raise ValueError(f"crop_type must be one of {FERT_CROP_TYPES}")
-    result = current_app.ml.recommend_fertilizer(soil_type=soil, crop_type=crop, **nums)
-    if data.get("area"):
-        crop_key = {"Paddy": "rice", "Ground Nuts": "groundnut", "Oil seeds": "mustard", "Pulses": "chickpea"} \
-            .get(crop, crop.lower())
-        result["calculator"] = fertilizer_calculator(crop_key, float(data["area"]), data.get("unit", "acre"))
+    result = current_app.ml.recommend_fertilizer(
+        soil_type=soil, crop_type=crop, **nums,
+        area=float(data["area"]) if data.get("area") else None, unit=data.get("unit", "acre"))
     log_activity("Fertilizer Recommendation", {**nums, "soil_type": soil, "crop_type": crop},
                  {"fertilizer": result["recommended_fertilizer"], "confidence": result["confidence"]})
     return jsonify(result)
@@ -104,7 +102,11 @@ def fert_calc():
 @bp.route("/yield/predict", methods=["POST"])
 def yield_predict():
     data = _payload()
-    nums = _floats(data, ("area", "production", "annual_rainfall", "fertilizer", "pesticide"))
+    nums = _floats(data, ("area", "annual_rainfall"))
+    # fertilizer/pesticide are optional: omitted values fall back to regional medians.
+    # "production" is accepted and ignored - it used to leak the target.
+    for k in ("fertilizer", "pesticide"):
+        nums[k] = float(data[k]) if data.get(k) not in (None, "") else None
     for k in ("crop", "season", "state", "crop_year"):
         if not data.get(k):
             raise ValueError(f"{k} is required")
@@ -129,11 +131,13 @@ def disease_detect():
     if not result.get("available"):
         return jsonify(result), 503
     top = result["top"]
-    result["info"] = current_app.kb.disease_by_label(top["label"])
+    is_plant = result.get("is_plant", True)
+    result["info"] = current_app.kb.disease_by_label(top["label"]) if is_plant else None
     from .marketplace import search_products
 
     result["products"] = [dict(p.to_dict(), url=f"/marketplace/product/{p.slug}")
-                          for p in search_products(disease=top["label"], crop=top["crop"], limit=4)]
+                          for p in search_products(disease=top["label"], crop=top["crop"], limit=4)] \
+        if is_plant and not top["is_healthy"] else []
     log_activity("Crop Disease Detection", {"image": file.filename}, {"disease": top["name"], "confidence": top["confidence"]})
     return jsonify(result)
 

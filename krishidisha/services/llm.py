@@ -54,7 +54,12 @@ class AgriAssistant:
         self.provider = self._choose_provider()
         self._anthropic = None
         self._openai = None
-        log.info("Agri assistant provider: %s", self.provider)
+        from .lang import LanguageLayer
+
+        # Translation layer for languages the local model / rules bot cannot handle natively. Claude handles
+        # Indic languages itself, so the layer only acts for the openai (local) and rules providers.
+        self.lang = LanguageLayer(getattr(config, "TRANSLATION_BACKEND", None))
+        log.info("Agri assistant provider: %s (translation: %s)", self.provider, self.lang.translator.name)
 
     # ------------------------------------------------------------ provider
     def _choose_provider(self) -> str:
@@ -94,6 +99,23 @@ class AgriAssistant:
         history = [h for h in (history or []) if h.get("role") in {"user", "assistant"} and h.get("content")]
         history = history[-self.cfg.CHAT_HISTORY_TURNS:]
 
+        # 0. Language: trust a confident script detection over the UI setting; translate for non-native
+        #    languages when the provider cannot handle them itself.
+        language, _conf = self.lang.resolve(message, language)
+        translate = self.provider != "anthropic" and self.lang.active and language not in self.lang.native
+        original_message = message
+        if translate:
+            message, _ = self.lang.inbound(message, language)
+
+        def finish(result: dict[str, Any]) -> dict[str, Any]:
+            result = self._guard(result)
+            result["language"] = language
+            if translate:
+                result["reply_en"] = result.get("reply", "")
+                result["reply"] = self.lang.outbound(result.get("reply", ""), language)
+                result["translated"] = True
+            return result
+
         # 1. Optional image -> run disease model first (works for every provider)
         vision_note = None
         detection = None
@@ -104,13 +126,25 @@ class AgriAssistant:
                 detection = self.detector.predict(Image.open(io.BytesIO(image_bytes)))
                 if detection.get("available"):
                     top = detection["top"]
-                    info = self.kb.disease_by_label(top["label"]) or {}
-                    vision_note = (
-                        f"[Leaf image analysed by the KrishiDisha disease model ({detection['model']}): "
-                        f"top prediction {top['name']} with {top['confidence'] * 100:.1f}% confidence; "
-                        f"other candidates: {', '.join(p['name'] + ' ' + str(round(p['confidence'] * 100, 1)) + '%' for p in detection['predictions'][1:])}. "
-                        f"Catalogue guidance: {info.get('description', '')[:600]} Steps: {info.get('prevention', '')[:600]}]"
-                    )
+                    if not detection.get("is_plant", True):
+                        vision_note = (
+                            f"[The KrishiDisha disease model could not recognise a plant leaf in the photo "
+                            f"(top guess {top['name']} at {top['confidence'] * 100:.0f}%). Tell the farmer to retake it: one leaf "
+                            f"filling the frame, daylight, plain background. Do not diagnose from this photo.]"
+                        )
+                    else:
+                        info = self.kb.disease_by_label(top["label"]) or {}
+                        caveat = ""
+                        if detection.get("uncertain"):
+                            caveat = " The model is NOT confident: present this as a possibility, ask about symptoms, and advise confirming with a KVK."
+                        elif detection.get("crop_tier") == "C":
+                            caveat = " This crop has limited training data (experimental); advise confirming with an expert."
+                        vision_note = (
+                            f"[Leaf image analysed by the KrishiDisha disease model ({detection['model']}): "
+                            f"top prediction {top['name']} with {top['confidence'] * 100:.1f}% confidence; "
+                            f"other candidates: {', '.join(p['name'] + ' ' + str(round(p['confidence'] * 100, 1)) + '%' for p in detection['predictions'][1:])}.{caveat} "
+                            f"Catalogue guidance: {info.get('description', '')[:600]} Steps: {info.get('prevention', '')[:600]}]"
+                        )
             except Exception as exc:  # noqa: BLE001
                 log.warning("Image analysis failed: %s", exc)
 
@@ -132,17 +166,32 @@ class AgriAssistant:
 
         try:
             if self.provider == "anthropic":
-                return self._chat_anthropic(user_turn, history, image_bytes, image_mime, passages, detection)
+                return finish(self._chat_anthropic(user_turn, history, image_bytes, image_mime, passages, detection))
             if self.provider == "openai":
-                return self._chat_openai(user_turn, history, image_bytes, image_mime, passages, detection)
+                return finish(self._chat_openai(user_turn, history, image_bytes, image_mime, passages, detection))
         except Exception as exc:  # noqa: BLE001
             log.exception("LLM provider %s failed; using offline fallback", self.provider)
             result = self.rules.reply(message, language=language, detection=detection, farmer_context=farmer_context)
             result["provider"] = "rules"
             result["fallback_reason"] = str(exc)[:300]
-            return result
+            return finish(result)
         result = self.rules.reply(message, language=language, detection=detection, farmer_context=farmer_context)
         result["provider"] = "rules"
+        return finish(result)
+
+    @staticmethod
+    def _guard(result: dict[str, Any]) -> dict[str, Any]:
+        """Pesticide safety post-check applied to every provider's reply."""
+        from .safety import check_reply
+
+        try:
+            check = check_reply(result.get("reply", ""))
+        except Exception as exc:  # noqa: BLE001 - never block a reply on the guard itself
+            log.warning("safety check failed: %s", exc)
+            return result
+        if not check["ok"]:
+            result["reply"] = check["annotated"]
+            result["safety_flags"] = check["flags"]
         return result
 
     # ------------------------------------------------------------ anthropic
@@ -213,14 +262,27 @@ class AgriAssistant:
                 {"type": "image_url", "image_url": {"url": f"data:{image_mime};base64,{b64}"}}]})
         else:
             messages.append({"role": "user", "content": user_turn})
+        from .toolcalls import extract_tool_calls, strip_tool_calls
+
         tool_defs = [t.openai() for t in self.tools]
+        if getattr(self.cfg, "LLM_COMPACT_TOOLS", False):
+            # Local 3-4B models: a 1.8k-token tool list costs seconds of prompt processing; keep one sentence each.
+            for d in tool_defs:
+                desc = d["function"].get("description", "")
+                d["function"]["description"] = re.split(r"(?<=[.!?])\s+", desc, maxsplit=1)[0][:160]
+        known = {t.name for t in self.tools}
         tools_used: list[str] = []
         model = self.cfg.OPENAI_MODEL
         msg = None
+        text = ""
         for _ in range(self.cfg.LLM_MAX_TOOL_ROUNDS + 1):
             try:
-                resp = client.chat.completions.create(model=model, messages=messages, tools=tool_defs,
-                                                      tool_choice="auto", temperature=0.3)
+                kwargs: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.3}
+                if tool_defs:
+                    kwargs.update(tools=tool_defs, tool_choice="auto")
+                if getattr(self.cfg, "LLM_MAX_TOKENS", None):
+                    kwargs["max_tokens"] = int(self.cfg.LLM_MAX_TOKENS)
+                resp = client.chat.completions.create(**kwargs)
             except Exception as exc:  # noqa: BLE001 - some local models reject tools/images
                 if image_bytes and "image" in str(exc).lower():
                     messages[-1] = {"role": "user", "content": user_turn}
@@ -232,22 +294,31 @@ class AgriAssistant:
                 else:
                     raise
             msg = resp.choices[0].message
-            calls = getattr(msg, "tool_calls", None) or []
+            text = msg.content or ""
+            calls = [{"id": c.id, "name": c.function.name, "arguments": c.function.arguments or "{}"}
+                     for c in (getattr(msg, "tool_calls", None) or [])]
+            if not calls:
+                # Servers/templates without native tool support return the Hermes <tool_call> text instead.
+                parsed = extract_tool_calls(text, known)
+                calls = [{"id": p.id, "name": p.name, "arguments": json.dumps(p.arguments, ensure_ascii=False)} for p in parsed]
+                if calls:
+                    text = strip_tool_calls(text)
             if not calls:
                 break
-            messages.append({"role": "assistant", "content": msg.content or "",
-                             "tool_calls": [{"id": c.id, "type": "function",
-                                             "function": {"name": c.function.name, "arguments": c.function.arguments}}
-                                            for c in calls]})
+            messages.append({"role": "assistant", "content": text,
+                             "tool_calls": [{"id": c["id"], "type": "function",
+                                             "function": {"name": c["name"], "arguments": c["arguments"]}} for c in calls]})
             for c in calls:
-                tools_used.append(c.function.name)
+                tools_used.append(c["name"])
                 try:
-                    args = json.loads(c.function.arguments or "{}")
+                    args = json.loads(c["arguments"] or "{}")
                 except ValueError:
                     args = {}
-                out, _ = run_tool(self.tools, c.function.name, args)
-                messages.append({"role": "tool", "tool_call_id": c.id, "content": out})
-        text = (msg.content if msg else "") or "I could not produce an answer right now. Please try again."
+                out, _ = run_tool(self.tools, c["name"], args)
+                messages.append({"role": "tool", "tool_call_id": c["id"], "name": c["name"], "content": out})
+        text = strip_tool_calls(text) if text else ""
+        if not text:
+            text = "I could not produce an answer right now. Please try again."
         return {"reply": text, "tools_used": tools_used, "provider": "openai", "model": model,
                 "sources": [p["title"] for p in passages], "detection": detection}
 

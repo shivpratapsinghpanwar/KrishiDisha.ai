@@ -82,7 +82,13 @@ python -m ml.train_disease --data-dir <PlantVillage root> --epochs 6 --arch mobi
 python -m ml.train_all                                            # both (image stage skipped if dataset absent)
 ```
 
-Latest tabular results (`models/metrics_tabular.json`): crop recommendation 99.5 % test accuracy (GaussianNB, RF 99.3 %), fertilizer 100 % (XGBoost), yield R² 0.94 to 0.99 (best CV: XGBoost). Plots are in `models/reports/`.
+Latest tabular results (`models/metrics_tabular.json`, per-task model cards in `models/reports/*_card.md`):
+
+- **Crop recommendation** — 99.3 % hold-out accuracy (Optuna-free `RandomizedSearchCV` random forest with Platt calibration; GaussianNB ties it at 99.5 % but its probabilities are not calibrated). The 22 classes in this dataset are nearly separable, so treat this as a sanity check rather than field accuracy. Inputs outside the training range are flagged in `warnings`.
+- **Yield** — the honest headline: on a time split (fit ≤ 2016, test 2017-2020) **no model beat the 5-year Crop × State median**, so that baseline is what ships. Baseline MAE **1.10 t/ha** / MAPE 27 % / R² 0.66 versus tuned XGBoost 1.31 t/ha / 30 % / 0.62. `Production` is excluded as a feature (`Yield == Production / Area` — the old 0.94–0.99 R² was measuring that leak) and Coconut is dropped as nuts/ha. Every prediction ships with the baseline for comparison and an `expected_range` built by split-conformal calibration — it claims 80 % and measured **82.1 %** on the test years, where the two nominal-quantile alternatives managed 50 % and 70 %.
+- **Fertilizer** — the app no longer obeys the classifier. `recommend_fertilizer` computes the crop's soil-test-adjusted nutrient deficit and ranks the seven products by NPK-ratio match; the model is returned as a labelled `model_hint`. The 99-row CSV scores 100 % but has one row per soil/crop/product combination, so that is memorisation, not skill — the 750 k-row Kaggle Playground S5E6 table (`--fert-data`) is used instead when available.
+
+Plots are in `models/reports/`.
 
 For disease detection without training: `DISEASE_MODEL_BACKEND=hf` downloads a pretrained PlantVillage MobileNet from the Hugging Face Hub on first use. The original `plant_disease_model_1_latest.pt` from `CNN.py` is also supported (`legacy`).
 
