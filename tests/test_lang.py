@@ -52,6 +52,16 @@ def test_resolve_prefers_confident_detection_over_ui_choice():
     assert lang == "en"
 
 
+def test_glossary_expands_hindi_and_hinglish_queries_for_retrieval():
+    from krishidisha.services.lang import expand_query
+
+    assert "wheat" in expand_query("गेहूं में पीला रतुआ") and "yellow stripe rust" in expand_query("गेहूं में पीला रतुआ")
+    assert "pink bollworm" in expand_query("कपास में गुलाबी सुंडी") and "cotton" in expand_query("कपास में गुलाबी सुंडी")
+    assert "sugarcane" in expand_query("ganne me lal sadan") and "red rot" in expand_query("ganne me lal sadan")
+    assert expand_query("How much urea for wheat?").endswith("urea wheat") or "wheat" in expand_query("How much urea for wheat?")
+    assert expand_query("आमतौर पर") == "आमतौर पर"  # 'आम' (mango) must not fire inside a longer word
+
+
 def test_unknown_backend_falls_back_to_none():
     layer = LanguageLayer(backend="does-not-exist")
     assert layer.translator.name == "none"

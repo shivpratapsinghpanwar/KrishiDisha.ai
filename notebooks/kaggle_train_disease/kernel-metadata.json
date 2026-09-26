@@ -1,5 +1,5 @@
 {
-  "id": "sspanwar/krishidisha-train-disease",
+  "id": "sspanwar/krishidisha-field-disease-classifier-training",
   "title": "KrishiDisha field disease classifier - training",
   "code_file": "kaggle_train_disease.ipynb",
   "language": "python",

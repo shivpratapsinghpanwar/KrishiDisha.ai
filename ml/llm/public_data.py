@@ -58,13 +58,14 @@ def fetch_kisanvaani(max_rows: int, min_answer_chars: int = 80, india_only: bool
             try:
                 r = session.get(HF_ROWS, params={"dataset": dataset, "config": "default", "split": "train",
                                                  "offset": offset, "length": 100}, timeout=30)
-                if r.status_code == 429:
+                if r.status_code == 429 or r.status_code >= 500:
+                    print(f"  kisanvaani: HTTP {r.status_code} at offset {offset}; retry {attempt + 1}", flush=True)
                     time.sleep(5 * (attempt + 1))
                     continue
                 r.raise_for_status()
                 payload = r.json()
                 break
-            except (requests.ConnectionError, requests.Timeout) as exc:
+            except (requests.ConnectionError, requests.Timeout, ValueError) as exc:
                 wait = 3 * (attempt + 1)
                 print(f"  kisanvaani: {type(exc).__name__} at offset {offset}; retry in {wait}s", flush=True)
                 time.sleep(wait)
