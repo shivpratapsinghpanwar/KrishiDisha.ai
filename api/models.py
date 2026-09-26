@@ -48,6 +48,8 @@ class CropRecommendationOutput(BaseModel):
     profit_per_acre: Optional[float] = None
     image: Optional[str] = None
     guide: Optional[dict[str, Any]] = None
+    #: Inputs outside the 1st-99th percentile of the training data.
+    warnings: list[str] = []
 
 
 class FertilizerRecommendationInput(BaseModel):
@@ -65,8 +67,20 @@ class FertilizerRecommendationInput(BaseModel):
 
 class FertilizerRecommendationOutput(BaseModel):
     recommended_fertilizer: str
+    #: Rule ranking similarity of the top product (0-1), not a model probability.
     confidence: float
     alternatives: list[Alternative]
+    #: Top 3 products with their NPK-ratio similarity to the nutrient deficit.
+    ranked: list[dict[str, Any]] = []
+    #: One sentence explaining the pick.
+    why: Optional[str] = None
+    #: Soil-test-adjusted requirement in kg/ha of N, P2O5 and K2O.
+    deficit_kg_per_ha: dict[str, float] = {}
+    soil_status: dict[str, str] = {}
+    crop_key: Optional[str] = None
+    method: Optional[str] = None
+    #: The trained classifier's opinion, reported but not obeyed.
+    model_hint: Optional[dict[str, Any]] = None
     npk: Optional[str] = None
     usage_note: Optional[str] = None
     image: Optional[str] = None
@@ -103,21 +117,38 @@ class DiseaseDetectionOutput(BaseModel):
 
 
 class CropYieldInput(BaseModel):
+    """Yield inputs.
+
+    ``production`` is deliberately absent: in the training data
+    ``Yield == Production / Area``, so accepting it would leak the target.
+    """
+
     crop: str = Field(..., examples=["Wheat"])
     crop_year: int = Field(..., ge=1990, le=2040)
     season: str = Field(..., examples=["Rabi"])
     state: str = Field(..., examples=["Punjab"])
     area: float = Field(..., gt=0, description="hectares")
-    production: float = Field(..., ge=0, description="tonnes")
     annual_rainfall: float = Field(..., ge=0, description="mm")
-    fertilizer: float = Field(..., ge=0, description="kg")
-    pesticide: float = Field(..., ge=0, description="kg")
+    fertilizer: Optional[float] = Field(
+        None, ge=0, description="kg, total for the area; omitted -> State x Crop median")
+    pesticide: Optional[float] = Field(
+        None, ge=0, description="kg, total for the area; omitted -> State x Crop median")
 
 
 class CropYieldOutput(BaseModel):
     predicted_yield: float
     unit: str
     estimated_production: float
+    #: Calibrated 80 % prediction interval in t/ha, when a band is available.
+    expected_range: Optional[list[float]] = None
+    #: How that band was built and the coverage it actually achieved in back-testing.
+    expected_range_note: Optional[str] = None
+    #: Median yield for this crop and state over the previous five years.
+    baseline_yield: Optional[float] = None
+    #: Which estimator won the 2017-2020 back-test and produced this number.
+    model: Optional[str] = None
+    #: The fertilizer / pesticide figures actually used, and where they came from.
+    inputs_used: dict[str, Any] = {}
     tips: list[str] = []
 
 

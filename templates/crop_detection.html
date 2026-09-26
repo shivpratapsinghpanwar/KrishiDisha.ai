@@ -42,6 +42,11 @@
       <p class="small text-muted mt-3">
         <i class="bi bi-robot me-1"></i>Prefer chat? <a href="{{ url_for('chat.page') }}">Send the photo to the assistant</a> instead.
       </p>
+
+      <p class="small text-muted mt-2 mb-0" id="consentNotice">
+        <i class="bi bi-shield-check me-1"></i>Photos you upload may be used, with your consent, to improve
+        KrishiDisha's models. <a href="{{ url_for('auth.profile') }}">Manage in Profile</a>.
+      </p>
     </div>
 
     <div class="col-lg-5">

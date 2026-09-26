@@ -82,20 +82,74 @@
   toggle.addEventListener("click", open);
   closeBtn.addEventListener("click", close);
 
-  function addMessage(role, html, meta) {
+  function addMessage(role, html, meta, ref) {
     const div = document.createElement("div");
     div.className = "kd-msg " + (role === "user" ? "kd-msg-user" : "kd-msg-bot");
     div.innerHTML = html;
     messages.appendChild(div);
-    if (meta) {
+    if (meta || ref) {
       const m = document.createElement("div");
       m.className = "kd-msg-meta";
-      m.textContent = meta;
+      m.textContent = meta || "";
+      if (ref) {
+        m.dataset.ref = ref;
+        m.insertAdjacentHTML("beforeend",
+          ' <button type="button" class="btn btn-sm btn-link p-0 ms-2 kd-rate-btn" data-rating="1"' +
+          ' aria-label="This reply was helpful"><i class="bi bi-hand-thumbs-up"></i></button>' +
+          ' <button type="button" class="btn btn-sm btn-link p-0 ms-1 kd-rate-btn" data-rating="-1"' +
+          ' aria-label="This reply was not helpful"><i class="bi bi-hand-thumbs-down"></i></button>');
+      }
       messages.appendChild(m);
     }
     messages.scrollTop = messages.scrollHeight;
     return div;
   }
+
+  // -------------------------------------------------- widget reply feedback
+  function rateReply(metaEl, rating, comment) {
+    fetch("/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        kind: "chat", ref_id: metaEl.dataset.ref, rating: rating,
+        comment: comment || null, language: KD.language || "en"
+      })
+    }).catch(() => { /* feedback is best-effort */ });
+    metaEl.querySelectorAll(".kd-rate-btn").forEach((b) => { b.disabled = true; });
+    const note = document.createElement("span");
+    note.className = "ms-2 text-success small";
+    note.textContent = "Thanks!";
+    metaEl.appendChild(note);
+  }
+
+  messages.addEventListener("click", (ev) => {
+    const btn = ev.target.closest(".kd-rate-btn");
+    if (!btn) return;
+    const metaEl = btn.closest(".kd-msg-meta");
+    if (!metaEl || !metaEl.dataset.ref) return;
+    const rating = parseInt(btn.dataset.rating, 10);
+    if (rating > 0) { rateReply(metaEl, 1); return; }
+    if (metaEl.querySelector(".kd-feedback-comment")) return;
+    const wrap = document.createElement("div");
+    wrap.className = "kd-feedback-comment d-flex gap-1 mt-1";
+    wrap.innerHTML = '<input type="text" class="form-control form-control-sm" maxlength="300"' +
+      ' placeholder="What was wrong? (optional)" aria-label="What was wrong with this reply?">' +
+      '<button type="button" class="btn btn-sm btn-outline-success kd-feedback-send">Send</button>';
+    metaEl.appendChild(wrap);
+    const box = wrap.querySelector("input");
+    let sent = false;
+    const done = () => {
+      if (sent) return;
+      sent = true;
+      const text = box.value.trim();
+      wrap.remove();
+      rateReply(metaEl, -1, text);
+    };
+    box.focus();
+    wrap.querySelector(".kd-feedback-send").addEventListener("click", done);
+    box.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); done(); } });
+    box.addEventListener("blur", () => setTimeout(done, 250));
+  });
 
   imageInput.addEventListener("change", () => {
     if (imageInput.files && imageInput.files[0]) {
@@ -146,7 +200,8 @@
         html = '<div class="small text-success mb-1"><i class="bi bi-camera"></i> ' + t.name + " (" + Math.round(t.confidence * 100) + "%)</div>" + html;
       }
       const meta = (data.provider || "") + (data.tools_used && data.tools_used.length ? " · " + data.tools_used.join(", ") : "");
-      addMessage("bot", html, meta);
+      const ref = sessionKey ? sessionKey + (data.message_index !== undefined ? "#" + data.message_index : "") : null;
+      addMessage("bot", html, meta, ref);
     } catch (e) {
       typing.remove();
       addMessage("bot", "Network error. Please try again.");

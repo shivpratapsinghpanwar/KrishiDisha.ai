@@ -85,20 +85,106 @@ def test_crop_recommendation_model(app):
     assert res["profit_per_acre"] == res["revenue_per_acre"] - res["cost_per_acre"]
 
 
-def test_fertilizer_model(app):
+def test_fertilizer_rule_beats_the_lookup_table(app):
+    """Sandy / Maize / N=37, P=0, K=0 - the row the 99-row CSV labels 'Urea'.
+
+    The rule disagrees, and it is right to. Maize wants 120-60-40 kg/ha of
+    N-P2O5-K2O; all three soil values test low (N=37 << 280, P=0 < 10,
+    K=0 < 120), so the STCR adjustment raises the dose 25 % across the board to
+    150-75-50. Straight Urea (46-0-0) would pour nitrogen onto a field with
+    *zero* available phosphorus and potassium. Cosine similarity against that
+    deficit ranks the balanced N+P complexes first (28-28 and 20-20 both score
+    0.909, ahead of 17-17-17 at 0.907 and Urea at 0.857); the tie breaks
+    towards 28-28 for its higher nutrient concentration. The remaining
+    potassium is then supplied by MOP in the dose calculator.
+    """
     res = app.ml.recommend_fertilizer(temperature=26, humidity=52, moisture=38, soil_type="Sandy", crop_type="Maize",
                                       N=37, K=0, P=0)
-    assert res["recommended_fertilizer"] == "Urea"
-    assert res["npk"] == "46-0-0"
+    assert res["recommended_fertilizer"] == "28-28"
+    assert res["npk"] == "28-28-0"
+    assert res["deficit_kg_per_ha"] == {"N": 150.0, "P2O5": 75.0, "K2O": 50.0}
+    assert res["confidence"] == pytest.approx(0.909, abs=0.002)
+    assert [r["fertilizer"] for r in res["ranked"]] == ["28-28", "20-20", "17-17-17"]
+    assert "28-28" in res["why"]
+    # the classifier is still reported - clearly labelled as a hint, never obeyed
+    assert res["model_hint"]["fertilizer"] and res["model_hint"]["note"]
+
+
+def test_fertilizer_phosphorus_deficit_picks_a_phosphorus_product(app):
+    """A genuinely phosphorus-led gap picks a phosphorus-led product.
+
+    Pulses map to chickpea, whose base requirement is 20-50-20 (legumes fix
+    their own nitrogen). With soil N and K testing high (-25 %) and P testing
+    low (+25 %) the gap becomes 15-62.5-15, and the ranking returns 14-35-14
+    ahead of DAP.
+    """
+    res = app.ml.recommend_fertilizer(temperature=29, humidity=52, moisture=45, soil_type="Loamy",
+                                      crop_type="Pulses", N=700, K=400, P=0)
+    assert res["deficit_kg_per_ha"]["P2O5"] > res["deficit_kg_per_ha"]["N"]
+    assert res["recommended_fertilizer"] == "14-35-14"
+    assert [r["fertilizer"] for r in res["ranked"][:2]] == ["14-35-14", "DAP"]
+
+
+def test_soil_test_cannot_reorder_an_n_led_requirement(app):
+    """The STCR adjustment scales each nutrient by +-25 %; it cannot flip the ratio.
+
+    Sugarcane needs 250-100-120. Even with soil N testing high and soil P
+    testing low, the remaining gap is 187.5-125-90 - still nitrogen-led - so the
+    balanced 17-17-17 wins rather than a phosphorus product. This is a real
+    limitation of the rule, documented rather than hidden: the crop's base
+    requirement dominates the product choice and the soil test only nudges it.
+    """
+    res = app.ml.recommend_fertilizer(temperature=29, humidity=52, moisture=45, soil_type="Loamy",
+                                      crop_type="Sugarcane", N=700, K=400, P=0)
+    assert res["deficit_kg_per_ha"] == {"N": 187.5, "P2O5": 125.0, "K2O": 90.0}
+    assert res["recommended_fertilizer"] == "17-17-17"
+
+
+def test_fertilizer_with_area_includes_dose(app):
+    res = app.ml.recommend_fertilizer(temperature=26, humidity=52, moisture=38, soil_type="Sandy", crop_type="Maize",
+                                      N=37, K=0, P=0, area=2, unit="acre")
+    assert res["calculator"]["crop"] == "maize"
+    assert res["calculator"]["fertilizers_kg"]["Urea"] > 0
+
+
+def test_yield_inputs_have_no_production_column():
+    from krishidisha.services.ml import YIELD_NUMERIC
+
+    assert "Production" not in YIELD_NUMERIC
 
 
 def test_yield_model_and_meta(app):
     meta = app.ml.yield_meta
     assert "Wheat" in meta["crops"] and "Punjab" in meta["states"] and "Rabi" in meta["seasons"]
+    assert "Coconut" not in meta["crops"]  # nuts/ha, dropped as a non-tonne unit
+    assert meta["defaults"]["global"]["fert_per_ha"] > 0
     res = app.ml.predict_yield(crop="Wheat", crop_year=2020, season="Rabi", state="Punjab", area=1000,
-                               production=4000, annual_rainfall=600, fertilizer=150000, pesticide=300)
+                               annual_rainfall=600, fertilizer=150000, pesticide=300)
     assert res["predicted_yield"] > 0
     assert res["estimated_production"] == pytest.approx(res["predicted_yield"] * 1000, rel=0.01)
+    lo, hi = res["expected_range"]
+    assert 0 <= lo <= res["predicted_yield"] <= hi
+    assert res["baseline_yield"] > 0
+    assert res["inputs_used"]["source"] == {"fertilizer": "provided", "pesticide": "provided"}
+
+
+def test_yield_fills_missing_inputs_and_ignores_production(app):
+    """Omitted inputs come from regional medians; a stray `production` is ignored."""
+    res = app.ml.predict_yield(crop="Wheat", crop_year=2020, season="Rabi", state="Punjab", area=1000,
+                               annual_rainfall=600)
+    assert res["inputs_used"]["fertilizer"] > 0
+    assert res["inputs_used"]["source"]["fertilizer"].endswith("median")
+    # `production` is swallowed by **_deprecated - it used to leak the target
+    leaky = app.ml.predict_yield(crop="Wheat", crop_year=2020, season="Rabi", state="Punjab", area=1000,
+                                 annual_rainfall=600, production=999999)
+    assert leaky["predicted_yield"] == res["predicted_yield"]
+
+
+def test_crop_recommendation_flags_out_of_range_inputs(app):
+    normal = app.ml.recommend_crop(N=90, P=42, K=43, temperature=21, humidity=82, ph=6.5, rainfall=203)
+    assert normal["warnings"] == []
+    weird = app.ml.recommend_crop(N=900, P=42, K=43, temperature=21, humidity=82, ph=6.5, rainfall=203)
+    assert any("N=900" in w for w in weird["warnings"])
 
 
 # ------------------------------------------------------------------ rules bot

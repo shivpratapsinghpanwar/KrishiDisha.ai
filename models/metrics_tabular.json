@@ -1,7 +1,37 @@
 {
-  "generated_at": "2026-09-08T00:35:14",
+  "generated_at": "2026-09-08T23:49:04",
   "random_state": 42,
   "cv_folds": 5,
+  "datasets": {
+    "crop": {
+      "name": "Crop Recommendation Dataset",
+      "file": "data/Crop_recommendation.csv",
+      "source_url": "https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset",
+      "licence": "CC0 1.0 Public Domain",
+      "note": "Synthesised from Indian soil/rainfall statistics; the classes are near-separable, so a 99 % accuracy here does not transfer to a real field."
+    },
+    "fertilizer": {
+      "name": "Fertilizer Prediction (Kaggle)",
+      "file": "data/Fertilizer Prediction.csv",
+      "source_url": "https://www.kaggle.com/datasets/gdabhishek/fertilizer-prediction",
+      "licence": "CC0 1.0 Public Domain",
+      "note": "99 rows, one per (soil, crop, product) combination - effectively a lookup table."
+    },
+    "fertilizer_s5e6": {
+      "name": "Kaggle Playground Series S5E6 - Predicting Optimal Fertilizers",
+      "file": "train.csv",
+      "source_url": "https://www.kaggle.com/competitions/playground-series-s5e6",
+      "licence": "Kaggle competition rules (non-commercial research use)",
+      "note": "750 k synthetic rows with the same schema as the 99-row file; the winning public MAP@3 was ~0.38, so ~0.35 is a good score, not a broken model."
+    },
+    "yield": {
+      "name": "Crop Yield in Indian States",
+      "file": "data/crop_yield.csv",
+      "source_url": "https://www.kaggle.com/datasets/akshatgupta7/crop-yield-in-indian-states-dataset",
+      "licence": "CC0 1.0 Public Domain (compiled from data.gov.in / Ministry of Agriculture and Farmers Welfare releases)",
+      "note": "State-level aggregates 1997-2020. Yield == Production / Area, so Production is excluded as a feature; Coconut is recorded in nuts/ha and is dropped."
+    }
+  },
   "tasks": {
     "crop": {
       "task": "crop",
@@ -46,7 +76,7 @@
           "train_accuracy": 1.0,
           "test_accuracy": 0.9931818181818182,
           "test_f1_macro": 0.9931775541531639,
-          "fit_seconds": 3.96
+          "fit_seconds": 2.73
         },
         "GradientBoosting": {
           "cv_mean_accuracy": 0.984659090909091,
@@ -55,7 +85,7 @@
           "train_accuracy": 1.0,
           "test_accuracy": 0.9886363636363636,
           "test_f1_macro": 0.9886735002267737,
-          "fit_seconds": 44.72
+          "fit_seconds": 36.12
         },
         "XGBoost": {
           "cv_mean_accuracy": 0.9920454545454545,
@@ -64,7 +94,7 @@
           "train_accuracy": 1.0,
           "test_accuracy": 0.990909090909091,
           "test_f1_macro": 0.9908335139400607,
-          "fit_seconds": 13.21
+          "fit_seconds": 6.58
         },
         "SVM": {
           "cv_mean_accuracy": 0.9573863636363636,
@@ -73,7 +103,7 @@
           "train_accuracy": 0.9693181818181819,
           "test_accuracy": 0.9590909090909091,
           "test_f1_macro": 0.9589667952928849,
-          "fit_seconds": 1.41
+          "fit_seconds": 1.42
         },
         "KNN": {
           "cv_mean_accuracy": 0.965340909090909,
@@ -82,7 +112,7 @@
           "train_accuracy": 0.9846590909090909,
           "test_accuracy": 0.9795454545454545,
           "test_f1_macro": 0.9792832328133997,
-          "fit_seconds": 0.07
+          "fit_seconds": 0.08
         },
         "DecisionTree": {
           "cv_mean_accuracy": 0.9852272727272728,
@@ -91,7 +121,7 @@
           "train_accuracy": 1.0,
           "test_accuracy": 0.9795454545454545,
           "test_f1_macro": 0.9794231513743707,
-          "fit_seconds": 0.06
+          "fit_seconds": 0.07
         },
         "GaussianNB": {
           "cv_mean_accuracy": 0.9948863636363636,
@@ -100,18 +130,27 @@
           "train_accuracy": 0.9948863636363636,
           "test_accuracy": 0.9954545454545455,
           "test_f1_macro": 0.9954431533378901,
-          "fit_seconds": 0.04
+          "fit_seconds": 0.05
+        },
+        "RandomForest (tuned+calibrated)": {
+          "cv_mean_accuracy": 0.9948863636363636,
+          "cv_std_accuracy": 0.005207472380631634,
+          "cv_folds": 5,
+          "train_accuracy": 1.0,
+          "test_accuracy": 0.9931818181818182,
+          "test_f1_macro": 0.9931775541531639,
+          "fit_seconds": 8.77
         }
       },
-      "best_model": "GaussianNB",
+      "best_model": "RandomForest (tuned+calibrated)",
       "best_metrics": {
         "cv_mean_accuracy": 0.9948863636363636,
-        "cv_std_accuracy": 0.004175266607016787,
+        "cv_std_accuracy": 0.005207472380631634,
         "cv_folds": 5,
-        "train_accuracy": 0.9948863636363636,
-        "test_accuracy": 0.9954545454545455,
-        "test_f1_macro": 0.9954431533378901,
-        "fit_seconds": 0.04
+        "train_accuracy": 1.0,
+        "test_accuracy": 0.9931818181818182,
+        "test_f1_macro": 0.9931775541531639,
+        "fit_seconds": 8.77
       },
       "classification_report": {
         "apple": {
@@ -128,8 +167,8 @@
         },
         "blackgram": {
           "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
+          "recall": 0.95,
+          "f1-score": 0.9743589743589743,
           "support": 20.0
         },
         "chickpea": {
@@ -163,9 +202,9 @@
           "support": 20.0
         },
         "jute": {
-          "precision": 0.9090909090909091,
+          "precision": 0.9523809523809523,
           "recall": 1.0,
-          "f1-score": 0.9523809523809523,
+          "f1-score": 0.975609756097561,
           "support": 20.0
         },
         "kidneybeans": {
@@ -176,14 +215,14 @@
         },
         "lentil": {
           "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
+          "recall": 0.95,
+          "f1-score": 0.9743589743589743,
           "support": 20.0
         },
         "maize": {
-          "precision": 1.0,
+          "precision": 0.9523809523809523,
           "recall": 1.0,
-          "f1-score": 1.0,
+          "f1-score": 0.975609756097561,
           "support": 20.0
         },
         "mango": {
@@ -193,9 +232,9 @@
           "support": 20.0
         },
         "mothbeans": {
-          "precision": 1.0,
+          "precision": 0.9523809523809523,
           "recall": 1.0,
-          "f1-score": 1.0,
+          "f1-score": 0.975609756097561,
           "support": 20.0
         },
         "mungbean": {
@@ -236,8 +275,8 @@
         },
         "rice": {
           "precision": 1.0,
-          "recall": 0.9,
-          "f1-score": 0.9473684210526315,
+          "recall": 0.95,
+          "f1-score": 0.9743589743589743,
           "support": 20.0
         },
         "watermelon": {
@@ -246,17 +285,17 @@
           "f1-score": 1.0,
           "support": 20.0
         },
-        "accuracy": 0.9954545454545455,
+        "accuracy": 0.9931818181818182,
         "macro avg": {
-          "precision": 0.9958677685950413,
-          "recall": 0.9954545454545454,
-          "f1-score": 0.9954431533378901,
+          "precision": 0.9935064935064936,
+          "recall": 0.993181818181818,
+          "f1-score": 0.9931775541531639,
           "support": 440.0
         },
         "weighted avg": {
-          "precision": 0.9958677685950413,
-          "recall": 0.9954545454545455,
-          "f1-score": 0.9954431533378901,
+          "precision": 0.9935064935064934,
+          "recall": 0.9931818181818182,
+          "f1-score": 0.9931775541531639,
           "support": 440.0
         }
       },
@@ -337,8 +376,32 @@
           [
             0,
             0,
-            20,
+            19,
             0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            20,
             0,
             0,
             0,
@@ -362,30 +425,6 @@
             0,
             0,
             0,
-            20,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
             0,
             20,
             0,
@@ -537,10 +576,10 @@
             0,
             0,
             0,
-            20,
+            19,
             0,
             0,
-            0,
+            1,
             0,
             0,
             0,
@@ -775,7 +814,7 @@
             0,
             0,
             0,
-            2,
+            1,
             0,
             0,
             0,
@@ -787,7 +826,7 @@
             0,
             0,
             0,
-            18,
+            19,
             0
           ],
           [
@@ -816,10 +855,42 @@
           ]
         ]
       },
-      "feature_importances": {},
+      "feature_importances": {
+        "N": 0.10819802629158108,
+        "P": 0.1516227480942021,
+        "K": 0.1750917676398376,
+        "temperature": 0.07637271705594967,
+        "humidity": 0.2118622469067476,
+        "ph": 0.0547058752304694,
+        "rainfall": 0.22214661878121256
+      },
       "refit_on_full_data": true,
+      "tie_break": "RandomForest (tuned+calibrated) is within one CV standard deviation of GaussianNB (0.0000 <= 0.0042) and its probabilities are calibrated, so it is shipped",
+      "tuning": {
+        "estimator": "RandomForestClassifier",
+        "search": "RandomizedSearchCV",
+        "n_iter": 15,
+        "best_params": {
+          "n_estimators": 250,
+          "min_samples_split": 4,
+          "min_samples_leaf": 1,
+          "max_features": "log2",
+          "max_depth": 16,
+          "criterion": "gini"
+        },
+        "best_cv_accuracy": 0.9950000000000001,
+        "calibration": "CalibratedClassifierCV(method='sigmoid', cv=3)"
+      },
+      "dataset": {
+        "name": "Crop Recommendation Dataset",
+        "file": "data/Crop_recommendation.csv",
+        "source_url": "https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset",
+        "licence": "CC0 1.0 Public Domain",
+        "note": "Synthesised from Indian soil/rainfall statistics; the classes are near-separable, so a 99 % accuracy here does not transfer to a real field."
+      },
       "artifact": "crop_recommendation_model.pkl",
-      "artifact_bytes": 3138
+      "artifact_bytes": 3361409,
+      "meta_artifact": "crop_meta.json"
     },
     "fertilizer": {
       "task": "fertilizer",
@@ -849,7 +920,8 @@
           "train_accuracy": 1.0,
           "test_accuracy": 1.0,
           "test_f1_macro": 1.0,
-          "fit_seconds": 2.1
+          "fit_seconds": 2.21,
+          "test_map3": 1.0
         },
         "GradientBoosting": {
           "cv_mean_accuracy": 0.9358333333333334,
@@ -858,7 +930,8 @@
           "train_accuracy": 1.0,
           "test_accuracy": 0.95,
           "test_f1_macro": 0.9584415584415584,
-          "fit_seconds": 2.19
+          "fit_seconds": 2.24,
+          "test_map3": 0.95
         },
         "XGBoost": {
           "cv_mean_accuracy": 0.9616666666666667,
@@ -867,7 +940,8 @@
           "train_accuracy": 1.0,
           "test_accuracy": 1.0,
           "test_f1_macro": 1.0,
-          "fit_seconds": 1.01
+          "fit_seconds": 1.0,
+          "test_map3": 1.0
         },
         "SVM": {
           "cv_mean_accuracy": 0.34249999999999997,
@@ -876,7 +950,8 @@
           "train_accuracy": 0.45569620253164556,
           "test_accuracy": 0.45,
           "test_f1_macro": 0.19913419913419914,
-          "fit_seconds": 0.09
+          "fit_seconds": 0.12,
+          "test_map3": 0.6416666666666667
         },
         "KNN": {
           "cv_mean_accuracy": 0.25166666666666665,
@@ -885,7 +960,8 @@
           "train_accuracy": 0.4936708860759494,
           "test_accuracy": 0.25,
           "test_f1_macro": 0.15194805194805192,
-          "fit_seconds": 0.13
+          "fit_seconds": 0.13,
+          "test_map3": 0.5000000000000001
         },
         "DecisionTree": {
           "cv_mean_accuracy": 0.95,
@@ -894,7 +970,8 @@
           "train_accuracy": 1.0,
           "test_accuracy": 0.95,
           "test_f1_macro": 0.9238095238095239,
-          "fit_seconds": 0.05
+          "fit_seconds": 0.06,
+          "test_map3": 0.95
         },
         "GaussianNB": {
           "cv_mean_accuracy": 0.5425,
@@ -903,18 +980,30 @@
           "train_accuracy": 0.9493670886075949,
           "test_accuracy": 0.55,
           "test_f1_macro": 0.43197278911564624,
-          "fit_seconds": 0.05
+          "fit_seconds": 0.05,
+          "test_map3": 0.6
+        },
+        "XGBoost (tuned+calibrated)": {
+          "cv_mean_accuracy": 0.9366666666666668,
+          "cv_std_accuracy": 0.05592653911854173,
+          "cv_folds": 5,
+          "train_accuracy": 1.0,
+          "test_accuracy": 1.0,
+          "test_f1_macro": 1.0,
+          "fit_seconds": 7.29,
+          "test_map3": 1.0
         }
       },
-      "best_model": "XGBoost",
+      "best_model": "XGBoost (tuned+calibrated)",
       "best_metrics": {
-        "cv_mean_accuracy": 0.9616666666666667,
-        "cv_std_accuracy": 0.03133599279493861,
+        "cv_mean_accuracy": 0.9366666666666668,
+        "cv_std_accuracy": 0.05592653911854173,
         "cv_folds": 5,
         "train_accuracy": 1.0,
         "test_accuracy": 1.0,
         "test_f1_macro": 1.0,
-        "fit_seconds": 1.01
+        "fit_seconds": 7.29,
+        "test_map3": 1.0
       },
       "classification_report": {
         "10-26-26": {
@@ -1050,9 +1139,9 @@
         ]
       },
       "feature_importances": {
-        "cat__Soil Type_Black": 0.009388083592057228,
-        "cat__Soil Type_Clayey": 0.051774874329566956,
-        "cat__Soil Type_Loamy": 0.145722433924675,
+        "cat__Soil Type_Black": 0.002577160717919469,
+        "cat__Soil Type_Clayey": 0.0,
+        "cat__Soil Type_Loamy": 0.0,
         "cat__Soil Type_Red": 0.0,
         "cat__Soil Type_Sandy": 0.0,
         "cat__Crop Type_Barley": 0.0,
@@ -1063,188 +1152,506 @@
         "cat__Crop Type_Oil seeds": 0.0,
         "cat__Crop Type_Paddy": 0.0,
         "cat__Crop Type_Pulses": 0.0,
-        "cat__Crop Type_Sugarcane": 0.023063888773322105,
+        "cat__Crop Type_Sugarcane": 0.016678718850016594,
         "cat__Crop Type_Tobacco": 0.0,
         "cat__Crop Type_Wheat": 0.0,
-        "num__Temparature": 0.008619089610874653,
-        "num__Humidity": 0.0038255001418292522,
-        "num__Moisture": 0.0054898071102797985,
-        "num__Nitrogen": 0.3173663914203644,
-        "num__Potassium": 0.2662517726421356,
-        "num__Phosphorous": 0.16849814355373383
+        "num__Temparature": 0.008955235593020916,
+        "num__Humidity": 0.00020764955843333155,
+        "num__Moisture": 0.005353312939405441,
+        "num__Nitrogen": 0.37718209624290466,
+        "num__Potassium": 0.3314356207847595,
+        "num__Phosphorous": 0.2576102316379547
       },
       "refit_on_full_data": true,
+      "tie_break": "XGBoost (tuned+calibrated) is within one CV standard deviation of XGBoost (0.0250 <= 0.0313) and its probabilities are calibrated, so it is shipped",
+      "map3": 1.0,
+      "top1_accuracy": 1.0,
+      "map3_trustworthy": false,
+      "reliability": "Its accuracy was measured on a 99-row lookup table with one row per soil/crop/product combination, so it is memorisation and does not generalise.",
+      "tuning": {
+        "estimator": "XGBLabelClassifier",
+        "search": "RandomizedSearchCV",
+        "n_iter": 20,
+        "tune_rows": 99,
+        "best_params": {
+          "n_estimators": 800,
+          "max_depth": 8,
+          "learning_rate": 0.1,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "min_child_weight": 1,
+          "tree_method": "hist",
+          "random_state": 42,
+          "n_jobs": -1,
+          "verbosity": 0
+        },
+        "best_cv_accuracy": 0.9797979797979798,
+        "cv_folds": 3,
+        "calibration": "CalibratedClassifierCV(method='isotonic', cv=3)"
+      },
+      "dataset": {
+        "name": "Fertilizer Prediction (Kaggle)",
+        "file": "data/Fertilizer Prediction.csv",
+        "source_url": "https://www.kaggle.com/datasets/gdabhishek/fertilizer-prediction",
+        "licence": "CC0 1.0 Public Domain",
+        "note": "99 rows, one per (soil, crop, product) combination - effectively a lookup table.",
+        "rows": 99,
+        "warning": "FALLBACK dataset: 99 rows, effectively a lookup table. Metrics are memorisation, not generalisation."
+      },
+      "serving_note": "The app does NOT obey this classifier. recommend_fertilizer() ranks the catalogue against the crop's soil-test-adjusted nutrient deficit and returns this model only as a labelled `model_hint`.",
       "artifact": "fertilizer_recommendation_model.pkl",
-      "artifact_bytes": 96292
+      "artifact_bytes": 641888
     },
     "yield": {
       "task": "yield",
-      "n_samples": 19689,
-      "n_features": 9,
-      "split": {
-        "train": 15751,
-        "test": 3938,
-        "test_size": 0.2
+      "n_samples_raw": 19689,
+      "n_samples": 19412,
+      "n_features": 11,
+      "dropped_crops": [
+        "Coconut"
+      ],
+      "leakage_note": "Production is excluded: Yield == Production / Area in this dataset.",
+      "features": {
+        "categorical": [
+          "Crop",
+          "Season",
+          "State"
+        ],
+        "numeric": [
+          "Crop_Year",
+          "Area",
+          "Annual_Rainfall",
+          "Fertilizer",
+          "Pesticide"
+        ],
+        "derived": [
+          "fert_per_ha",
+          "pest_per_ha",
+          "log_area"
+        ]
       },
-      "comparison": {
-        "RandomForest": {
-          "cv_mean_r2": 0.957643393763582,
-          "cv_std_r2": 0.04355846127073043,
-          "cv_folds": 5,
-          "train_r2": 0.9902403026238751,
-          "train_mae": 3.999105972200307,
-          "train_rmse": 86.34584435160043,
-          "test_r2": 0.969976040852033,
-          "test_mae": 9.597661041190591,
-          "test_rmse": 155.10123459123622,
-          "fit_seconds": 119.11
-        },
-        "GradientBoosting": {
-          "cv_mean_r2": 0.9574120734974013,
-          "cv_std_r2": 0.04890241985522969,
-          "cv_folds": 5,
-          "train_r2": 0.999991902664601,
-          "train_mae": 0.8076246726056655,
-          "train_rmse": 2.4871061947347064,
-          "test_r2": 0.9857084871368258,
-          "test_mae": 7.951173931350759,
-          "test_rmse": 107.00901754442562,
-          "fit_seconds": 54.57
-        },
-        "XGBoost": {
-          "cv_mean_r2": 0.9641120320763854,
-          "cv_std_r2": 0.028306343135845128,
-          "cv_folds": 5,
-          "train_r2": 0.9999981660697123,
-          "train_mae": 0.4563569318399942,
-          "train_rmse": 1.183626490552912,
-          "test_r2": 0.944817861224584,
-          "test_mae": 12.667576317464649,
-          "test_rmse": 210.2715611245579,
-          "fit_seconds": 2.6
+      "target_transform": "log1p / expm1",
+      "split": {
+        "protocol": "time split + GroupKFold(5) by State x Crop",
+        "tune_fit_years": "<= 2013",
+        "tune_validation_years": "2014-2016",
+        "fit_years": "<= 2016",
+        "test_years": "2017-2020",
+        "fit_rows": 16212,
+        "test_rows": 3200
+      },
+      "tuning": {
+        "library": "optuna",
+        "n_trials": 40,
+        "objective": "validation MAE (t/ha)",
+        "best_params": {
+          "n_estimators": 300,
+          "max_depth": 8,
+          "learning_rate": 0.19608910829800194,
+          "subsample": 0.8253097164224785,
+          "colsample_bytree": 0.762050244964799,
+          "min_child_weight": 2,
+          "reg_lambda": 3.4034147615448895,
+          "reg_alpha": 0.01758290606111052
         }
       },
-      "best_model": "XGBoost",
+      "comparison": {
+        "MedianBaseline": {
+          "time_split_test": {
+            "mae": 1.0950508110065627,
+            "mape": 0.2710253093821928,
+            "r2": 0.664400787543576,
+            "rmse": 8.374447885544486
+          },
+          "time_split_train": {
+            "mae": 1.0141075930982915,
+            "mape": 0.34234958910710955,
+            "r2": 0.5157163404052489,
+            "rmse": 10.198451219371691
+          },
+          "fit_seconds": 10.12,
+          "group_kfold": {
+            "folds": 5,
+            "grouped_by": "State x Crop",
+            "mae_mean": 2.5030094936941554,
+            "mae_std": 0.799882835286159,
+            "mape_mean": 0.9132166742092845,
+            "r2_mean": 0.3849796101647286
+          }
+        },
+        "RandomForest": {
+          "time_split_test": {
+            "mae": 1.3469646192571987,
+            "mape": 0.305152351412194,
+            "r2": 0.6089646375325627,
+            "rmse": 9.039694105640796
+          },
+          "time_split_train": {
+            "mae": 0.4858283378496453,
+            "mape": 0.11885873095007828,
+            "r2": 0.637976745760531,
+            "rmse": 8.817643762563824
+          },
+          "fit_seconds": 102.93,
+          "group_kfold": {
+            "folds": 5,
+            "grouped_by": "State x Crop",
+            "mae_mean": 2.240821198356752,
+            "mae_std": 0.7062993428539404,
+            "mape_mean": 0.6536503982101356,
+            "r2_mean": 0.419226743841838
+          }
+        },
+        "GradientBoosting": {
+          "time_split_test": {
+            "mae": 1.607244353106765,
+            "mape": 0.41395678556456544,
+            "r2": 0.5741096625449209,
+            "rmse": 9.433972615602915
+          },
+          "time_split_train": {
+            "mae": 0.9353382424812599,
+            "mape": 0.35803253086736886,
+            "r2": 0.8449204715001504,
+            "rmse": 5.77113921964991
+          },
+          "fit_seconds": 15.75,
+          "group_kfold": {
+            "folds": 5,
+            "grouped_by": "State x Crop",
+            "mae_mean": 2.172307517471242,
+            "mae_std": 0.6171703018602276,
+            "mape_mean": 0.6710771485959433,
+            "r2_mean": 0.4426370035025903
+          }
+        },
+        "XGBoost (Optuna)": {
+          "time_split_test": {
+            "mae": 1.306139026251968,
+            "mape": 0.3049699549219452,
+            "r2": 0.6220735942510219,
+            "rmse": 8.886880418651337
+          },
+          "time_split_train": {
+            "mae": 0.37485442785273726,
+            "mape": 0.13514734876886267,
+            "r2": 0.9513298185650669,
+            "rmse": 3.2330751368798545
+          },
+          "fit_seconds": 1.75,
+          "group_kfold": {
+            "folds": 5,
+            "grouped_by": "State x Crop",
+            "mae_mean": 2.2022212239615393,
+            "mae_std": 0.5184462580635397,
+            "mape_mean": 0.6378677077871399,
+            "r2_mean": 0.44776819676148405
+          }
+        }
+      },
+      "best_model": "MedianBaseline",
       "best_metrics": {
-        "cv_mean_r2": 0.9641120320763854,
-        "cv_std_r2": 0.028306343135845128,
-        "cv_folds": 5,
-        "train_r2": 0.9999981660697123,
-        "train_mae": 0.4563569318399942,
-        "train_rmse": 1.183626490552912,
-        "test_r2": 0.944817861224584,
-        "test_mae": 12.667576317464649,
-        "test_rmse": 210.2715611245579,
-        "fit_seconds": 2.6
+        "time_split_test": {
+          "mae": 1.0950508110065627,
+          "mape": 0.2710253093821928,
+          "r2": 0.664400787543576,
+          "rmse": 8.374447885544486
+        },
+        "time_split_train": {
+          "mae": 1.0141075930982915,
+          "mape": 0.34234958910710955,
+          "r2": 0.5157163404052489,
+          "rmse": 10.198451219371691
+        },
+        "fit_seconds": 10.12,
+        "group_kfold": {
+          "folds": 5,
+          "grouped_by": "State x Crop",
+          "mae_mean": 2.5030094936941554,
+          "mae_std": 0.799882835286159,
+          "mape_mean": 0.9132166742092845,
+          "r2_mean": 0.3849796101647286
+        }
+      },
+      "baseline_metrics": {
+        "time_split_test": {
+          "mae": 1.0950508110065627,
+          "mape": 0.2710253093821928,
+          "r2": 0.664400787543576,
+          "rmse": 8.374447885544486
+        },
+        "time_split_train": {
+          "mae": 1.0141075930982915,
+          "mape": 0.34234958910710955,
+          "r2": 0.5157163404052489,
+          "rmse": 10.198451219371691
+        },
+        "fit_seconds": 10.12,
+        "group_kfold": {
+          "folds": 5,
+          "grouped_by": "State x Crop",
+          "mae_mean": 2.5030094936941554,
+          "mae_std": 0.799882835286159,
+          "mape_mean": 0.9132166742092845,
+          "r2_mean": 0.3849796101647286
+        }
+      },
+      "verdict": "the 5-year median baseline BEATS XGBoost on 2017-2020 (1.0951 vs 1.3061 t/ha MAE), so the baseline is shipped",
+      "per_crop_mae": [
+        {
+          "crop": "Rice",
+          "n_test_rows": 186,
+          "model_mae": 0.34348553894841805,
+          "baseline_mae": 0.3473907948387097,
+          "mean_actual_yield": 2.569925784887096
+        },
+        {
+          "crop": "Maize",
+          "n_test_rows": 155,
+          "model_mae": 0.8099454295267523,
+          "baseline_mae": 0.853687922116129,
+          "mean_actual_yield": 2.941072819825806
+        },
+        {
+          "crop": "Urad",
+          "n_test_rows": 129,
+          "model_mae": 0.16418958344615114,
+          "baseline_mae": 0.1337705291472868,
+          "mean_actual_yield": 0.7172903766046511
+        },
+        {
+          "crop": "Moong(Green Gram)",
+          "n_test_rows": 126,
+          "model_mae": 0.13185519494441147,
+          "baseline_mae": 0.11488512949603176,
+          "mean_actual_yield": 0.6511788157619048
+        },
+        {
+          "crop": "Groundnut",
+          "n_test_rows": 119,
+          "model_mae": 0.35841745449308765,
+          "baseline_mae": 0.2988074330630252,
+          "mean_actual_yield": 1.752545778310924
+        },
+        {
+          "crop": "Sesamum",
+          "n_test_rows": 115,
+          "model_mae": 0.19570315576764583,
+          "baseline_mae": 0.10536028247826087,
+          "mean_actual_yield": 0.5493238324347827
+        },
+        {
+          "crop": "Potato",
+          "n_test_rows": 105,
+          "model_mae": 2.075644208743592,
+          "baseline_mae": 2.712237586161905,
+          "mean_actual_yield": 12.60586141352381
+        },
+        {
+          "crop": "Bajra",
+          "n_test_rows": 85,
+          "model_mae": 0.6445962835106293,
+          "baseline_mae": 0.8745472288352942,
+          "mean_actual_yield": 2.0247014337529414
+        },
+        {
+          "crop": "Arhar/Tur",
+          "n_test_rows": 83,
+          "model_mae": 0.22041396676524572,
+          "baseline_mae": 0.18611853531927708,
+          "mean_actual_yield": 0.981397339506024
+        },
+        {
+          "crop": "Ragi",
+          "n_test_rows": 81,
+          "model_mae": 0.36434391011310907,
+          "baseline_mae": 0.27443174119753083,
+          "mean_actual_yield": 1.4206853513703703
+        },
+        {
+          "crop": "Small millets",
+          "n_test_rows": 81,
+          "model_mae": 0.2244143692431914,
+          "baseline_mae": 0.15953958397530865,
+          "mean_actual_yield": 0.9477610910740741
+        },
+        {
+          "crop": "Jowar",
+          "n_test_rows": 80,
+          "model_mae": 0.27570772712835334,
+          "baseline_mae": 0.27129478305,
+          "mean_actual_yield": 1.2013375733875
+        },
+        {
+          "crop": "Onion",
+          "n_test_rows": 80,
+          "model_mae": 11.852100127173703,
+          "baseline_mae": 11.813977689800002,
+          "mean_actual_yield": 21.792355579349998
+        },
+        {
+          "crop": "Rapeseed &Mustard",
+          "n_test_rows": 80,
+          "model_mae": 0.14955059235842827,
+          "baseline_mae": 0.12143306940624998,
+          "mean_actual_yield": 0.8681386090124998
+        },
+        {
+          "crop": "Wheat",
+          "n_test_rows": 80,
+          "model_mae": 0.2970253335683174,
+          "baseline_mae": 0.23842547217500001,
+          "mean_actual_yield": 2.2369719471375
+        }
+      ],
+      "prediction_interval": {
+        "method": "conformal",
+        "nominal_coverage": 0.8,
+        "point_model": "MedianBaseline",
+        "empirical_coverage": 0.82125,
+        "mean_width_t_per_ha": 3.1151283921007753,
+        "candidates": {
+          "baseline_quantile": {
+            "empirical_coverage": 0.5009375,
+            "mean_width_t_per_ha": 1.5784700034869998,
+            "contains_point_estimate": 1.0
+          },
+          "xgb_quantile": {
+            "empirical_coverage": 0.7009375,
+            "mean_width_t_per_ha": 2.722907066345215,
+            "contains_point_estimate": 0.8990625
+          },
+          "conformal": {
+            "empirical_coverage": 0.82125,
+            "mean_width_t_per_ha": 3.1151283921007753,
+            "contains_point_estimate": 1.0
+          }
+        }
       },
       "feature_importances": {
-        "cat__Crop_Arecanut": 0.0027454462833702564,
-        "cat__Crop_Arhar/Tur": 2.960955043818103e-06,
-        "cat__Crop_Bajra": 5.747316208726261e-06,
-        "cat__Crop_Banana": 1.6947789845289662e-05,
-        "cat__Crop_Barley": 3.034045903405058e-08,
-        "cat__Crop_Black pepper": 3.0775606063571104e-08,
-        "cat__Crop_Cardamom": 1.9936176443025033e-07,
-        "cat__Crop_Cashewnut": 7.890769666119013e-06,
-        "cat__Crop_Castor seed": 4.454144431065288e-08,
-        "cat__Crop_Coconut": 0.8485348224639893,
-        "cat__Crop_Coriander": 5.3213046413702614e-08,
-        "cat__Crop_Cotton(lint)": 3.234612086089328e-05,
-        "cat__Crop_Cowpea(Lobia)": 0.0,
-        "cat__Crop_Dry chillies": 2.7278707648292766e-07,
-        "cat__Crop_Garlic": 6.107235321906046e-07,
-        "cat__Crop_Ginger": 1.3660612694366137e-06,
-        "cat__Crop_Gram": 0.0,
-        "cat__Crop_Groundnut": 1.360363199864878e-07,
-        "cat__Crop_Guar seed": 3.788520430703102e-08,
-        "cat__Crop_Horse-gram": 5.414670795067522e-11,
-        "cat__Crop_Jowar": 5.234226829742283e-09,
-        "cat__Crop_Jute": 3.0282810712378705e-06,
-        "cat__Crop_Khesari": 0.0,
-        "cat__Crop_Linseed": 0.0,
-        "cat__Crop_Maize": 3.4594158933032304e-05,
-        "cat__Crop_Masoor": 1.7200133584083233e-07,
-        "cat__Crop_Mesta": 1.1565791737666586e-06,
-        "cat__Crop_Moong(Green Gram)": 1.8505124543821694e-08,
-        "cat__Crop_Moth": 0.0,
-        "cat__Crop_Niger seed": 1.4207636178653615e-09,
-        "cat__Crop_Oilseeds total": 8.132873574595578e-08,
-        "cat__Crop_Onion": 7.4762092481250875e-06,
-        "cat__Crop_Other  Rabi pulses": 7.057388007325471e-10,
-        "cat__Crop_Other Cereals": 0.0,
-        "cat__Crop_Other Kharif pulses": 0.0,
-        "cat__Crop_Other Summer Pulses": 0.0,
-        "cat__Crop_Peas & beans (Pulses)": 1.0080493950681557e-07,
-        "cat__Crop_Potato": 9.258711543225218e-06,
-        "cat__Crop_Ragi": 8.035275556039778e-08,
-        "cat__Crop_Rapeseed &Mustard": 1.0473798539578638e-07,
-        "cat__Crop_Rice": 3.7733244084847684e-07,
-        "cat__Crop_Safflower": 0.0,
-        "cat__Crop_Sannhamp": 9.40172810715012e-08,
-        "cat__Crop_Sesamum": 1.7898796613735612e-06,
-        "cat__Crop_Small millets": 9.768902131668256e-09,
-        "cat__Crop_Soyabean": 1.6290670146190678e-08,
-        "cat__Crop_Sugarcane": 0.007813927717506886,
-        "cat__Crop_Sunflower": 2.1281352928781416e-06,
-        "cat__Crop_Sweet potato": 1.7261023685932742e-06,
-        "cat__Crop_Tapioca": 7.260471193148987e-06,
-        "cat__Crop_Tobacco": 3.10264908875979e-06,
-        "cat__Crop_Turmeric": 2.876506641769083e-07,
-        "cat__Crop_Urad": 0.0,
-        "cat__Crop_Wheat": 9.409191079612356e-07,
-        "cat__Crop_other oilseeds": 3.7457238022398087e-07,
-        "cat__Season_Autumn": 2.8783671950805e-05,
-        "cat__Season_Kharif": 5.533489820663817e-05,
-        "cat__Season_Rabi": 2.84684392681811e-06,
-        "cat__Season_Summer": 1.6407609848556604e-07,
-        "cat__Season_Whole Year": 0.0005938298418186605,
-        "cat__Season_Winter": 2.2870791838158766e-07,
-        "cat__State_Andhra Pradesh": 0.0006720962119288743,
-        "cat__State_Arunachal Pradesh": 4.281874055322987e-07,
-        "cat__State_Assam": 0.030818982049822807,
-        "cat__State_Bihar": 8.960660693446698e-07,
-        "cat__State_Chhattisgarh": 0.005166693590581417,
-        "cat__State_Delhi": 2.348918314964976e-05,
-        "cat__State_Goa": 0.0031766726169735193,
-        "cat__State_Gujarat": 3.4497122669563396e-06,
-        "cat__State_Haryana": 1.8069130192088778e-06,
-        "cat__State_Himachal Pradesh": 1.9194939682165568e-07,
-        "cat__State_Jammu and Kashmir": 2.022498932774397e-07,
-        "cat__State_Jharkhand": 7.763226790302724e-07,
-        "cat__State_Karnataka": 0.019910812377929688,
-        "cat__State_Kerala": 0.00030309255816973746,
-        "cat__State_Madhya Pradesh": 1.9241037989559118e-06,
-        "cat__State_Maharashtra": 9.743602277012542e-05,
-        "cat__State_Manipur": 2.7251476240053307e-06,
-        "cat__State_Meghalaya": 6.976215161103028e-08,
-        "cat__State_Mizoram": 1.612765117897652e-05,
-        "cat__State_Nagaland": 6.943158155081619e-07,
-        "cat__State_Odisha": 2.8701201415515243e-08,
-        "cat__State_Puducherry": 0.024824293330311775,
-        "cat__State_Punjab": 8.263185691248509e-07,
-        "cat__State_Sikkim": 0.0,
-        "cat__State_Tamil Nadu": 0.0016389988595619798,
-        "cat__State_Telangana": 0.02058226242661476,
-        "cat__State_Tripura": 4.125274244870525e-06,
-        "cat__State_Uttar Pradesh": 2.0000668428110657e-06,
-        "cat__State_Uttarakhand": 3.753850421617244e-07,
-        "cat__State_West Bengal": 0.009130899794399738,
-        "num__Crop_Year": 0.0006746382568962872,
-        "num__Area": 0.007781509775668383,
-        "num__Production": 0.009722383692860603,
-        "num__Annual_Rainfall": 0.0038682788144797087,
-        "num__Fertilizer": 0.0005149951903149486,
-        "num__Pesticide": 0.0011376210022717714
+        "cat__Crop_Arecanut": 0.004977117292582989,
+        "cat__Crop_Arhar/Tur": 0.0012438324047252536,
+        "cat__Crop_Bajra": 0.004762711934745312,
+        "cat__Crop_Banana": 0.11362753063440323,
+        "cat__Crop_Barley": 0.0029729085508733988,
+        "cat__Crop_Black pepper": 0.023566823452711105,
+        "cat__Crop_Cardamom": 0.038664836436510086,
+        "cat__Crop_Cashewnut": 0.012539241462945938,
+        "cat__Crop_Castor seed": 0.00133540912065655,
+        "cat__Crop_Coriander": 0.017734112218022346,
+        "cat__Crop_Cotton(lint)": 0.001338873989880085,
+        "cat__Crop_Cowpea(Lobia)": 0.0009252745658159256,
+        "cat__Crop_Dry chillies": 0.01094328798353672,
+        "cat__Crop_Garlic": 0.0071415891870856285,
+        "cat__Crop_Ginger": 0.015184810385107994,
+        "cat__Crop_Gram": 0.0007928729755803943,
+        "cat__Crop_Groundnut": 0.0009566915105096996,
+        "cat__Crop_Guar seed": 0.009907285682857037,
+        "cat__Crop_Horse-gram": 0.010075348429381847,
+        "cat__Crop_Jowar": 0.0009113780688494444,
+        "cat__Crop_Jute": 0.039411380887031555,
+        "cat__Crop_Khesari": 0.00030069000786170363,
+        "cat__Crop_Linseed": 0.007752181496471167,
+        "cat__Crop_Maize": 0.008751614950597286,
+        "cat__Crop_Masoor": 0.0017574633238837123,
+        "cat__Crop_Mesta": 0.031348954886198044,
+        "cat__Crop_Moong(Green Gram)": 0.0087553346529603,
+        "cat__Crop_Moth": 0.004603874403983355,
+        "cat__Crop_Niger seed": 0.006453160662204027,
+        "cat__Crop_Oilseeds total": 0.0009492930257692933,
+        "cat__Crop_Onion": 0.061874452978372574,
+        "cat__Crop_Other  Rabi pulses": 0.001471393508836627,
+        "cat__Crop_Other Cereals": 0.00035273865796625614,
+        "cat__Crop_Other Kharif pulses": 0.0017527341842651367,
+        "cat__Crop_Other Summer Pulses": 0.00018742431711871177,
+        "cat__Crop_Peas & beans (Pulses)": 0.0012853501830250025,
+        "cat__Crop_Potato": 0.07381384819746017,
+        "cat__Crop_Ragi": 0.0008932219352573156,
+        "cat__Crop_Rapeseed &Mustard": 0.001387361902743578,
+        "cat__Crop_Rice": 0.010971720330417156,
+        "cat__Crop_Safflower": 0.002138812094926834,
+        "cat__Crop_Sannhamp": 0.008272909559309483,
+        "cat__Crop_Sesamum": 0.008076135069131851,
+        "cat__Crop_Small millets": 0.0011680865427479148,
+        "cat__Crop_Soyabean": 0.0006666212575510144,
+        "cat__Crop_Sugarcane": 0.1480274498462677,
+        "cat__Crop_Sunflower": 0.0009109329548664391,
+        "cat__Crop_Sweet potato": 0.04439212754368782,
+        "cat__Crop_Tapioca": 0.07209479063749313,
+        "cat__Crop_Tobacco": 0.015149359591305256,
+        "cat__Crop_Turmeric": 0.0031870976090431213,
+        "cat__Crop_Urad": 0.006175872404128313,
+        "cat__Crop_Wheat": 0.006270859856158495,
+        "cat__Crop_other oilseeds": 0.0017936518415808678,
+        "cat__Season_Autumn": 0.0014542696299031377,
+        "cat__Season_Kharif": 0.0009092967957258224,
+        "cat__Season_Rabi": 0.0011346667306497693,
+        "cat__Season_Summer": 0.0021193453576415777,
+        "cat__Season_Whole Year": 0.039927735924720764,
+        "cat__Season_Winter": 0.0006303622503764927,
+        "cat__State_Andhra Pradesh": 0.0016259804833680391,
+        "cat__State_Arunachal Pradesh": 0.001639630412682891,
+        "cat__State_Assam": 0.0034868500661104918,
+        "cat__State_Bihar": 0.0011815991019830108,
+        "cat__State_Chhattisgarh": 0.008411483839154243,
+        "cat__State_Delhi": 0.01606505736708641,
+        "cat__State_Goa": 0.0008585476316511631,
+        "cat__State_Gujarat": 0.0016301748109981418,
+        "cat__State_Haryana": 0.001506524276919663,
+        "cat__State_Himachal Pradesh": 0.0031086415983736515,
+        "cat__State_Jammu and Kashmir": 0.004814079962670803,
+        "cat__State_Jharkhand": 0.0014037461951375008,
+        "cat__State_Karnataka": 0.00254048896022141,
+        "cat__State_Kerala": 0.0021721336524933577,
+        "cat__State_Madhya Pradesh": 0.004044453613460064,
+        "cat__State_Maharashtra": 0.0017427804414182901,
+        "cat__State_Manipur": 0.002804417395964265,
+        "cat__State_Meghalaya": 0.005424779839813709,
+        "cat__State_Mizoram": 0.0030128860380500555,
+        "cat__State_Nagaland": 0.0010630366159603,
+        "cat__State_Odisha": 0.0016771559603512287,
+        "cat__State_Puducherry": 0.003939187619835138,
+        "cat__State_Punjab": 0.001593323890119791,
+        "cat__State_Sikkim": 0.0007143036345951259,
+        "cat__State_Tamil Nadu": 0.002122223377227783,
+        "cat__State_Telangana": 0.0006525499629788101,
+        "cat__State_Tripura": 0.001087513635866344,
+        "cat__State_Uttar Pradesh": 0.0016052505234256387,
+        "cat__State_Uttarakhand": 0.0013724970631301403,
+        "cat__State_West Bengal": 0.0010524108074605465,
+        "num__Crop_Year": 0.0005852945032529533,
+        "num__Area": 0.000823813199531287,
+        "num__Annual_Rainfall": 0.0009056251146830618,
+        "num__Fertilizer": 0.0018681036308407784,
+        "num__Pesticide": 0.000652745773550123,
+        "num__fert_per_ha": 0.0004403429920785129,
+        "num__pest_per_ha": 0.0005896836519241333,
+        "num__log_area": 0.0016041701892390847
       },
       "meta_counts": {
-        "crops": 55,
+        "crops": 54,
         "states": 30,
         "seasons": 6
       },
       "refit_on_full_data": true,
+      "dataset": {
+        "name": "Crop Yield in Indian States",
+        "file": "data/crop_yield.csv",
+        "source_url": "https://www.kaggle.com/datasets/akshatgupta7/crop-yield-in-indian-states-dataset",
+        "licence": "CC0 1.0 Public Domain (compiled from data.gov.in / Ministry of Agriculture and Farmers Welfare releases)",
+        "note": "State-level aggregates 1997-2020. Yield == Production / Area, so Production is excluded as a feature; Coconut is recorded in nuts/ha and is dropped."
+      },
       "artifact": "yield_prediction_pipeline.pkl",
-      "artifact_bytes": 511168
+      "artifact_bytes": 248491
     }
   },
-  "total_seconds": 249.0
+  "tasks_trained_this_run": [
+    "yield"
+  ],
+  "model_cards": [
+    "crop_card.md",
+    "fertilizer_card.md",
+    "yield_card.md"
+  ],
+  "total_seconds": 592.9
 }

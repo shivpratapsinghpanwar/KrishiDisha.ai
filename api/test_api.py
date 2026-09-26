@@ -42,7 +42,10 @@ def test_fertilizer_and_calculator(client):
     r = client.post("/fertilizer/recommend", json={"temperature": 26, "humidity": 52, "moisture": 38,
                                                    "soil_type": "Sandy", "crop_type": "Maize", "N": 37, "P": 0,
                                                    "K": 0, "area": 2})
-    assert r.status_code == 200 and r.json()["recommended_fertilizer"] == "Urea"
+    # rule-first: with soil N, P and K all low the balanced N+P complex wins,
+    # not straight Urea - see tests/test_services.py
+    assert r.status_code == 200 and r.json()["recommended_fertilizer"] == "28-28"
+    assert r.json()["why"] and len(r.json()["ranked"]) == 3
     assert r.json()["calculator"]["bags_50kg"]["Urea"] > 0
     r = client.post("/fertilizer/calculator", json={"crop": "wheat", "area": 1, "unit": "hectare"})
     assert r.status_code == 200 and r.json()["nutrient_requirement_kg"]["N"] == 120
@@ -51,9 +54,16 @@ def test_fertilizer_and_calculator(client):
 
 def test_yield(client):
     r = client.post("/yield/predict", json={"crop": "Wheat", "crop_year": 2020, "season": "Rabi", "state": "Punjab",
-                                            "area": 100, "production": 400, "annual_rainfall": 600,
+                                            "area": 100, "annual_rainfall": 600,
                                             "fertilizer": 15000, "pesticide": 30})
-    assert r.status_code == 200 and r.json()["predicted_yield"] > 0
+    body = r.json()
+    assert r.status_code == 200 and body["predicted_yield"] > 0
+    assert body["expected_range"][0] <= body["predicted_yield"] <= body["expected_range"][1]
+    assert body["baseline_yield"] > 0
+    # fertilizer/pesticide are optional; "production" is gone from the schema
+    r = client.post("/yield/predict", json={"crop": "Wheat", "crop_year": 2020, "season": "Rabi", "state": "Punjab",
+                                            "area": 100, "annual_rainfall": 600})
+    assert r.status_code == 200 and r.json()["inputs_used"]["fertilizer"] > 0
 
 
 def test_disease_stub(client):

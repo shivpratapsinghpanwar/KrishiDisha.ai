@@ -56,30 +56,41 @@ def build_tools(ml: MLService, kb: KnowledgeBase, data_dir, data_gov_key: str,
     ))
     tools.append(Tool(
         "recommend_fertilizer",
-        "Predict the most suitable commercial fertilizer (Urea, DAP, 10-26-26, 14-35-14, 17-17-17, 20-20, 28-28) "
-        f"for a crop and soil. soil_type must be one of {SOIL_TYPES}; crop_type one of {FERT_CROP_TYPES}.",
+        "Recommend a commercial fertilizer (Urea, DAP, 10-26-26, 14-35-14, 17-17-17, 20-20, 28-28) by working out "
+        "the crop's nutrient requirement, subtracting what the soil test already supplies, and matching the "
+        "remaining N-P2O5-K2O ratio against each product. Returns the pick, a one-line reason, the ranked top 3 "
+        "and the kg/ha deficit; pass area to also get the dose in kg and 50-kg bags. "
+        f"soil_type must be one of {SOIL_TYPES}; crop_type one of {FERT_CROP_TYPES}. "
+        "N, K and P are available soil nutrients in kg/ha (Soil Health Card values).",
         {"type": "object", "properties": {
             "temperature": _num("Temperature in Celsius"), "humidity": _num("Humidity %"),
             "moisture": _num("Soil moisture %"),
             "soil_type": {"type": "string", "enum": SOIL_TYPES},
             "crop_type": {"type": "string", "enum": FERT_CROP_TYPES},
-            "N": _num("Soil nitrogen"), "K": _num("Soil potassium"), "P": _num("Soil phosphorus")},
+            "N": _num("Available soil nitrogen, kg/ha"), "K": _num("Available soil potassium, kg/ha"),
+            "P": _num("Available soil phosphorus, kg/ha"),
+            "area": _num("Field area (optional) - adds a dose calculation"),
+            "unit": {"type": "string", "enum": ["acre", "hectare"], "description": "Area unit (default acre)"}},
          "required": ["temperature", "humidity", "moisture", "soil_type", "crop_type", "N", "K", "P"]},
         lambda **kw: ml.recommend_fertilizer(**kw),
     ))
     tools.append(Tool(
         "predict_yield",
-        "Predict crop yield (tonnes/hectare) for an Indian state and season using the historical yield model. "
+        "Estimate crop yield (tonnes/hectare) for an Indian state and season from a model trained on 1997-2020 "
+        "state-level records. Returns the point estimate, a 10-90% expected_range and baseline_yield (the 5-year "
+        "median for that crop and state) so the farmer can see whether the model is saying anything new. "
+        "Never invent fertilizer or pesticide figures: leave them out and regional medians are used, and the "
+        "result reports which values it fell back on. Do NOT pass production - yield is derived from production "
+        "in the source data, so supplying it would just echo the answer back. "
         "Call get_reference_lists first if unsure about valid crop/state/season names.",
         {"type": "object", "properties": {
             "crop": {"type": "string"}, "crop_year": {"type": "integer"},
             "season": {"type": "string", "description": "Kharif, Rabi, Whole Year, Summer, Autumn or Winter"},
             "state": {"type": "string"}, "area": _num("Cultivated area in hectares"),
-            "production": _num("Expected/last production in tonnes (use area*3 if unknown)"),
-            "annual_rainfall": _num("Annual rainfall mm"), "fertilizer": _num("Total fertilizer used in kg"),
-            "pesticide": _num("Total pesticide used in kg")},
-         "required": ["crop", "crop_year", "season", "state", "area", "production", "annual_rainfall",
-                      "fertilizer", "pesticide"]},
+            "annual_rainfall": _num("Annual rainfall mm"),
+            "fertilizer": _num("Total fertilizer used in kg (optional; omit if unknown)"),
+            "pesticide": _num("Total pesticide used in kg (optional; omit if unknown)")},
+         "required": ["crop", "crop_year", "season", "state", "area", "annual_rainfall"]},
         lambda **kw: ml.predict_yield(**kw),
     ))
     tools.append(Tool(

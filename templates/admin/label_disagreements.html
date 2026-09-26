@@ -1,0 +1,64 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Label disagreements{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-exclamation-diamond me-2"></i>Label disagreements</h4>
+  <div class="text-muted small">The two labellers chose different classes. Pick the final answer.</div>
+{% endblock %}
+
+{% block admin_content %}
+<div class="mb-3">
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.label_queue') }}">
+    <i class="bi bi-arrow-left me-1"></i>Back to the queue</a>
+  <span class="ms-2 small text-muted">{{ tasks | length }} open · {{ counts.get('labelled', 0) }} agreed so far</span>
+</div>
+
+{% if not tasks %}
+  <div class="alert alert-success"><i class="bi bi-check2-circle me-1"></i>No disagreements to resolve.</div>
+{% endif %}
+
+{% for task in tasks %}
+<div class="kd-card p-3 mb-4">
+  <form method="post" action="{{ url_for('admin.label_disagreements') }}">
+    <input type="hidden" name="task_id" value="{{ task.id }}">
+    <div class="row g-3">
+      <div class="col-lg-5 text-center">
+        {% set src = image_url(task.image_path) %}
+        {% if src %}
+          <img src="{{ src }}" alt="Photo with disagreeing labels" class="img-fluid rounded" style="max-height:340px;object-fit:contain;">
+        {% else %}
+          <div class="alert alert-warning mb-0">Image file not available: <code>{{ task.image_path }}</code></div>
+        {% endif %}
+        <div class="small text-muted mt-2">Task #{{ task.id }} · source {{ task.source }}</div>
+      </div>
+      <div class="col-lg-7">
+        <ul class="list-unstyled small mb-3">
+          <li><strong>{{ task.labeller_1 }}</strong>: {{ task.label_1.replace('___', ' — ').replace('_', ' ') if task.label_1 else '-' }}</li>
+          <li><strong>{{ task.labeller_2 }}</strong>: {{ task.label_2.replace('___', ' — ').replace('_', ' ') if task.label_2 else '-' }}</li>
+          {% if task.model_label %}
+            <li class="text-muted">Model: {{ task.model_label.replace('___', ' — ').replace('_', ' ') }}
+              {% if task.model_confidence %}({{ task.model_confidence | pct }}){% endif %}</li>
+          {% endif %}
+        </ul>
+
+        <label for="final{{ task.id }}" class="form-label small mb-1">Final label</label>
+        <select class="form-select form-select-sm mb-3" id="final{{ task.id }}" name="final_label">
+          {% if task.label_1 %}<option value="{{ task.label_1 }}">{{ task.label_1 }} ({{ task.labeller_1 }})</option>{% endif %}
+          {% if task.label_2 %}<option value="{{ task.label_2 }}">{{ task.label_2 }} ({{ task.labeller_2 }})</option>{% endif %}
+          <option value="unsure">Neither — discard this photo</option>
+          {% for crop, items in grouped.items() | sort %}
+            <optgroup label="{{ crop }}">
+              {% for label in items %}
+                {% if label != 'unsure' %}
+                  <option value="{{ label }}">{{ label.split('___')[1].replace('_', ' ') if '___' in label else label }}</option>
+                {% endif %}
+              {% endfor %}
+            </optgroup>
+          {% endfor %}
+        </select>
+        <button class="btn btn-success btn-sm" type="submit"><i class="bi bi-check2 me-1"></i>Set final label</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endfor %}
+{% endblock %}

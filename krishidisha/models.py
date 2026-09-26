@@ -260,3 +260,123 @@ class ChatMessage(db.Model):
     tools_used = db.Column(db.Text)  # JSON list of tool names invoked for this reply
     provider = db.Column(db.String(30))
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+
+# --------------------------------------------------------------------------- #
+# Feedback loop / own data collection
+# --------------------------------------------------------------------------- #
+FEEDBACK_KINDS = ["chat", "diagnosis", "yield", "fertilizer"]
+FEEDBACK_STATUSES = ["pending", "accepted", "rejected"]
+LABEL_SOURCES = ["app_upload", "chat", "drive"]
+LABEL_STATUSES = ["queued", "labelled", "needs_second", "disagreement", "exported", "discarded"]
+UNSURE = "unsure"
+
+
+class DataConsent(db.Model):
+    """Per-farmer opt-in for reusing their photos / chats to improve the models."""
+
+    __tablename__ = "data_consent"
+
+    id = db.Column(db.Integer, primary_key=True)
+    farmer_id = db.Column(db.Integer, db.ForeignKey("farmer.id"), unique=True, nullable=False, index=True)
+    photos = db.Column(db.Boolean, default=False, nullable=False)
+    chats = db.Column(db.Boolean, default=False, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    farmer = db.relationship("Farmer", backref=db.backref("consent", uselist=False, cascade="all, delete-orphan"))
+
+    def to_dict(self) -> dict:
+        return {"photos": bool(self.photos), "chats": bool(self.chats),
+                "updated_at": self.updated_at.isoformat() if self.updated_at else None}
+
+
+class Feedback(db.Model):
+    """A farmer's verdict on one model output (chat reply, diagnosis, yield, fertilizer)."""
+
+    __tablename__ = "feedback"
+
+    id = db.Column(db.Integer, primary_key=True)
+    farmer_id = db.Column(db.Integer, db.ForeignKey("farmer.id"), nullable=True, index=True)
+    kind = db.Column(db.String(20), nullable=False, index=True)  # chat | diagnosis | yield | fertilizer
+    ref_id = db.Column(db.String(200), nullable=False)  # chat session key (+#index) / activity id / filename
+    rating = db.Column(db.Integer, default=0, nullable=False)  # -1 bad, 0 neutral, +1 good
+    corrected_label = db.Column(db.String(120))
+    comment = db.Column(db.Text)
+    image_path = db.Column(db.String(500))
+    model_label = db.Column(db.String(120))
+    model_confidence = db.Column(db.Float)
+    language = db.Column(db.String(10))
+    consent = db.Column(db.Boolean, default=False, nullable=False)
+    status = db.Column(db.String(20), default="pending", nullable=False, index=True)
+    reviewer = db.Column(db.String(60))
+    reviewed_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    farmer = db.relationship("Farmer", backref=db.backref("feedback", lazy=True))
+
+    def to_dict(self) -> dict:
+        return {"id": self.id, "kind": self.kind, "ref_id": self.ref_id, "rating": self.rating,
+                "corrected_label": self.corrected_label, "comment": self.comment,
+                "model_label": self.model_label, "model_confidence": self.model_confidence,
+                "language": self.language, "consent": bool(self.consent), "status": self.status,
+                "created_at": self.created_at.isoformat() if self.created_at else None}
+
+
+class LabelTask(db.Model):
+    """One photo waiting for a human label, using a two-person agreement rule."""
+
+    __tablename__ = "label_task"
+
+    id = db.Column(db.Integer, primary_key=True)
+    image_path = db.Column(db.String(500), nullable=False)  # relative to UPLOAD_DIR, or absolute
+    source = db.Column(db.String(20), nullable=False, index=True)  # app_upload | chat | drive
+    farmer_id = db.Column(db.Integer, db.ForeignKey("farmer.id"), nullable=True, index=True)
+    model_label = db.Column(db.String(120))
+    model_confidence = db.Column(db.Float)
+    label_1 = db.Column(db.String(120))
+    labeller_1 = db.Column(db.String(60))
+    label_2 = db.Column(db.String(120))
+    labeller_2 = db.Column(db.String(60))
+    final_label = db.Column(db.String(120))
+    status = db.Column(db.String(20), default="queued", nullable=False, index=True)
+    consent = db.Column(db.Boolean, default=False, nullable=False)
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    farmer = db.relationship("Farmer", backref=db.backref("label_tasks", lazy=True))
+
+    # ---------------------------------------------------------------- agreement
+    def record_label(self, label: str, labeller: str) -> str:
+        """Apply the two-person agreement rule and return the new status."""
+        label = (label or "").strip()
+        if not self.labeller_1:
+            self.label_1, self.labeller_1 = label, labeller
+            self.status = "needs_second"
+        elif self.labeller_1 != labeller:
+            self.label_2, self.labeller_2 = label, labeller
+            if label == self.label_1:
+                if label == UNSURE:
+                    self.status = "discarded"
+                    self.notes = ((self.notes or "") + " both labellers unsure;").strip()
+                else:
+                    self.final_label, self.status = label, "labelled"
+            else:
+                self.status = "disagreement"
+        self.updated_at = datetime.utcnow()
+        return self.status
+
+    def resolve(self, final_label: str, reviewer: str) -> None:
+        final_label = (final_label or "").strip()
+        self.notes = ((self.notes or "") + f" resolved by {reviewer};").strip()
+        if not final_label or final_label == UNSURE:
+            self.status = "discarded"
+        else:
+            self.final_label, self.status = final_label, "labelled"
+        self.updated_at = datetime.utcnow()
+
+    def to_dict(self) -> dict:
+        return {"id": self.id, "image_path": self.image_path, "source": self.source, "status": self.status,
+                "model_label": self.model_label, "model_confidence": self.model_confidence,
+                "label_1": self.label_1, "label_2": self.label_2, "final_label": self.final_label,
+                "consent": bool(self.consent)}

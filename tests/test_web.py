@@ -67,18 +67,31 @@ def test_fertilizer_recommendation_flow(farmer_client):
     data = {"temperature": 26, "humidity": 52, "moisture": 38, "soil_type": "Sandy", "crop_type": "Maize",
             "N": 37, "P": 0, "K": 0, "area": 2, "unit": "acre"}
     r = farmer_client.post("/fertilizer_recommendation", data=data)
-    assert r.status_code == 200 and b"Urea" in r.data
+    # the rule picks the balanced N+P complex, not straight Urea - see
+    # tests/test_services.py::test_fertilizer_rule_beats_the_lookup_table
+    assert r.status_code == 200 and b"28-28" in r.data
+    assert b"Nutrient gap to fill" in r.data
     r = farmer_client.post("/download_fertilizer_report")
     assert r.status_code == 200 and r.mimetype == "application/pdf"
 
 
 def test_yield_flow(farmer_client):
     data = {"crop": "Wheat", "crop_year": 2020, "season": "Rabi", "state": "Punjab", "area": 1000,
-            "production": 4000, "annual_rainfall": 600, "fertilizer": 150000, "pesticide": 300}
+            "annual_rainfall": 600, "fertilizer": 150000, "pesticide": 300}
     r = farmer_client.post("/crop_yield", data=data)
     assert r.status_code == 200 and b"tonnes per hectare" in r.data
+    assert b"5-year state average" in r.data
     r = farmer_client.post("/download_yield_report")
     assert r.status_code == 200 and r.mimetype == "application/pdf"
+
+
+def test_yield_flow_without_optional_inputs(farmer_client):
+    """Fertilizer and pesticide are optional; regional medians fill the blanks."""
+    data = {"crop": "Wheat", "crop_year": 2020, "season": "Rabi", "state": "Punjab", "area": 1000,
+            "annual_rainfall": 600, "fertilizer": "", "pesticide": ""}
+    r = farmer_client.post("/crop_yield", data=data)
+    assert r.status_code == 200 and b"tonnes per hectare" in r.data
+    assert b"Filled in for you" in r.data
 
 
 def test_disease_upload_with_stub_model(farmer_client):
@@ -248,10 +261,17 @@ def test_api_endpoints(client):
                                                           "soil_type": "Sandy", "crop_type": "Maize", "N": 37, "P": 0,
                                                           "K": 0, "area": 1})
     assert r.status_code == 200 and r.get_json()["calculator"]["bags_50kg"]["Urea"] > 0
+    assert r.get_json()["why"] and r.get_json()["ranked"]
     r = client.post("/api/v1/yield/predict", json={"crop": "Wheat", "crop_year": 2020, "season": "Rabi",
-                                                   "state": "Punjab", "area": 100, "production": 400,
+                                                   "state": "Punjab", "area": 100,
                                                    "annual_rainfall": 600, "fertilizer": 15000, "pesticide": 30})
-    assert r.status_code == 200 and r.get_json()["predicted_yield"] > 0
+    body = r.get_json()
+    assert r.status_code == 200 and body["predicted_yield"] > 0
+    assert body["expected_range"][0] <= body["predicted_yield"] <= body["expected_range"][1]
+    # fertilizer/pesticide are optional now
+    r = client.post("/api/v1/yield/predict", json={"crop": "Wheat", "crop_year": 2020, "season": "Rabi",
+                                                   "state": "Punjab", "area": 100, "annual_rainfall": 600})
+    assert r.status_code == 200 and r.get_json()["inputs_used"]["fertilizer"] > 0
     assert client.get("/api/v1/reference").get_json()["soil_types"] == ["Black", "Clayey", "Loamy", "Red", "Sandy"]
     assert client.get("/api/v1/schemes?q=credit").get_json()["schemes"]
     assert client.get("/api/v1/crop-guide/wheat").get_json()["guide"]["season"]

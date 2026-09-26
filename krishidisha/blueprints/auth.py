@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
 from ..models import Admin, Farmer
-from ..utils import current_farmer, farmer_required
+from ..utils import consent_row, current_farmer, farmer_required, set_consent
 
 bp = Blueprint("auth", __name__)
 
@@ -51,6 +51,8 @@ def farmer_registration():
             db.session.rollback()
             flash("Username, email or phone already registered.", "danger")
             return render_template("farmer_registration.html", states=INDIAN_STATES, languages=LANGUAGES, form=f)
+        if f.get("data_consent") in ("on", "1", "true", "yes"):
+            set_consent(farmer, photos=True, chats=True)
         if farmer.verified:
             session["farmer_id"] = farmer.id
             flash(f"Welcome to KrishiDisha, {farmer.name}!", "success")
@@ -103,10 +105,13 @@ def profile():
                 flash("New password must be at least 6 characters.", "danger")
                 return redirect(url_for("auth.profile"))
             farmer.set_password(f["new_password"])
+        set_consent(farmer, photos=f.get("consent_photos") == "on", chats=f.get("consent_chats") == "on",
+                    commit=False)
         db.session.commit()
         flash("Profile updated.", "success")
         return redirect(url_for("auth.profile"))
-    return render_template("profile.html", farmer=farmer, states=INDIAN_STATES, languages=LANGUAGES)
+    return render_template("profile.html", farmer=farmer, states=INDIAN_STATES, languages=LANGUAGES,
+                           consent=consent_row(farmer))
 
 
 # ------------------------------------------------------------------ admin

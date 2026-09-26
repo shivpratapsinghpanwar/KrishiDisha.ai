@@ -11,7 +11,7 @@
 {% block content %}
 <div class="container py-4">
   <h1 class="kd-section-title mb-1"><i class="bi bi-droplet-half me-2"></i>Fertilizer Recommendation</h1>
-  <p class="text-muted mb-4">Tell us your soil and crop details to get the right fertilizer, and optionally the exact dose for your field.</p>
+  <p class="text-muted mb-4">Tell us your soil test and crop to get the right fertilizer, and optionally the exact dose for your field. The pick comes from an agronomic rule: your crop's nutrient requirement, less what the soil already supplies, matched against each product's NPK ratio.</p>
 
   <div class="row g-4">
     <div class="col-lg-5">
@@ -56,14 +56,17 @@
             <div class="col-4">
               <label for="N" class="form-label">Nitrogen (N)</label>
               <input type="number" step="any" min="0" class="form-control" id="N" name="N" value="{{ inputs.N if inputs.N is not none else '' }}" required>
+              <div class="kd-help">kg/ha available</div>
             </div>
             <div class="col-4">
               <label for="P" class="form-label">Phosphorus (P)</label>
               <input type="number" step="any" min="0" class="form-control" id="P" name="P" value="{{ inputs.P if inputs.P is not none else '' }}" required>
+              <div class="kd-help">kg/ha available</div>
             </div>
             <div class="col-4">
               <label for="K" class="form-label">Potassium (K)</label>
               <input type="number" step="any" min="0" class="form-control" id="K" name="K" value="{{ inputs.K if inputs.K is not none else '' }}" required>
+              <div class="kd-help">kg/ha available</div>
             </div>
           </div>
 
@@ -104,17 +107,31 @@
               <h2 class="text-success mb-1">{{ result.recommended_fertilizer }}</h2>
               {% if result.npk %}<span class="badge bg-success mb-2">NPK {{ result.npk }}</span>{% endif %}
               <div class="d-flex align-items-center gap-2">
-                <div class="progress kd-confidence flex-grow-1" role="progressbar" aria-label="Confidence" aria-valuenow="{{ (result.confidence * 100) | round }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress kd-confidence flex-grow-1" role="progressbar" aria-label="Ratio match" aria-valuenow="{{ (result.confidence * 100) | round }}" aria-valuemin="0" aria-valuemax="100">
                   <div class="progress-bar bg-success" style="width: {{ (result.confidence * 100) | round }}%"></div>
                 </div>
-                <span class="fw-semibold">{{ result.confidence | pct }}</span>
+                <span class="fw-semibold">{{ result.confidence | pct }} match</span>
               </div>
             </div>
           </div>
 
+          {% if result.why %}
+            <p class="mb-3"><i class="bi bi-lightbulb me-1 text-warning"></i>{{ result.why }}</p>
+          {% endif %}
+
+          {% if result.deficit_kg_per_ha %}
+            <div class="mb-3">
+              <div class="small text-muted mb-1">Nutrient gap to fill (kg per hectare)</div>
+              {% for nutrient, kg in result.deficit_kg_per_ha.items() %}
+                <span class="kd-chip"><i class="bi bi-clipboard-data"></i>{{ nutrient }} {{ kg }} kg
+                  {%- if result.soil_status and result.soil_status.get(nutrient) %} · soil {{ result.soil_status[nutrient] }}{% endif %}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
           {% if result.alternatives %}
             <div class="mb-3">
-              <div class="small text-muted mb-1">Other options</div>
+              <div class="small text-muted mb-1">Next best ratio matches</div>
               {% for alt in result.alternatives %}
                 <span class="kd-chip"><i class="bi bi-droplet"></i>{{ alt.fertilizer }} · {{ alt.probability | pct }}</span>
               {% endfor %}
@@ -123,6 +140,15 @@
 
           {% if result.usage_note %}
             <p class="small text-muted"><i class="bi bi-info-circle me-1"></i>{{ result.usage_note }}</p>
+          {% endif %}
+
+          {% if result.model_hint %}
+            <p class="small text-muted mb-0">
+              <i class="bi bi-cpu me-1"></i>For reference, the statistical model would have said
+              <strong>{{ result.model_hint.fertilizer }}</strong> ({{ result.model_hint.confidence | pct }}).
+              {{ result.model_hint.reliability }}
+              The recommendation above follows the agronomic rule instead.
+            </p>
           {% endif %}
 
           {% if result.calculator %}

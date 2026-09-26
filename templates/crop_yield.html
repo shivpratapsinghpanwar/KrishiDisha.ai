@@ -47,29 +47,24 @@
               <div class="kd-help">hectares</div>
             </div>
             <div class="col-6">
-              <label for="production" class="form-label">Historical production</label>
-              <input type="number" step="any" min="0" class="form-control" id="production" name="production" value="{{ inputs.production if inputs.production is not none else '' }}" required>
-              <div class="kd-help">tonnes, from a similar past season</div>
-            </div>
-            <div class="col-6">
               <label for="annual_rainfall" class="form-label">Annual rainfall</label>
               <input type="number" step="any" min="0" class="form-control" id="annual_rainfall" name="annual_rainfall" value="{{ inputs.annual_rainfall if inputs.annual_rainfall is not none else '' }}" required>
               <div class="kd-help">mm</div>
             </div>
             <div class="col-6">
-              <label for="fertilizer" class="form-label">Fertilizer used</label>
-              <input type="number" step="any" min="0" class="form-control" id="fertilizer" name="fertilizer" value="{{ inputs.fertilizer if inputs.fertilizer is not none else '' }}" required>
-              <div class="kd-help">kg, total for the area</div>
+              <label for="fertilizer" class="form-label">Fertilizer used <span class="text-muted fw-normal">(optional)</span></label>
+              <input type="number" step="any" min="0" class="form-control" id="fertilizer" name="fertilizer" value="{{ inputs.fertilizer if inputs.fertilizer is not none else '' }}">
+              <div class="kd-help">kg, total for the area — leave blank to use your region's typical rate</div>
             </div>
-            <div class="col-12">
-              <label for="pesticide" class="form-label">Pesticide used</label>
-              <input type="number" step="any" min="0" class="form-control" id="pesticide" name="pesticide" value="{{ inputs.pesticide if inputs.pesticide is not none else '' }}" required>
-              <div class="kd-help">kg, total for the area</div>
+            <div class="col-6">
+              <label for="pesticide" class="form-label">Pesticide used <span class="text-muted fw-normal">(optional)</span></label>
+              <input type="number" step="any" min="0" class="form-control" id="pesticide" name="pesticide" value="{{ inputs.pesticide if inputs.pesticide is not none else '' }}">
+              <div class="kd-help">kg, total for the area — leave blank to use your region's typical rate</div>
             </div>
           </div>
           <button type="submit" class="btn btn-success w-100 mt-4"><i class="bi bi-search me-1"></i>Predict yield</button>
         </form>
-        <p class="small text-muted mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>The model learns patterns from state-level historical records (area, rainfall, fertilizer and pesticide use), so results are indicative, not a field-level guarantee.</p>
+        <p class="small text-muted mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>The model learns patterns from state-level historical records (area, rainfall, fertilizer and pesticide use), so results are indicative, not a field-level guarantee. It is <strong>not</strong> given your production figure — yield is derived from production in the source data, so feeding it back would only echo your own number.</p>
       </div>
     </div>
 
@@ -80,11 +75,45 @@
             <div class="small text-muted">Predicted yield</div>
             <div class="display-5 fw-bold text-success">{{ result.predicted_yield | round(2) }}</div>
             <div class="text-muted">{{ result.unit }}</div>
+            {% if result.expected_range %}
+              <div class="small text-muted mt-2">
+                Likely between <strong>{{ result.expected_range[0] | round(2) }}</strong> and
+                <strong>{{ result.expected_range[1] | round(2) }}</strong> t/ha
+                {% if result.expected_range_note %}<span class="d-block">{{ result.expected_range_note }}</span>{% endif %}
+              </div>
+            {% endif %}
           </div>
           {% if result.estimated_production is not none %}
             <div class="text-center mb-3">
               <span class="badge bg-success fs-6">Estimated production: {{ result.estimated_production | round(2) }} tonnes</span>
             </div>
+          {% endif %}
+          {% if result.baseline_yield %}
+            {% set delta = result.predicted_yield - result.baseline_yield %}
+            <div class="text-center mb-3">
+              {% if (delta | abs) < 0.005 %}
+                <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                  Matches the 5-year state average ({{ result.baseline_yield | round(2) }} t/ha for
+                  {{ inputs.crop }} in {{ inputs.state }})
+                </span>
+              {% else %}
+                <span class="badge {{ 'bg-success-subtle text-success-emphasis' if delta >= 0 else 'bg-warning-subtle text-warning-emphasis' }}">
+                  {{ '+' if delta >= 0 }}{{ delta | round(2) }} t/ha vs the 5-year state average
+                  ({{ result.baseline_yield | round(2) }} t/ha for {{ inputs.crop }} in {{ inputs.state }})
+                </span>
+              {% endif %}
+            </div>
+          {% endif %}
+          {% if result.inputs_used and result.inputs_used.source %}
+            {% set src = result.inputs_used.source %}
+            {% if src.fertilizer != 'provided' or src.pesticide != 'provided' %}
+              <div class="alert alert-light border small py-2 mb-3">
+                <i class="bi bi-info-circle me-1"></i>Filled in for you:
+                {% if src.fertilizer != 'provided' %}fertilizer {{ result.inputs_used.fertilizer }} kg{% endif %}{% if src.fertilizer != 'provided' and src.pesticide != 'provided' %},{% endif %}
+                {% if src.pesticide != 'provided' %}pesticide {{ result.inputs_used.pesticide }} kg{% endif %}
+                — from typical rates for this crop and state.
+              </div>
+            {% endif %}
           {% endif %}
           {% if result.tips %}
             <hr>
