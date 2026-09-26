@@ -10,7 +10,19 @@ agricultural assistant — one Flask app, running on a laptop or a single dyno.
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-lightgrey)](LICENSE)
 
+[![Paper](https://img.shields.io/badge/IEEE%20ICoEIT%202025-10.1109%2FICoEIT63558.2025.11211713-00629B)](https://doi.org/10.1109/ICoEIT63558.2025.11211713)
+
 Built by Abhishek Chourasia, Goutam Mandloi and Shivpratap Singh Panwar.
+
+This repository is the reference implementation of our paper **"KrishiDisha: Revolutionizing
+Agriculture with Intelligent Recommendations, Disease Detection, and Yield Prediction"**,
+2025 IEEE International Conference on Engineering Innovations and Technologies (ICoEIT),
+pp. 1028-1040, [doi:10.1109/ICoEIT63558.2025.11211713](https://doi.org/10.1109/ICoEIT63558.2025.11211713).
+The paper describes the platform as field-validated with 150+ farmers. The code here has moved
+past what the paper reports: the disease model is now trained only on field photographs of Indian
+crops, the yield and fertilizer models were rebuilt without target leakage, and the more advanced
+parts (our own fine-tuned agronomy LLM, regional-language support, a farmer feedback and labelling
+loop) are in active development - see [Roadmap](#roadmap).
 
 ## Screenshots
 
@@ -193,6 +205,21 @@ third-party libraries keep their own licences (see `ml/datasets/sources.yaml` an
 
 Abhishek Chourasia, Goutam Mandloi and Shivpratap Singh Panwar, the founding team behind
 KrishiDisha, started the project at Medi-Caps University.
+
+## Citation
+
+If you use KrishiDisha in research, please cite the paper:
+
+```bibtex
+@inproceedings{krishidisha2025,
+  title     = {KrishiDisha: Revolutionizing Agriculture with Intelligent Recommendations, Disease Detection, and Yield Prediction},
+  author    = {Panwar, Shivpratap Singh and Chourasia, Abhishek and Mandloi, Goutam},
+  booktitle = {2025 IEEE International Conference on Engineering Innovations and Technologies (ICoEIT)},
+  pages     = {1028--1040},
+  year      = {2025},
+  doi       = {10.1109/ICoEIT63558.2025.11211713}
+}
+```
 
 ## Disclaimer
 
