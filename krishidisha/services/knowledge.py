@@ -259,6 +259,13 @@ class KnowledgeBase:
     def search(self, query: str, k: int = 4, kinds: tuple[str, ...] | None = None) -> list[dict[str, Any]]:
         if not self.docs:
             return []
+        # Hindi / Hinglish agri terms -> English so both retrieval legs see the KB's vocabulary
+        try:
+            from .lang import expand_query
+
+            query = expand_query(query)
+        except Exception:  # noqa: BLE001
+            pass
         if self._vectorizer is None:
             q = query.lower()
             hits = [d for d in self.docs if any(w in (d.title + d.text).lower() for w in q.split())]

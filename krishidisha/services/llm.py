@@ -262,14 +262,27 @@ class AgriAssistant:
                 {"type": "image_url", "image_url": {"url": f"data:{image_mime};base64,{b64}"}}]})
         else:
             messages.append({"role": "user", "content": user_turn})
+        from .toolcalls import extract_tool_calls, strip_tool_calls
+
         tool_defs = [t.openai() for t in self.tools]
+        if getattr(self.cfg, "LLM_COMPACT_TOOLS", False):
+            # Local 3-4B models: a 1.8k-token tool list costs seconds of prompt processing; keep one sentence each.
+            for d in tool_defs:
+                desc = d["function"].get("description", "")
+                d["function"]["description"] = re.split(r"(?<=[.!?])\s+", desc, maxsplit=1)[0][:160]
+        known = {t.name for t in self.tools}
         tools_used: list[str] = []
         model = self.cfg.OPENAI_MODEL
         msg = None
+        text = ""
         for _ in range(self.cfg.LLM_MAX_TOOL_ROUNDS + 1):
             try:
-                resp = client.chat.completions.create(model=model, messages=messages, tools=tool_defs,
-                                                      tool_choice="auto", temperature=0.3)
+                kwargs: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.3}
+                if tool_defs:
+                    kwargs.update(tools=tool_defs, tool_choice="auto")
+                if getattr(self.cfg, "LLM_MAX_TOKENS", None):
+                    kwargs["max_tokens"] = int(self.cfg.LLM_MAX_TOKENS)
+                resp = client.chat.completions.create(**kwargs)
             except Exception as exc:  # noqa: BLE001 - some local models reject tools/images
                 if image_bytes and "image" in str(exc).lower():
                     messages[-1] = {"role": "user", "content": user_turn}
@@ -281,22 +294,31 @@ class AgriAssistant:
                 else:
                     raise
             msg = resp.choices[0].message
-            calls = getattr(msg, "tool_calls", None) or []
+            text = msg.content or ""
+            calls = [{"id": c.id, "name": c.function.name, "arguments": c.function.arguments or "{}"}
+                     for c in (getattr(msg, "tool_calls", None) or [])]
+            if not calls:
+                # Servers/templates without native tool support return the Hermes <tool_call> text instead.
+                parsed = extract_tool_calls(text, known)
+                calls = [{"id": p.id, "name": p.name, "arguments": json.dumps(p.arguments, ensure_ascii=False)} for p in parsed]
+                if calls:
+                    text = strip_tool_calls(text)
             if not calls:
                 break
-            messages.append({"role": "assistant", "content": msg.content or "",
-                             "tool_calls": [{"id": c.id, "type": "function",
-                                             "function": {"name": c.function.name, "arguments": c.function.arguments}}
-                                            for c in calls]})
+            messages.append({"role": "assistant", "content": text,
+                             "tool_calls": [{"id": c["id"], "type": "function",
+                                             "function": {"name": c["name"], "arguments": c["arguments"]}} for c in calls]})
             for c in calls:
-                tools_used.append(c.function.name)
+                tools_used.append(c["name"])
                 try:
-                    args = json.loads(c.function.arguments or "{}")
+                    args = json.loads(c["arguments"] or "{}")
                 except ValueError:
                     args = {}
-                out, _ = run_tool(self.tools, c.function.name, args)
-                messages.append({"role": "tool", "tool_call_id": c.id, "content": out})
-        text = (msg.content if msg else "") or "I could not produce an answer right now. Please try again."
+                out, _ = run_tool(self.tools, c["name"], args)
+                messages.append({"role": "tool", "tool_call_id": c["id"], "name": c["name"], "content": out})
+        text = strip_tool_calls(text) if text else ""
+        if not text:
+            text = "I could not produce an answer right now. Please try again."
         return {"reply": text, "tools_used": tools_used, "provider": "openai", "model": model,
                 "sources": [p["title"] for p in passages], "detection": detection}
 

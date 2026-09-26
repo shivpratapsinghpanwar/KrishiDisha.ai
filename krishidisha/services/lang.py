@@ -108,6 +108,61 @@ def _indiclid(text: str) -> tuple[str, float] | None:
     return None
 
 
+# ------------------------------------------------------------------ query glossary
+# Hindi / Hinglish agricultural terms -> English, used to expand retrieval queries so both the TF-IDF and
+# the dense leg see the English vocabulary the knowledge base is written in. Longer keys match first.
+AGRI_GLOSSARY: dict[str, str] = {
+    # crops
+    "गेहूं": "wheat", "गेहू": "wheat", "gehu": "wheat", "gehun": "wheat", "धान": "rice paddy", "चावल": "rice", "dhaan": "rice paddy",
+    "dhan": "rice paddy", "मक्का": "maize corn", "makka": "maize", "कपास": "cotton", "kapas": "cotton", "गन्ना": "sugarcane",
+    "ganna": "sugarcane", "ganne": "sugarcane", "सोयाबीन": "soybean", "मूंगफली": "groundnut", "moongphali": "groundnut", "सरसों": "mustard",
+    "sarson": "mustard", "चना": "chickpea gram", "chana": "chickpea gram", "अरहर": "pigeonpea arhar tur", "arhar": "pigeonpea",
+    "मसूर": "lentil", "मूंग": "mungbean moong", "moong": "mungbean", "उड़द": "blackgram urad", "urad": "blackgram", "आलू": "potato",
+    "aloo": "potato", "टमाटर": "tomato", "tamatar": "tomato", "प्याज": "onion", "pyaz": "onion", "केला": "banana", "kela": "banana",
+    "आम": "mango", "aam": "mango", "अंगूर": "grapes", "सेब": "apple", "मिर्च": "chilli", "mirch": "chilli", "बैंगन": "brinjal",
+    "भिंडी": "okra", "बाजरा": "bajra millets", "bajra": "millets", "ज्वार": "jowar sorghum", "jowar": "sorghum",
+    # diseases / pests
+    "पीला रतुआ": "yellow stripe rust", "रतुआ": "rust", "peela ratua": "yellow rust", "ratua": "rust", "ब्लास्ट": "blast",
+    "झुलसा": "blight", "jhulsa": "blight", "अगेती झुलसा": "early blight", "पछेती झुलसा": "late blight",
+    "गुलाबी सुंडी": "pink bollworm", "gulabi sundi": "pink bollworm", "सुंडी": "bollworm caterpillar", "sundi": "caterpillar",
+    "सफेद मक्खी": "whitefly", "safed makkhi": "whitefly", "माहू": "aphid", "mahu": "aphid", "थ्रिप्स": "thrips",
+    "तना छेदक": "stem borer", "tana chhedak": "stem borer", "फल छेदक": "fruit borer", "जड़ सड़न": "root rot",
+    "लाल सड़न": "red rot", "lal sadan": "red rot", "sadan": "rot", "सड़न": "rot", "उकठा": "wilt", "ukta": "wilt", "चूर्णी फफूंद": "powdery mildew", "पत्ती धब्बा": "leaf spot",
+    "मोज़ेक": "mosaic virus", "पत्ती मोड़": "leaf curl", "दीमक": "termite", "deemak": "termite", "फॉल आर्मीवर्म": "fall armyworm",
+    "भूरा धब्बा": "brown spot", "शीथ ब्लाइट": "sheath blight", "जीवाणु झुलसा": "bacterial blight", "कीट": "pest insect",
+    "keeda": "pest insect", "keede": "pest insect", "रोग": "disease", "rog": "disease", "bimari": "disease", "फफूंद": "fungus fungal",
+    # inputs / practices
+    "खाद": "fertilizer", "khad": "fertilizer", "khaad": "fertilizer", "उर्वरक": "fertilizer", "यूरिया": "urea", "urea": "urea",
+    "डीएपी": "DAP", "dap": "DAP", "पोटाश": "potash MOP", "बीज": "seed", "beej": "seed", "बुवाई": "sowing", "buwai": "sowing",
+    "bone": "sowing", "सिंचाई": "irrigation", "sinchai": "irrigation", "पानी": "water irrigation", "कटाई": "harvest",
+    "katai": "harvest", "पैदावार": "yield", "उपज": "yield", "paidawar": "yield", "किस्म": "variety", "kism": "variety",
+    "दवा": "pesticide spray", "dawa": "pesticide spray", "छिड़काव": "spray", "chhidkav": "spray", "खरपतवार": "weed",
+    "मिट्टी": "soil", "mitti": "soil", "मौसम": "weather", "mausam": "weather", "बारिश": "rain", "barish": "rain",
+    "मंडी": "mandi market price", "भाव": "price", "bhav": "price", "योजना": "scheme yojana", "yojana": "scheme",
+    "बीमा": "insurance", "bima": "insurance", "ऋण": "loan credit", "kharif": "kharif", "rabi": "rabi",
+    "जैविक": "organic", "jaivik": "organic", "नीम": "neem", "neem": "neem", "गोबर": "farmyard manure", "gobar": "manure",
+}
+_GLOSSARY_KEYS = sorted(AGRI_GLOSSARY, key=len, reverse=True)
+
+
+def expand_query(text: str) -> str:
+    """Append English equivalents of Hindi/Hinglish agri terms found in ``text`` (for retrieval only)."""
+    if not text:
+        return text
+    low = text.lower()
+    found: list[str] = []
+    for key in _GLOSSARY_KEYS:
+        if key.isascii():
+            hit = re.search(rf"\b{re.escape(key)}\b", low) is not None
+        else:  # Devanagari: require the term not to be embedded in a longer Devanagari word
+            hit = re.search(rf"(?<![ऀ-ॿ]){re.escape(key)}(?![ऀ-ॿ])", low) is not None
+        if hit:
+            eng = AGRI_GLOSSARY[key]
+            if eng not in found:
+                found.append(eng)
+    return f"{text} {' '.join(found)}" if found else text
+
+
 # ------------------------------------------------------------------ masking
 @dataclass
 class Masked:
