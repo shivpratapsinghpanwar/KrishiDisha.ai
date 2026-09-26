@@ -1,0 +1,99 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Farmer feedback{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-chat-square-heart me-2"></i>Farmer feedback</h4>
+  <div class="text-muted small">Ratings and corrections from the assistant, diagnosis, yield and fertilizer tools.</div>
+{% endblock %}
+
+{% block admin_content %}
+<div class="row g-3 mb-4">
+  <div class="col-4 col-md-3">
+    <div class="kd-stat h-100" style="border-left-color:#f4b400;"><div class="value">{{ counts.get('pending', 0) }}</div>
+      <div class="label"><i class="bi bi-hourglass-split me-1"></i>Pending</div></div>
+  </div>
+  <div class="col-4 col-md-3">
+    <div class="kd-stat h-100" style="border-left-color:#6a994e;"><div class="value">{{ counts.get('accepted', 0) }}</div>
+      <div class="label"><i class="bi bi-check2-circle me-1"></i>Accepted</div></div>
+  </div>
+  <div class="col-4 col-md-3">
+    <div class="kd-stat h-100" style="border-left-color:#dc3545;"><div class="value">{{ counts.get('rejected', 0) }}</div>
+      <div class="label"><i class="bi bi-x-circle me-1"></i>Rejected</div></div>
+  </div>
+</div>
+
+<form class="row g-2 align-items-end mb-3" method="get">
+  <div class="col-auto">
+    <label for="kindFilter" class="form-label small mb-1">Kind</label>
+    <select class="form-select form-select-sm" id="kindFilter" name="kind">
+      <option value="">All</option>
+      {% for k in kinds %}<option value="{{ k }}" {% if kind == k %}selected{% endif %}>{{ k }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label for="statusFilter" class="form-label small mb-1">Status</label>
+    <select class="form-select form-select-sm" id="statusFilter" name="status">
+      <option value="">All</option>
+      {% for s in ['pending', 'accepted', 'rejected'] %}
+        <option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto"><button class="btn btn-sm btn-success" type="submit">Filter</button></div>
+  <div class="col-auto"><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.feedback_review') }}">Reset</a></div>
+</form>
+
+<div class="kd-card p-3">
+  {% if rows %}
+  <div class="table-responsive">
+    <table class="table table-kd table-sm align-middle mb-0">
+      <thead><tr>
+        <th>#</th><th>Kind</th><th>Rating</th><th>Model said</th><th>Farmer says</th>
+        <th>Comment</th><th>Consent</th><th>Status</th><th>When</th><th></th>
+      </tr></thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ r.id }}</td>
+          <td><span class="badge bg-kd-light text-success border">{{ r.kind }}</span></td>
+          <td>
+            {% if r.rating > 0 %}<i class="bi bi-hand-thumbs-up-fill text-success"></i>
+            {% elif r.rating < 0 %}<i class="bi bi-hand-thumbs-down-fill text-danger"></i>
+            {% else %}<span class="text-muted">-</span>{% endif %}
+          </td>
+          <td class="small">
+            {{ r.model_label.replace('___', ' — ').replace('_', ' ') if r.model_label else '-' }}
+            {% if r.model_confidence %}<span class="text-muted">({{ r.model_confidence | pct }})</span>{% endif %}
+          </td>
+          <td class="small">
+            {% if r.corrected_label %}<strong>{{ r.corrected_label.replace('___', ' — ').replace('_', ' ') }}</strong>
+            {% else %}<span class="text-muted">-</span>{% endif %}
+            {% set src = image_url(r.image_path) %}
+            {% if src %}<a href="{{ src }}" target="_blank" rel="noopener" class="ms-1"><i class="bi bi-image"></i></a>{% endif %}
+          </td>
+          <td class="small text-muted">{{ r.comment or '' }}</td>
+          <td>{% if r.consent %}<i class="bi bi-check2 text-success"></i>{% else %}<i class="bi bi-dash text-muted"></i>{% endif %}</td>
+          <td>
+            {% set badge = {'pending': 'warning', 'accepted': 'success', 'rejected': 'secondary'} %}
+            <span class="badge text-bg-{{ badge.get(r.status, 'secondary') }}">{{ r.status }}</span>
+            {% if r.reviewer %}<div class="small text-muted">{{ r.reviewer }}</div>{% endif %}
+          </td>
+          <td class="small text-muted">{{ r.created_at.strftime('%d %b %H:%M') }}</td>
+          <td class="text-end text-nowrap">
+            {% if r.status == 'pending' %}
+            <form method="post" class="d-inline">
+              <input type="hidden" name="feedback_id" value="{{ r.id }}">
+              <button class="btn btn-sm btn-success" name="action" value="accept" type="submit">Accept</button>
+              <button class="btn btn-sm btn-outline-secondary" name="action" value="reject" type="submit">Reject</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted small mb-0">No feedback matches this filter yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

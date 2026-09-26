@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.order_number }}{% endblock %}
+
+{% block head %}
+<style>
+  .kd-steps { display: flex; list-style: none; padding: 0; margin: 1.5rem 0; }
+  .kd-steps li { flex: 1; text-align: center; position: relative; font-size: .8rem; color: #8a8a8a; }
+  .kd-steps li::before {
+    content: ""; display: block; width: 22px; height: 22px; border-radius: 50%;
+    background: #e3e8e4; margin: 0 auto .4rem; border: 3px solid #fff; box-shadow: 0 0 0 2px #e3e8e4;
+  }
+  .kd-steps li::after {
+    content: ""; position: absolute; top: 10px; left: -50%; width: 100%; height: 3px; background: #e3e8e4; z-index: -1;
+  }
+  .kd-steps li:first-child::after { display: none; }
+  .kd-steps li.done { color: var(--kd-green-dark); font-weight: 600; }
+  .kd-steps li.done::before { background: var(--kd-green); box-shadow: 0 0 0 2px var(--kd-green); }
+  .kd-steps li.done::after { background: var(--kd-green); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+    <h1 class="h4 mb-0"><i class="bi bi-receipt me-2"></i>Order {{ order.order_number }}</h1>
+    {% set status_colors = {'Placed': 'secondary', 'Confirmed': 'info', 'Packed': 'primary', 'Shipped': 'warning', 'Delivered': 'success', 'Cancelled': 'danger'} %}
+    <span class="badge fs-6 bg-{{ status_colors.get(order.status, 'secondary') }}">{{ order.status }}</span>
+  </div>
+  <p class="text-muted">Placed on {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+
+  {% if order.status == 'Cancelled' %}
+  <div class="alert alert-danger"><i class="bi bi-x-circle me-1"></i>This order has been cancelled.</div>
+  {% else %}
+  <ol class="kd-steps">
+    {% for s in statuses if s != 'Cancelled' %}
+    <li class="{% if statuses.index(s) <= statuses.index(order.status) %}done{% endif %}">{{ s }}</li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="table-responsive mb-4">
+        <table class="table table-kd align-middle bg-white">
+          <thead>
+            <tr><th scope="col">Product</th><th scope="col">Unit price</th><th scope="col">Qty</th><th scope="col">Line total</th></tr>
+          </thead>
+          <tbody>
+            {% for item in order.items %}
+            <tr>
+              <td>{% if item.product %}<a href="{{ url_for('marketplace.product', slug=item.product.slug) }}">{{ item.product_name }}</a>{% else %}{{ item.product_name }}{% endif %}</td>
+              <td>{{ item.unit_price | inr }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.line_total | inr }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="kd-form-card mb-4">
+        <h2 class="h6">Delivery address</h2>
+        <p class="mb-0">{{ order.address_text }}</p>
+      </div>
+
+      <div class="kd-form-card">
+        <h2 class="h6">Payment</h2>
+        <p class="mb-1">Method: <strong>{{ order.payment_method }}</strong></p>
+        <p class="mb-1">Status: <span class="badge {% if order.payment_status in ['Paid', 'Paid (pending verification)'] %}bg-success{% elif order.payment_status == 'Awaiting UPI' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ order.payment_status }}</span></p>
+        {% if order.payment_reference %}<p class="mb-1">Reference: {{ order.payment_reference }}</p>{% endif %}
+
+        {% if order.payment_method == 'UPI' and order.payment_status != 'Paid' %}
+        <div class="alert alert-info mt-3">
+          <p class="mb-1">Pay <strong>{{ order.total | inr }}</strong> using UPI ID:</p>
+          <p class="fs-5 fw-bold mb-2">{{ upi_id }}</p>
+          <form method="post" action="{{ url_for('marketplace.order_mark_paid', order_number=order.order_number) }}" class="d-flex gap-2 flex-wrap">
+            <div class="flex-grow-1">
+              <label for="reference" class="form-label small">UPI transaction ID</label>
+              <input type="text" class="form-control" id="reference" name="reference" placeholder="e.g. 123456789012" required>
+            </div>
+            <button type="submit" class="btn btn-success align-self-end">I have paid</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="kd-form-card kd-sticky-summary">
+        <h2 class="h5 mb-3">Total</h2>
+        <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>{{ order.subtotal | inr }}</span></div>
+        <div class="d-flex justify-content-between mb-2">
+          <span>Delivery</span>
+          <span>{% if order.delivery_charge == 0 %}<span class="text-success fw-semibold">Free</span>{% else %}{{ order.delivery_charge | inr }}{% endif %}</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5 mb-3"><span>Total</span><span>{{ order.total | inr }}</span></div>
+
+        {% if order.status in ['Placed', 'Confirmed'] %}
+        <button type="button" class="btn btn-outline-danger w-100 mb-2" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+          <i class="bi bi-x-circle me-1"></i>Cancel order
+        </button>
+        {% endif %}
+        <a href="{{ url_for('marketplace.orders') }}" class="btn btn-outline-secondary w-100 mb-2">Back to orders</a>
+        <a href="{{ url_for('marketplace.index') }}" class="btn btn-link w-100">Continue shopping</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if order.status in ['Placed', 'Confirmed'] %}
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="cancelOrderModalLabel">Cancel this order?</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">Order {{ order.order_number }} will be cancelled and cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Keep order</button>
+        <form method="post" action="{{ url_for('marketplace.order_cancel', order_number=order.order_number) }}">
+          <button type="submit" class="btn btn-danger">Yes, cancel order</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

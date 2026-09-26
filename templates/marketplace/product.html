@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+{% block meta_description %}{{ (product.description or product.name) | truncate(150) }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{{ url_for('marketplace.index') }}">Marketplace</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('marketplace.index', category=product.category) }}">{{ product.category }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-md-5">
+      <div class="kd-form-card text-center">
+        <img src="{{ product.image_url or url_for('static', filename='images/plant.png') }}"
+             onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/plant.png') }}';"
+             class="img-fluid" style="max-height:320px;object-fit:contain;" alt="{{ product.name }}">
+      </div>
+    </div>
+
+    <div class="col-md-7">
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <span class="badge bg-secondary">{{ product.category }}</span>
+        {% if product.is_organic %}<span class="badge kd-badge-organic">Organic</span>{% endif %}
+        {% if product.npk %}<span class="badge bg-kd-light text-success">NPK {{ product.npk }}</span>{% endif %}
+      </div>
+      <h1 class="h3 mb-1">{{ product.name }}</h1>
+      {% if product.brand %}<p class="text-muted mb-2">by {{ product.brand }}</p>{% endif %}
+
+      <div class="mb-2" aria-label="Rating {{ product.rating }} out of 5">
+        {% for i in range(5) %}
+          {% if product.rating and i < product.rating | round(0, 'floor') %}
+            <i class="bi bi-star-fill text-warning"></i>
+          {% elif product.rating and (product.rating - i) >= 0.5 %}
+            <i class="bi bi-star-half text-warning"></i>
+          {% else %}
+            <i class="bi bi-star text-warning"></i>
+          {% endif %}
+        {% endfor %}
+        <span class="small text-muted ms-1">{{ '%.1f' | format(product.rating or 0) }} rating</span>
+      </div>
+
+      <div class="d-flex align-items-baseline gap-2 mb-1">
+        <span class="kd-price fs-3">{{ product.price | inr }}</span>
+        {% if product.mrp and product.mrp > product.price %}
+        <span class="kd-mrp">{{ product.mrp | inr }}</span>
+        {% endif %}
+        {% if product.discount_percent() > 0 %}
+        <span class="badge bg-danger">{{ product.discount_percent() }}% off</span>
+        {% endif %}
+      </div>
+      <div class="text-muted mb-3">per {{ product.unit }}</div>
+
+      {% if product.stock <= 0 %}
+      <p class="text-danger fw-semibold"><i class="bi bi-x-circle me-1"></i>Out of stock</p>
+      {% else %}
+        {% if product.stock <= 5 %}
+        <p class="text-warning fw-semibold"><i class="bi bi-exclamation-triangle me-1"></i>Only {{ product.stock }} left in stock</p>
+        {% endif %}
+        <div class="d-flex align-items-end gap-2 mb-3 flex-wrap">
+          <div>
+            <label for="qty" class="form-label small fw-semibold mb-1">Quantity</label>
+            <input type="number" class="form-control" id="qty" min="1" max="{{ product.stock }}" value="1" style="width:100px;">
+          </div>
+          <button type="button" class="btn btn-success" data-add-to-cart="{{ product.id }}" data-qty-input="#qty">
+            <i class="bi bi-cart-plus"></i> Add to cart
+          </button>
+          <a href="{{ url_for('marketplace.cart') }}" class="btn btn-outline-success" data-add-to-cart="{{ product.id }}" data-qty-input="#qty">
+            <i class="bi bi-lightning-charge"></i> Buy now
+          </a>
+        </div>
+      {% endif %}
+
+      {% if product.description %}
+      <p class="mb-3">{{ product.description }}</p>
+      {% endif %}
+
+      {% if diseases %}
+      <div class="mb-3">
+        <h2 class="h6 fw-semibold">Treats</h2>
+        <ul class="mb-0">
+          {% for d in diseases %}<li>{{ d.name }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if product.crop_tags %}
+      <div class="mb-3">
+        <h2 class="h6 fw-semibold">Suitable crops</h2>
+        <div class="d-flex flex-wrap gap-2">
+          {% for crop in product.crop_tags.split(',') %}
+            {% if crop.strip() %}<span class="badge bg-kd-light text-success">{{ crop.strip() | capitalize }}</span>{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if product.category in ['Fungicide', 'Insecticide', 'Herbicide'] %}
+      <div class="alert alert-warning small">
+        <i class="bi bi-shield-exclamation me-1"></i><strong>Safety note:</strong>
+        Wear gloves and a mask while spraying. Follow the label dose exactly and observe the pre-harvest interval before selling or eating the produce.
+      </div>
+      {% endif %}
+
+      {% if product.external_url %}
+      <a href="{{ product.external_url }}" target="_blank" rel="noopener" class="small">
+        <i class="bi bi-box-arrow-up-right me-1"></i>Compare on vendor site
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if related %}
+  <h2 class="h5 kd-section-title mt-5 mb-3">Related products</h2>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4">
+    {% for r in related %}
+    <div class="col">
+      <div class="card kd-card h-100">
+        <img src="{{ r.image_url or url_for('static', filename='images/plant.png') }}"
+             onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/plant.png') }}';"
+             class="kd-product-img w-100" alt="{{ r.name }}">
+        <div class="card-body">
+          <h3 class="h6 mb-1">
+            <a href="{{ url_for('marketplace.product', slug=r.slug) }}" class="text-decoration-none text-dark">{{ r.name }}</a>
+          </h3>
+          <span class="kd-price">{{ r.price | inr }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

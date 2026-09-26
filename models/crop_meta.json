@@ -1,0 +1,80 @@
+{
+  "features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "n_samples": 2200,
+  "feature_ranges": {
+    "N": {
+      "p1": 0.0,
+      "p99": 129.00999999999976,
+      "min": 0.0,
+      "max": 140.0
+    },
+    "P": {
+      "p1": 5.990000000000002,
+      "p99": 143.0,
+      "min": 5.0,
+      "max": 145.0
+    },
+    "K": {
+      "p1": 7.990000000000002,
+      "p99": 204.0,
+      "min": 5.0,
+      "max": 205.0
+    },
+    "temperature": {
+      "p1": 11.8273815104,
+      "p99": 40.79135244359994,
+      "min": 8.825674745,
+      "max": 43.67549305
+    },
+    "humidity": {
+      "p1": 15.2252974374,
+      "p99": 96.9664454487,
+      "min": 14.25803981,
+      "max": 99.98187601
+    },
+    "ph": {
+      "p1": 4.60320194983,
+      "p99": 8.736512479289996,
+      "min": 3.504752314,
+      "max": 9.93509073
+    },
+    "rainfall": {
+      "p1": 21.9038473383,
+      "p99": 267.9914720139996,
+      "min": 20.21126747,
+      "max": 298.5601175
+    }
+  },
+  "classes": [
+    "apple",
+    "banana",
+    "blackgram",
+    "chickpea",
+    "coconut",
+    "coffee",
+    "cotton",
+    "grapes",
+    "jute",
+    "kidneybeans",
+    "lentil",
+    "maize",
+    "mango",
+    "mothbeans",
+    "mungbean",
+    "muskmelon",
+    "orange",
+    "papaya",
+    "pigeonpeas",
+    "pomegranate",
+    "rice",
+    "watermelon"
+  ]
+}

@@ -1,0 +1,79 @@
+{% extends "admin/_layout.html" %}
+{% block title %}{{ 'Add farmer' if mode == 'create' else 'Edit farmer' }}{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-person-{{ 'plus' if mode == 'create' else 'gear' }} me-2"></i>{{ 'Add farmer' if mode == 'create' else 'Edit farmer' }}</h4>
+{% endblock %}
+{% block admin_content %}
+<div class="kd-form-card" style="max-width: 720px;">
+  <form method="post">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="name" class="form-label">Full name</label>
+        <input type="text" class="form-control" id="name" name="name" required
+               value="{{ form.get('name') if form.get('name') else (farmer.name if farmer else '') }}">
+      </div>
+      <div class="col-md-6">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" required
+               value="{{ form.get('email') if form.get('email') else (farmer.email if farmer else '') }}">
+      </div>
+      <div class="col-md-6">
+        <label for="phone" class="form-label">Phone</label>
+        <input type="tel" class="form-control" id="phone" name="phone" required pattern="[6-9][0-9]{9}"
+               value="{{ form.get('phone') if form.get('phone') else (farmer.phone if farmer else '') }}">
+        <div class="kd-help">10-digit Indian mobile number.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required
+               value="{{ form.get('username') if form.get('username') else (farmer.username if farmer else '') }}">
+      </div>
+      <div class="col-md-6">
+        <label for="password" class="form-label">Password{% if mode == 'edit' %} <span class="text-muted small">(optional)</span>{% endif %}</label>
+        <input type="password" class="form-control" id="password" name="password" {% if mode == 'create' %}required{% endif %} minlength="6">
+        {% if mode == 'edit' %}<div class="kd-help">Leave blank to keep the current password.</div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        <label for="land_area_acres" class="form-label">Land area (acres)</label>
+        <input type="number" step="0.1" min="0" class="form-control" id="land_area_acres" name="land_area_acres"
+               value="{{ form.get('land_area_acres') if form.get('land_area_acres') else (farmer.land_area_acres if farmer and farmer.land_area_acres else '') }}">
+      </div>
+      <div class="col-md-6">
+        <label for="state" class="form-label">State</label>
+        <select class="form-select" id="state" name="state">
+          <option value="">Select state</option>
+          {% set current_state = form.get('state') if form.get('state') else (farmer.state if farmer else '') %}
+          {% for s in states %}
+          <option value="{{ s }}" {% if s == current_state %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="district" class="form-label">District</label>
+        <input type="text" class="form-control" id="district" name="district"
+               value="{{ form.get('district') if form.get('district') else (farmer.district if farmer and farmer.district else '') }}">
+      </div>
+      <div class="col-md-6">
+        <label for="preferred_language" class="form-label">Preferred language</label>
+        <select class="form-select" id="preferred_language" name="preferred_language">
+          {% set current_lang = form.get('preferred_language') if form.get('preferred_language') else (farmer.preferred_language if farmer else 'en') %}
+          {% for code, label in languages %}
+          <option value="{{ code }}" {% if code == current_lang %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="verified" name="verified"
+                 {% if form.get('verified') == 'on' or (not form and farmer and farmer.verified) %}checked{% endif %}>
+          <label class="form-check-label" for="verified">Verified (can log in)</label>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-success"><i class="bi bi-check2"></i> {{ 'Create farmer' if mode == 'create' else 'Save changes' }}</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.farmers') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

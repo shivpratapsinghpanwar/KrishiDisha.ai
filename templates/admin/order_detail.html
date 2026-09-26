@@ -1,0 +1,88 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Order {{ order.order_number }}{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-receipt me-2"></i>Order {{ order.order_number }}</h4>
+  <div class="text-muted small">Placed {{ order.created_at.strftime('%d %b %Y %H:%M') }} · last updated {{ order.updated_at.strftime('%d %b %Y %H:%M') }}</div>
+{% endblock %}
+{% block admin_content %}
+{% set kd_badge = {'Placed':'secondary','Confirmed':'info','Packed':'primary','Shipped':'warning','Delivered':'success','Cancelled':'danger'} %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="kd-card p-3 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0"><i class="bi bi-box-seam me-1"></i>Items</h6>
+        <span class="badge text-bg-{{ kd_badge.get(order.status, 'secondary') }} fs-6">{{ order.status }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-kd align-middle mb-0">
+          <thead><tr><th>Product</th><th class="text-end">Unit price</th><th class="text-end">Qty</th><th class="text-end">Line total</th></tr></thead>
+          <tbody>
+            {% for it in order.items %}
+            <tr>
+              <td>
+                {% if it.product %}<a href="{{ url_for('marketplace.product', slug=it.product.slug) }}">{{ it.product_name }}</a>
+                {% else %}{{ it.product_name }}{% endif %}
+              </td>
+              <td class="text-end">{{ it.unit_price|inr }}</td>
+              <td class="text-end">{{ it.quantity }}</td>
+              <td class="text-end">{{ it.line_total|inr }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr><td colspan="3" class="text-end">Subtotal</td><td class="text-end">{{ order.subtotal|inr }}</td></tr>
+            <tr><td colspan="3" class="text-end">Delivery</td><td class="text-end">{{ order.delivery_charge|inr }}</td></tr>
+            <tr class="fw-bold"><td colspan="3" class="text-end">Total</td><td class="text-end">{{ order.total|inr }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="kd-card p-3">
+      <h6 class="fw-bold mb-3"><i class="bi bi-geo-alt me-1"></i>Delivery address</h6>
+      <p class="mb-0">{{ order.address_text }}</p>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="kd-card p-3 mb-4">
+      <h6 class="fw-bold mb-3"><i class="bi bi-person me-1"></i>Farmer</h6>
+      {% if order.farmer %}
+      <p class="mb-1"><a href="{{ url_for('admin.farmer_detail', farmer_id=order.farmer.id) }}">{{ order.farmer.name }}</a></p>
+      <p class="small text-muted mb-0">{{ order.farmer.phone }} · {{ order.farmer.email }}</p>
+      {% else %}
+      <p class="text-muted mb-0">Farmer account deleted.</p>
+      {% endif %}
+    </div>
+
+    <div class="kd-card p-3">
+      <h6 class="fw-bold mb-3"><i class="bi bi-credit-card me-1"></i>Payment</h6>
+      <p class="mb-1 small">Method: <strong>{{ order.payment_method }}</strong></p>
+      <p class="mb-1 small">Status: <strong>{{ order.payment_status }}</strong></p>
+      {% if order.payment_reference %}
+      <p class="mb-3 small">Reference: <code>{{ order.payment_reference }}</code></p>
+      {% endif %}
+      <hr>
+      <form method="post">
+        <div class="mb-3">
+          <label for="status" class="form-label">Order status</label>
+          <select class="form-select" id="status" name="status">
+            {% for st in statuses %}
+            <option value="{{ st }}" {% if st == order.status %}selected{% endif %}>{{ st }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="payment_status" class="form-label">Payment status</label>
+          <select class="form-select" id="payment_status" name="payment_status">
+            {% for ps in payment_statuses %}
+            <option value="{{ ps }}" {% if ps == order.payment_status %}selected{% endif %}>{{ ps }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success w-100"><i class="bi bi-save"></i> Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

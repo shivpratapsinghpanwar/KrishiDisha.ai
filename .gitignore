@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+.venv-train/
+.venv*/
+
+# Secrets / local config
+.env
+.env.local
+*.env.*
+!.env.example
+
+# Runtime data
+instance/
+static/uploads/
+*.db
+*.sqlite3
+
+# Trained model artefacts (rebuild with `python -m ml.train_all`; keep the
+# small metrics / meta files and the report images so the docs stay useful)
+models/*.pkl
+models/*.pt
+models/*.pth
+models/*.onnx
+models/checkpoints/
+
+# Exported feedback / own-data collection (rebuild with `python -m ml.datasets.export_feedback`)
+data/llm/*.jsonl
+
+# Source PDFs for the knowledge base (retrieval only, not redistributed); the frozen LLM eval set is kept
+docs/pop/
+!data/llm/eval.jsonl
+
+# Logs and temp files
+*.log
+*.tmp
+.tmp/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

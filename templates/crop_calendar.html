@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Calendar{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-3"><i class="bi bi-calendar3 me-1"></i>Crop Calendar</h1>
+  <p class="text-muted">
+    India has three main cropping seasons: <strong>Kharif</strong> (sown with the monsoon, June-July; harvested Sept-Oct),
+    <strong>Rabi</strong> (sown in winter, Oct-Dec; harvested spring) and <strong>Zaid</strong> (a short summer season
+    between Rabi and Kharif, using irrigation).
+  </p>
+
+  <form method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-sm-5 col-md-3">
+      <label for="cropSelect" class="form-label">Crop</label>
+      <select class="form-select" id="cropSelect" name="crop">
+        <option value="" {% if not crop %}selected{% endif %}>All crops</option>
+        {% for c in crops %}
+          <option value="{{ c }}" {% if crop == c %}selected{% endif %}>{{ c | title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-5 col-md-3">
+      <label for="seasonSelect" class="form-label">Season</label>
+      <select class="form-select" id="seasonSelect" name="season">
+        <option value="" {% if not season %}selected{% endif %}>All</option>
+        <option value="Kharif" {% if season == 'Kharif' %}selected{% endif %}>Kharif</option>
+        <option value="Rabi" {% if season == 'Rabi' %}selected{% endif %}>Rabi</option>
+        <option value="Zaid" {% if season == 'Zaid' %}selected{% endif %}>Zaid</option>
+      </select>
+    </div>
+    <div class="col-sm-2">
+      <button type="submit" class="btn btn-success w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
+    </div>
+  </form>
+
+  <div class="mb-3">
+    <span class="badge bg-success me-1">Kharif</span>
+    <span class="badge bg-primary me-1">Rabi</span>
+    <span class="badge bg-warning text-dark me-1">Zaid</span>
+  </div>
+
+  {% if rows %}
+    <div class="table-responsive">
+      <table class="table table-kd align-middle">
+        <thead>
+          <tr><th>Crop</th><th>Season</th><th>Sowing</th><th>Harvest</th><th>Duration (days)</th><th>Regions</th></tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td><a href="{{ url_for('main.crop_guide_page', crop=row.crop | lower) }}">{{ row.crop | title }}</a></td>
+              <td>
+                <span class="badge {{ 'bg-success' if row.season == 'Kharif' else ('bg-primary' if row.season == 'Rabi' else 'bg-warning text-dark') }}">{{ row.season }}</span>
+              </td>
+              <td>{{ row.sowing }}</td>
+              <td>{{ row.harvest }}</td>
+              <td>{{ row.duration_days }}</td>
+              <td>{{ row.regions }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>No calendar entries match this filter.</div>
+  {% endif %}
+</div>
+{% endblock %}

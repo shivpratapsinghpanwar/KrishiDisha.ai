@@ -1,0 +1,71 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Collection drive upload{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-upload me-2"></i>Collection drive upload</h4>
+  <div class="text-muted small">Bulk-add field photos gathered with partner KVKs / FPOs.</div>
+{% endblock %}
+
+{% block admin_content %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="kd-card p-3">
+      <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="driveImages" class="form-label">Photos (JPG, PNG or WEBP)</label>
+          <input class="form-control" type="file" id="driveImages" name="images" accept="image/*" multiple required>
+          <div class="form-text">All files are stored with consent recorded, source <code>drive</code>.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="driveLabel" class="form-label">Crop / condition (optional)</label>
+          <select class="form-select" id="driveLabel" name="label">
+            <option value="">No pre-selected class — send to the labelling queue</option>
+            {% for crop, items in grouped.items() | sort %}
+              <optgroup label="{{ crop }}">
+                {% for label in items %}
+                  {% if label != 'unsure' %}
+                    <option value="{{ label }}">{{ label.split('___')[1].replace('_', ' ') if '___' in label else label }}</option>
+                  {% endif %}
+                {% endfor %}
+              </optgroup>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="trustLabel" name="trust_label">
+          <label class="form-check-label" for="trustLabel">
+            Trust this label — mark the photos as labelled immediately (skip the two-person check).
+            Use only for photos confirmed by an agronomist in the field.
+          </label>
+        </div>
+
+        <button class="btn btn-success" type="submit"><i class="bi bi-cloud-arrow-up me-1"></i>Upload</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.label_queue') }}">Back to the queue</a>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="kd-card p-3">
+      <h6 class="fw-bold mb-2"><i class="bi bi-bar-chart me-1"></i>Collection status</h6>
+      <ul class="list-unstyled small mb-0">
+        <li>Queued: <strong>{{ counts.get('queued', 0) }}</strong></li>
+        <li>Needs a second label: <strong>{{ counts.get('needs_second', 0) }}</strong></li>
+        <li>Agreed: <strong>{{ counts.get('labelled', 0) }}</strong></li>
+        <li>Disagreements: <strong>{{ counts.get('disagreement', 0) }}</strong></li>
+        <li>Exported: <strong>{{ counts.get('exported', 0) }}</strong></li>
+        <li>Discarded: <strong>{{ counts.get('discarded', 0) }}</strong></li>
+      </ul>
+    </div>
+    <div class="kd-card p-3 mt-3">
+      <h6 class="fw-bold mb-2"><i class="bi bi-camera me-1"></i>Photo guidance for the drive</h6>
+      <ul class="small text-muted mb-0">
+        <li>One leaf per photo, filling the frame, shot in daylight.</li>
+        <li>Include the crop's healthy leaves too — the model needs both.</li>
+        <li>Record the farmer's consent before uploading their photos.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

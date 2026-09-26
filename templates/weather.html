@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Weather{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-3"><i class="bi bi-cloud-sun me-1"></i>Weather &amp; Farm Advisories</h1>
+
+  <form method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-sm-8 col-md-5">
+      <label for="placeInput" class="form-label">Place</label>
+      <input type="text" class="form-control" id="placeInput" name="place" value="{{ place }}" placeholder="e.g. Indore" required>
+    </div>
+    <div class="col-sm-4 col-md-2">
+      <button type="submit" class="btn btn-success w-100"><i class="bi bi-search me-1"></i>Search</button>
+    </div>
+  </form>
+
+  {% if forecast and forecast.error %}
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i>{{ forecast.error }}</div>
+  {% endif %}
+
+  {% if not forecast %}
+    <p class="text-muted">Enter a place name to see the 7-day forecast and farm advisories.</p>
+    <p class="small">Try:
+      <a href="{{ url_for('main.weather_page', place='Indore') }}">Indore</a>,
+      <a href="{{ url_for('main.weather_page', place='Ludhiana') }}">Ludhiana</a>,
+      <a href="{{ url_for('main.weather_page', place='Nashik') }}">Nashik</a>
+    </p>
+  {% elif forecast.current %}
+    <h2 class="h5 mb-1">{{ forecast.place.name }}{% if forecast.place.admin1 %}, {{ forecast.place.admin1 }}{% endif %}</h2>
+    <p class="text-muted small mb-3">{{ forecast.place.country }}</p>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-8">
+        <div class="kd-result h-100">
+          <h6 class="text-muted mb-2">Current conditions</h6>
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <div class="kd-stat"><div class="value">{{ forecast.current.temperature }}&deg;C</div><div class="label">Temperature</div></div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="kd-stat"><div class="value">{{ forecast.current.humidity }}%</div><div class="label">Humidity</div></div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="kd-stat"><div class="value">{{ forecast.current.wind }} km/h</div><div class="label">Wind</div></div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="kd-stat"><div class="value">{{ forecast.current.precipitation }} mm</div><div class="label">Precipitation</div></div>
+            </div>
+          </div>
+          <p class="mt-3 mb-0"><i class="bi bi-cloud me-1"></i>{{ forecast.current.condition }}</p>
+          {% if forecast.soil_moisture_top is not none or forecast.soil_temperature is not none %}
+            <hr>
+            <div class="row g-3">
+              {% if forecast.soil_moisture_top is not none %}
+                <div class="col-6"><span class="text-muted small">Soil moisture (top layer):</span> {{ forecast.soil_moisture_top }}</div>
+              {% endif %}
+              {% if forecast.soil_temperature is not none %}
+                <div class="col-6"><span class="text-muted small">Soil temperature:</span> {{ forecast.soil_temperature }}&deg;C</div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="kd-result h-100">
+          <h6 class="text-muted mb-2">Advisories</h6>
+          {% if forecast.advisories %}
+            <ul class="list-unstyled mb-0">
+              {% for a in forecast.advisories %}
+                <li class="mb-2">
+                  <span class="badge {{ 'bg-primary' if a.level == 'info' else ('bg-warning text-dark' if a.level == 'warning' else 'bg-danger') }}">{{ a.level }}</span>
+                  <strong class="d-block small mt-1">{{ a.title }}</strong>
+                  <span class="small text-muted">{{ a.text }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="small text-muted mb-0">No advisories for this period.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if forecast.days %}
+      <h6 class="text-muted mb-2">7-day outlook</h6>
+      <div class="row g-2 mb-4">
+        {% for d in forecast.days %}
+          <div class="col-6 col-sm-4 col-md-3 col-lg-auto">
+            <div class="kd-weather-day">
+              <div class="small text-muted">{{ d.date[8:10] }}/{{ d.date[5:7] }}</div>
+              <div class="small">{{ d.condition }}</div>
+              <div class="temp">{{ d.t_max }}&deg;/{{ d.t_min }}&deg;</div>
+              <div class="small text-primary"><i class="bi bi-droplet"></i> {{ d.rain_mm }} mm ({{ d.rain_prob }}%)</div>
+              <div class="small text-muted"><i class="bi bi-wind"></i> {{ d.wind_max }} km/h</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="kd-result">
+        <canvas id="weatherChart" height="90"></canvas>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if forecast and forecast.days %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const days = {{ forecast.days | tojson }};
+  const ctx = document.getElementById('weatherChart');
+  new Chart(ctx, {
+    data: {
+      labels: days.map(d => d.date.slice(5)),
+      datasets: [
+        { type: 'line', label: 'Max °C', data: days.map(d => d.t_max), borderColor: '#f4b400', backgroundColor: '#f4b400', tension: .3, yAxisID: 'temp' },
+        { type: 'line', label: 'Min °C', data: days.map(d => d.t_min), borderColor: '#1b7f3b', backgroundColor: '#1b7f3b', tension: .3, yAxisID: 'temp' },
+        { type: 'bar', label: 'Rain (mm)', data: days.map(d => d.rain_mm), backgroundColor: 'rgba(27,127,59,.25)', yAxisID: 'rain' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        temp: { type: 'linear', position: 'left', title: { display: true, text: '°C' } },
+        rain: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'mm' } }
+      }
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ code }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+  <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+  <h1 class="kd-section-title mt-3">Something went wrong ({{ code }})</h1>
+  <p class="text-muted mb-4">{{ message }}</p>
+  <div class="d-flex justify-content-center gap-2">
+    <a href="{{ url_for('main.index') }}" class="btn btn-success"><i class="bi bi-house-door me-1"></i>Go home</a>
+    <a href="{{ url_for('chat.page') }}" class="btn btn-outline-success"><i class="bi bi-robot me-1"></i>Ask the assistant</a>
+  </div>
+</div>
+{% endblock %}
