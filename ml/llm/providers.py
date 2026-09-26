@@ -1,0 +1,185 @@
+"""Teacher-model providers for ``distill.py``.
+
+``AnthropicBatches``  - Message Batches API (50 % off, async). The stages were written against Anthropic's
+                         response shape (content blocks with ``.type``/``.text``/``.input``, ``stop_reason``, ``usage``).
+``OpenAICompatible``  - any OpenAI-style chat endpoint, called sequentially with rate limiting and retries, and
+                         its responses converted into the same Anthropic-like shape so the stages need no changes.
+                         Used for Gemini's free tier (``GEMINI_API_KEY``, endpoint
+                         ``https://generativelanguage.googleapis.com/v1beta/openai/``), Groq, OpenRouter or a local
+                         Ollama/vLLM model.
+
+Both expose ``run_batch(requests, label) -> {custom_id: result}`` where ``result.type`` is ``"succeeded"`` /
+``"errored"`` and ``result.message`` mimics ``anthropic.types.Message``.
+"""
+from __future__ import annotations
+
+import json
+import logging
+import os
+import time
+from types import SimpleNamespace
+from typing import Any
+
+log = logging.getLogger(__name__)
+
+GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
+
+
+# ------------------------------------------------------------------ Anthropic
+class AnthropicBatches:
+    name = "anthropic"
+
+    def __init__(self):
+        import anthropic
+
+        self.client = anthropic.Anthropic(max_retries=3, timeout=120.0)
+
+    def run_batch(self, requests_: list[dict], label: str, poll: int = 30) -> dict[str, Any]:
+        from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
+        from anthropic.types.messages.batch_create_params import Request
+
+        batch = self.client.messages.batches.create(requests=[Request(custom_id=r["custom_id"],
+                                                                      params=MessageCreateParamsNonStreaming(**r["params"]))
+                                                              for r in requests_])
+        print(f"[{label}] submitted batch {batch.id} with {len(requests_)} requests")
+        while True:
+            b = self.client.messages.batches.retrieve(batch.id)
+            if b.processing_status == "ended":
+                break
+            c = b.request_counts
+            done = c.succeeded + c.errored + c.expired + c.canceled
+            print(f"  {batch.id}: {b.processing_status} ({done}/{done + c.processing})", flush=True)
+            time.sleep(poll)
+        return {res.custom_id: res.result for res in self.client.messages.batches.results(batch.id)}
+
+
+# ------------------------------------------------------------------ OpenAI-compatible
+def _text_of(content) -> str:
+    if isinstance(content, str):
+        return content
+    return "".join(getattr(b, "text", "") if not isinstance(b, dict) else b.get("text", "")
+                   for b in content if (getattr(b, "type", None) or (isinstance(b, dict) and b.get("type"))) == "text")
+
+
+def anthropic_to_openai_messages(system, messages: list[dict]) -> list[dict]:
+    """Anthropic-shaped request (system blocks, tool_use/tool_result content) -> OpenAI chat messages."""
+    out: list[dict] = []
+    if system:
+        out.append({"role": "system", "content": _text_of(system) if not isinstance(system, str) else system})
+    for m in messages:
+        role, content = m["role"], m["content"]
+        if isinstance(content, str):
+            out.append({"role": role, "content": content})
+            continue
+        blocks = [b if isinstance(b, dict) else {"type": getattr(b, "type", None), "text": getattr(b, "text", None),
+                                                  "id": getattr(b, "id", None), "name": getattr(b, "name", None),
+                                                  "input": getattr(b, "input", None)} for b in content]
+        if role == "assistant":
+            text = "".join(b.get("text") or "" for b in blocks if b.get("type") == "text")
+            calls = [{"id": b["id"], "type": "function", "function": {"name": b["name"], "arguments": json.dumps(b["input"] or {}, ensure_ascii=False)}}
+                     for b in blocks if b.get("type") == "tool_use"]
+            msg: dict[str, Any] = {"role": "assistant", "content": text or None}
+            if calls:
+                msg["tool_calls"] = calls
+            out.append(msg)
+        else:  # user: text and/or tool_result blocks
+            results = [b for b in blocks if b.get("type") == "tool_result"]
+            for b in results:
+                out.append({"role": "tool", "tool_call_id": b.get("tool_use_id"), "content": _text_of(b.get("content", ""))})
+            text = "".join(b.get("text") or "" for b in blocks if b.get("type") == "text")
+            if text:
+                out.append({"role": "user", "content": text})
+    return out
+
+
+def anthropic_tools_to_openai(tools: list[dict] | None) -> list[dict]:
+    return [{"type": "function", "function": {"name": t["name"], "description": t.get("description", ""),
+                                              "parameters": t.get("input_schema", {"type": "object", "properties": {}})}}
+            for t in (tools or [])]
+
+
+def openai_to_anthropic_message(choice_message, usage, model: str):
+    blocks = []
+    if choice_message.content:
+        blocks.append(SimpleNamespace(type="text", text=choice_message.content))
+    for c in getattr(choice_message, "tool_calls", None) or []:
+        try:
+            args = json.loads(c.function.arguments or "{}")
+        except ValueError:
+            args = {}
+        blocks.append(SimpleNamespace(type="tool_use", id=c.id, name=c.function.name, input=args))
+    stop = "tool_use" if any(b.type == "tool_use" for b in blocks) else "end_turn"
+    u = SimpleNamespace(input_tokens=getattr(usage, "prompt_tokens", 0) or 0, output_tokens=getattr(usage, "completion_tokens", 0) or 0,
+                        cache_read_input_tokens=0, cache_creation_input_tokens=0)
+    return SimpleNamespace(content=blocks, stop_reason=stop, usage=u, model=model)
+
+
+class OpenAICompatible:
+    """Sequential calls with a requests-per-minute budget; free tiers are slow but cost nothing."""
+    name = "openai"
+
+    def __init__(self, base_url: str | None = None, api_key: str | None = None, rpm: float = 10.0, max_retries: int = 6):
+        from openai import OpenAI
+
+        base_url = base_url or os.getenv("TEACHER_BASE_URL") or (GEMINI_OPENAI_BASE if os.getenv("GEMINI_API_KEY") else os.getenv("OPENAI_BASE_URL"))
+        api_key = api_key or os.getenv("TEACHER_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY") or "none"
+        self.client = OpenAI(base_url=base_url, api_key=api_key, timeout=120.0, max_retries=0)
+        self.min_interval = 60.0 / max(rpm, 0.1)
+        self.max_retries = max_retries
+        self._last = 0.0
+        self.base_url = base_url
+
+    def _one(self, params: dict):
+        wait = self.min_interval - (time.time() - self._last)
+        if wait > 0:
+            time.sleep(wait)
+        messages = anthropic_to_openai_messages(params.get("system"), params["messages"])
+        kwargs: dict[str, Any] = {"model": params["model"], "messages": messages, "max_tokens": params.get("max_tokens", 1024),
+                                  "temperature": params.get("temperature", 0.7)}
+        tools = anthropic_tools_to_openai(params.get("tools"))
+        if tools:
+            kwargs.update(tools=tools, tool_choice="auto")
+        for attempt in range(self.max_retries):
+            try:
+                resp = self.client.chat.completions.create(**kwargs)
+                self._last = time.time()
+                return openai_to_anthropic_message(resp.choices[0].message, resp.usage, params["model"])
+            except Exception as exc:  # noqa: BLE001
+                msg = str(exc)
+                retry_after = 30 * (attempt + 1)
+                if "429" in msg or "rate" in msg.lower() or "quota" in msg.lower() or "503" in msg or "overloaded" in msg.lower():
+                    print(f"  provider throttled ({msg[:80]}); sleeping {retry_after}s", flush=True)
+                    time.sleep(retry_after)
+                    continue
+                if "tool" in msg.lower() and tools:
+                    kwargs.pop("tools", None)
+                    kwargs.pop("tool_choice", None)
+                    continue
+                raise
+        raise RuntimeError("provider kept throttling")
+
+    def run_batch(self, requests_: list[dict], label: str, poll: int = 0) -> dict[str, Any]:
+        print(f"[{label}] {len(requests_)} sequential requests via {self.base_url} (~{self.min_interval:.0f}s apart)")
+        out: dict[str, Any] = {}
+        t0 = time.time()
+        for i, r in enumerate(requests_):
+            try:
+                out[r["custom_id"]] = SimpleNamespace(type="succeeded", message=self._one(r["params"]))
+            except Exception as exc:  # noqa: BLE001
+                log.warning("%s failed: %s", r["custom_id"], exc)
+                out[r["custom_id"]] = SimpleNamespace(type="errored", error=str(exc)[:200])
+            if (i + 1) % 25 == 0:
+                print(f"  {i + 1}/{len(requests_)} done ({time.time() - t0:.0f}s)", flush=True)
+        return out
+
+
+def make_provider(name: str, dry_run: bool = False, base_url: str | None = None, rpm: float = 10.0):
+    if dry_run:
+        return None
+    if name == "anthropic":
+        return AnthropicBatches()
+    if name in ("openai", "gemini", "groq", "openrouter", "ollama"):
+        if name == "gemini":
+            base_url = base_url or GEMINI_OPENAI_BASE
+        return OpenAICompatible(base_url=base_url, rpm=rpm)
+    raise SystemExit(f"unknown provider {name}")

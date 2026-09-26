@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import random
 import sys
 import time
@@ -35,7 +36,13 @@ log = logging.getLogger(__name__)
 
 # Batch prices per million tokens (50 % of list); cache reads 0.1x, cache writes 1.25x of input.
 PRICES = {"claude-sonnet-5": (1.0, 5.0), "claude-opus-5": (2.5, 12.5), "claude-haiku-4-5": (0.5, 2.5),
-          "claude-sonnet-4-6": (1.5, 7.5)}
+          "claude-sonnet-4-6": (1.5, 7.5),
+          # free tiers / local models: no cost, only time
+          "gemini-2.5-flash": (0.0, 0.0), "gemini-2.5-flash-lite": (0.0, 0.0), "gemini-2.0-flash": (0.0, 0.0),
+          "gemini-2.5-pro": (0.0, 0.0)}
+DEFAULT_MODELS = {"anthropic": ("claude-sonnet-5", "claude-opus-5"), "gemini": ("gemini-2.5-flash", "gemini-2.5-flash"),
+                  "groq": ("llama-3.3-70b-versatile", "llama-3.3-70b-versatile"), "openrouter": ("qwen/qwen3-32b:free", "qwen/qwen3-32b:free"),
+                  "ollama": ("qwen2.5:32b", "qwen2.5:32b"), "openai": ("gpt-4o-mini", "gpt-4o")}
 LEDGER = DATA_DIR / "cost_ledger.json"
 
 PERSONAS = {
@@ -62,12 +69,16 @@ TOPICS = ["crop choice for my soil and season", "fertilizer dose and timing", "a
           "yield expectation for my field", "intercropping", "nursery raising", "livestock fodder crop"]
 
 
-def _client(dry_run: bool = False):
-    if dry_run:
-        return None
-    import anthropic
+def _client(args):
+    """Teacher provider: Anthropic Batches (paid, 50 % off) or any OpenAI-compatible endpoint such as Gemini's
+    free tier (GEMINI_API_KEY), Groq, OpenRouter or a local Ollama model. See ml/llm/providers.py."""
+    from .providers import make_provider
 
-    return anthropic.Anthropic(max_retries=3, timeout=120.0)
+    return make_provider(args.provider, dry_run=args.dry_run, base_url=args.base_url, rpm=args.rpm)
+
+
+def run_batch(client, requests_: list[dict], label: str) -> dict:
+    return client.run_batch(requests_, label)
 
 
 # ------------------------------------------------------------------ ledger
@@ -108,32 +119,6 @@ def guard(max_usd: float, est: float, label: str) -> None:
 
 
 # ------------------------------------------------------------------ batch helpers
-def submit_batch(client, requests_: list[dict], label: str) -> str:
-    from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
-    from anthropic.types.messages.batch_create_params import Request
-
-    batch = client.messages.batches.create(requests=[Request(custom_id=r["custom_id"],
-                                                             params=MessageCreateParamsNonStreaming(**r["params"]))
-                                                     for r in requests_])
-    print(f"[{label}] submitted batch {batch.id} with {len(requests_)} requests")
-    return batch.id
-
-
-def wait_batch(client, batch_id: str, poll: int = 30) -> dict:
-    while True:
-        b = client.messages.batches.retrieve(batch_id)
-        if b.processing_status == "ended":
-            break
-        c = b.request_counts
-        print(f"  {batch_id}: {b.processing_status} (done {c.succeeded + c.errored + c.expired + c.canceled}/"
-              f"{c.processing + c.succeeded + c.errored + c.expired + c.canceled})", flush=True)
-        time.sleep(poll)
-    results = {}
-    for res in client.messages.batches.results(batch_id):
-        results[res.custom_id] = res.result
-    return results
-
-
 def _system_blocks(app, system_prompt: str, tools: bool) -> tuple[list[dict], list[dict]]:
     tool_defs = [t.anthropic() for t in app.tools] if tools else []
     if tool_defs:
@@ -144,7 +129,7 @@ def _system_blocks(app, system_prompt: str, tools: bool) -> tuple[list[dict], li
 # ------------------------------------------------------------------ stage 1: questions
 def stage_questions(args) -> int:
     rng = random.Random(args.seed)
-    client = _client(args.dry_run)
+    client = _client(args)
     with app_context() as app:
         crops = sorted(app.kb.crop_guides)
         pests = [p["name"] for p in app.kb.pests]
@@ -169,8 +154,8 @@ def stage_questions(args) -> int:
     guard(args.max_usd, estimate(args.model, len(requests_), 180, 500), "questions")
     if args.dry_run:
         return 0
-    batch_id = submit_batch(client, requests_, "questions")
-    results = wait_batch(client, batch_id)
+    batch_id = "questions"
+    results = run_batch(client, requests_, "questions")
     rows, usd = [], 0.0
     for cid, res in results.items():
         if res.type != "succeeded":
@@ -219,7 +204,7 @@ def stage_trajectories(args) -> int:
     rng = random.Random(args.seed)
     rng.shuffle(questions)
     questions = questions[: args.n] if args.n else questions
-    client = _client(args.dry_run)
+    client = _client(args)
     with app_context() as app:
         system, tool_defs = _system_blocks(app, SYSTEM_PROMPT, tools=True)
         tools_openai = openai_tool_schemas(app)
@@ -252,8 +237,8 @@ def stage_trajectories(args) -> int:
             guard(args.max_usd, est, f"trajectories round {round_no}")
             if args.dry_run:
                 return 0
-            batch_id = submit_batch(client, reqs, f"trajectories r{round_no}")
-            results = wait_batch(client, batch_id)
+            batch_id = f"trajectories r{round_no}"
+            results = run_batch(client, reqs, batch_id)
             usd = 0.0
             for sid, res in results.items():
                 s = state[sid]
@@ -308,7 +293,7 @@ def stage_rewrite(args) -> int:
     rows = read_jsonl(args.inp)
     if args.n:
         rows = rows[: args.n]
-    client = _client(args.dry_run)
+    client = _client(args)
     reqs = []
     for r in rows:
         q, a = r["messages"][1]["content"], r["messages"][2]["content"]
@@ -317,8 +302,8 @@ def stage_rewrite(args) -> int:
     guard(args.max_usd, estimate(args.model, len(reqs), 260, 260), "rewrite")
     if args.dry_run:
         return 0
-    batch_id = submit_batch(client, reqs, "rewrite")
-    results = wait_batch(client, batch_id)
+    batch_id = "rewrite"
+    results = run_batch(client, reqs, "rewrite")
     out_rows, usd = [], 0.0
     by_id = {r["id"]: r for r in rows}
     for cid, res in results.items():
@@ -343,7 +328,13 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="stage", required=True)
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--model", default="claude-sonnet-5")
+    common.add_argument("--provider", default=os.getenv("TEACHER_PROVIDER", "gemini" if os.getenv("GEMINI_API_KEY") else "anthropic"),
+                        choices=["anthropic", "gemini", "openai", "groq", "openrouter", "ollama"],
+                        help="anthropic = Message Batches (paid); gemini = Google AI Studio free tier via the OpenAI-compatible "
+                             "endpoint (GEMINI_API_KEY); openai/groq/openrouter/ollama = any OpenAI-style endpoint (TEACHER_BASE_URL/TEACHER_API_KEY)")
+    common.add_argument("--base-url", default=None, help="override the OpenAI-compatible endpoint")
+    common.add_argument("--rpm", type=float, default=float(os.getenv("TEACHER_RPM", "8")), help="requests per minute for sequential providers")
+    common.add_argument("--model", default=None, help="teacher model (default depends on --provider)")
     common.add_argument("--max-usd", type=float, default=100.0)
     common.add_argument("--dry-run", action="store_true", help="estimate cost, submit nothing")
     common.add_argument("--seed", type=int, default=42)
@@ -366,6 +357,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.stage == "status":
         print(json.dumps(ledger_load(), indent=1))
         return 0
+    defaults = DEFAULT_MODELS.get(args.provider, DEFAULT_MODELS["openai"])
+    if not args.model:
+        args.model = defaults[0]
+    if getattr(args, "hard_model", None) in (None, "claude-opus-5") and args.provider != "anthropic":
+        args.hard_model = defaults[1]
+    print(f"teacher: provider={args.provider} model={args.model}" + (f" hard_model={args.hard_model}" if hasattr(args, "hard_model") else ""))
     return {"questions": stage_questions, "trajectories": stage_trajectories, "rewrite": stage_rewrite}[args.stage](args)
 
 
