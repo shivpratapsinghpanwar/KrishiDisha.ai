@@ -1,0 +1,263 @@
+# KrishiDisha image-source registry.
+#
+# Every entry:
+#   kind:        kaggle_dataset | kaggle_competition | git | http | local_zip
+#   ref:         Kaggle slug, competition id, git URL, http URL or local zip path
+#   domain:      field | lab | ood         (only `field` and `ood` train the served model)
+#   country:     where the photos were taken (Indian-field provenance preferred)
+#   licence:     as stated by the publisher; "verify" means it must be confirmed on download
+#                before a --commercial build may use it
+#   mapping:     name of the label-mapping in ml/datasets/taxonomy.py
+#   layout:      imagefolder (class sub-folders) | csv (a labels CSV) | plantdoc | paddy
+#   subdir:      folder inside the extracted archive that holds the class folders (optional)
+#   splits:      folders that already separate train/valid/test (optional)
+#   include_prefix / exclude: zip-member filters (optional)
+#   enabled:     false = registered but not downloaded by --all
+#
+# Sizes are the publishers' numbers; the manifest builder prints the real counts.
+
+data_root_env: KRISHIDISHA_DATA_ROOT
+
+sources:
+
+  # ------------------------------------------------------------------ rice
+  paddy_doctor:
+    kind: kaggle_competition
+    ref: paddy-disease-classification
+    domain: field
+    country: India (Tamil Nadu paddy fields, phone camera)
+    crop: rice
+    expected_images: 10407
+    licence: "Kaggle competition rules (Paddy Doctor, 2022) - verify commercial use; the authors also published the dataset (Petchiammal et al.) - prefer that release for a commercial build"
+    url: https://www.kaggle.com/competitions/paddy-disease-classification
+    citation: "Petchiammal, Briskline Kiruba, Murugan, Pandarasamy Arjunan. Paddy Doctor: A Visual Image Dataset for Automated Paddy Disease Classification and Benchmarking. 2022."
+    mapping: paddy_doctor
+    layout: csv
+    csv: train.csv
+    csv_image_col: image_id
+    csv_label_col: label
+    image_dir: train_images
+    enabled: true
+
+  rice_leaf_4:
+    kind: kaggle_dataset
+    ref: nirmalsankalana/rice-leaf-disease-image
+    domain: field
+    country: Bangladesh / India (field photos)
+    crop: rice
+    expected_images: 5932
+    licence: "CC BY 4.0 (Mendeley origin) - verify on the Kaggle page"
+    url: https://www.kaggle.com/datasets/nirmalsankalana/rice-leaf-disease-image
+    mapping: rice_leaf_4
+    layout: imagefolder
+    enabled: true
+
+  # ------------------------------------------------------------- sugarcane
+  sugarcane_leaf:
+    kind: kaggle_dataset
+    ref: nirmalsankalana/sugarcane-leaf-disease-dataset
+    domain: field
+    country: India (sugarcane fields)
+    crop: sugarcane
+    expected_images: 2521
+    licence: verify
+    url: https://www.kaggle.com/datasets/nirmalsankalana/sugarcane-leaf-disease-dataset
+    mapping: sugarcane_leaf
+    layout: imagefolder
+    enabled: true
+
+  # ----------------------------------------------------------------- mango
+  mango_leaf:
+    kind: kaggle_dataset
+    ref: aryashah2k/mango-leaf-disease-dataset
+    domain: field
+    country: Bangladesh (orchards, phone camera)
+    crop: mango
+    expected_images: 4000
+    licence: "CC BY 4.0 (Mendeley Data: MangoLeafBD)"
+    url: https://www.kaggle.com/datasets/aryashah2k/mango-leaf-disease-dataset
+    mapping: mango_leaf
+    layout: imagefolder
+    enabled: true
+
+  # ---------------------------------------------------------------- cotton
+  cotton_leaf:
+    kind: kaggle_dataset
+    ref: seroshkarim/cotton-leaf-disease-dataset
+    domain: field
+    country: India / Pakistan (field photos)
+    crop: cotton
+    expected_images: 1700
+    licence: verify
+    url: https://www.kaggle.com/datasets/seroshkarim/cotton-leaf-disease-dataset
+    mapping: cotton_leaf
+    layout: imagefolder
+    enabled: true
+
+  # ----------------------------------------------------------------- wheat
+  wheat_rust_cgiar:
+    kind: kaggle_dataset
+    ref: shadabhussain/cgiar-computer-vision-for-crop-disease
+    domain: field
+    country: Ethiopia (CGIAR field survey)
+    crop: wheat
+    expected_images: 876
+    licence: "CGIAR / Zindi challenge data - verify"
+    url: https://www.kaggle.com/datasets/shadabhussain/cgiar-computer-vision-for-crop-disease
+    mapping: wheat_rust_cgiar
+    layout: imagefolder
+    enabled: true
+
+  wheat_leaf:
+    kind: kaggle_dataset
+    ref: olyadgetch/wheat-leaf-dataset
+    domain: field
+    country: Ethiopia (field photos)
+    crop: wheat
+    expected_images: 407
+    licence: verify
+    url: https://www.kaggle.com/datasets/olyadgetch/wheat-leaf-dataset
+    mapping: wheat_leaf
+    layout: imagefolder
+    enabled: true
+
+  # ------------------------------------------------------- mixed field sets
+  plantdoc:
+    kind: git
+    ref: https://github.com/pratikkayal/PlantDoc-Dataset.git
+    domain: field
+    country: internet field photographs (worldwide)
+    crop: mixed (apple, bell pepper, blueberry, cherry, corn, grape, peach, potato, raspberry, soybean, squash, strawberry, tomato)
+    expected_images: 2598
+    licence: "CC BY 4.0"
+    url: https://github.com/pratikkayal/PlantDoc-Dataset
+    citation: "Singh et al. PlantDoc: A Dataset for Visual Plant Disease Detection. CoDS-COMAD 2020."
+    mapping: plantdoc
+    layout: imagefolder
+    splits: {train: train, test: test}
+    enabled: true
+
+  ccmt:
+    kind: http
+    ref: https://data.mendeley.com/public-files/datasets/bwh3zbpkpv/files/9d3b8a5e-6b5c-4d5a-9a6f-0c0d3c1d2f37/file_downloaded
+    domain: field
+    country: Ghana (field photos)
+    crop: mixed (cashew, cassava, maize, tomato) - only maize and tomato are used
+    expected_images: 24881
+    licence: "CC BY 4.0 (Mendeley Data: CCMT)"
+    url: https://data.mendeley.com/datasets/bwh3zbpkpv/1
+    mapping: ccmt
+    layout: imagefolder
+    subdir: "CCMT Dataset-Augmented"
+    only_crops: [maize, tomato]
+    enabled: false   # 8 GB; download on Kaggle/Colab, not on the laptop
+
+  # ----------------------------------------------- few-shot crops (phase 2)
+  chilli_leaf:
+    kind: kaggle_dataset
+    ref: dhenyd/chili-plant-disease
+    domain: field
+    country: Indonesia / India (field photos)
+    crop: chilli
+    expected_images: 500
+    licence: verify
+    url: https://www.kaggle.com/datasets/dhenyd/chili-plant-disease
+    mapping: chilli_leaf
+    layout: imagefolder
+    enabled: false
+
+  soybean_leaf:
+    kind: kaggle_dataset
+    ref: sivm205/soybean-diseased-leaf-dataset
+    domain: field
+    country: India (field photos)
+    crop: soybean
+    expected_images: 1000
+    licence: verify
+    url: https://www.kaggle.com/datasets/sivm205/soybean-diseased-leaf-dataset
+    mapping: soybean_leaf
+    layout: imagefolder
+    enabled: false
+
+  groundnut_leaf:
+    kind: kaggle_dataset
+    ref: abhimanuer/peanut-plant-leaf-disease
+    domain: field
+    country: India (field photos)
+    crop: groundnut
+    expected_images: 1500
+    licence: verify
+    url: https://www.kaggle.com/datasets/abhimanuer/peanut-plant-leaf-disease
+    mapping: groundnut_leaf
+    layout: imagefolder
+    enabled: false
+
+  banana_leaf:
+    kind: kaggle_dataset
+    ref: shifatearman/bananalsd
+    domain: field
+    country: Bangladesh (field photos)
+    crop: banana
+    expected_images: 937
+    licence: "CC BY 4.0 (Mendeley: BananaLSD) - verify"
+    url: https://www.kaggle.com/datasets/shifatearman/bananalsd
+    mapping: banana_leaf
+    layout: imagefolder
+    enabled: false
+
+  citrus_leaf:
+    kind: kaggle_dataset
+    ref: jonathansilva2020/orange-diseases-dataset
+    domain: field
+    country: Brazil (orchard photos)
+    crop: citrus
+    expected_images: 600
+    licence: verify
+    url: https://www.kaggle.com/datasets/jonathansilva2020/orange-diseases-dataset
+    mapping: citrus_leaf
+    layout: imagefolder
+    enabled: false
+
+  # ---------------------------------------------------------- OOD / not leaf
+  coco_val_subset:
+    kind: http
+    ref: http://images.cocodataset.org/zips/val2017.zip
+    domain: ood
+    country: n/a
+    crop: none
+    expected_images: 5000
+    licence: "CC BY 4.0 (COCO annotations); images under Flickr terms - used only for the not-a-leaf class"
+    url: https://cocodataset.org
+    mapping: not_leaf
+    layout: flat
+    subdir: val2017
+    sample: 1500
+    enabled: true
+
+  own_photos:
+    kind: local_dir
+    ref: own_photos
+    domain: field
+    country: "India (KrishiDisha collection drive - Madhya Pradesh, partner KVK/FPO)"
+    crop: mixed
+    licence: "own data, consent recorded per upload"
+    mapping: canonical
+    layout: imagefolder
+    holdout: true   # KrishiDisha field test set: never trained on until v2
+    enabled: true
+
+  # ------------------------------------------------------- lab (excluded)
+  plantvillage_aug:
+    kind: local_zip
+    ref: plantvillage/new-plant-diseases-dataset.zip
+    domain: lab
+    country: USA (PlantVillage lab photography)
+    crop: mixed
+    expected_images: 87867
+    licence: "public (PlantVillage)"
+    url: https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset
+    mapping: plantvillage
+    layout: imagefolder
+    include_prefix: "New Plant Diseases Dataset(Augmented)/New Plant Diseases Dataset(Augmented)/"
+    splits: {train: train, valid: valid}
+    enabled: false   # owner's decision: lab data is not used for the served model

@@ -1,0 +1,31 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Chat logs{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-chat-dots me-2"></i>Chat logs</h4>
+  <div class="text-muted small">{{ sessions|length }} session(s) shown (latest 100).</div>
+{% endblock %}
+{% block admin_content %}
+<div class="kd-card p-3">
+  {% if sessions %}
+  <div class="table-responsive">
+    <table class="table table-kd align-middle mb-0">
+      <thead><tr><th>Title</th><th>Farmer</th><th>Language</th><th>Messages</th><th>Updated</th><th></th></tr></thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td>{{ s.title or 'Conversation' }}</td>
+          <td>{% if s.farmer %}<a href="{{ url_for('admin.farmer_detail', farmer_id=s.farmer.id) }}">{{ s.farmer.name }}</a>{% else %}Anonymous{% endif %}</td>
+          <td>{{ s.language }}</td>
+          <td>{{ s.messages|length }}</td>
+          <td class="small text-muted">{{ s.updated_at.strftime('%d %b %Y %H:%M') }}</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-success" href="{{ url_for('admin.chat_detail', session_id=s.id) }}"><i class="bi bi-eye"></i> View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted mb-0">No chat sessions yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

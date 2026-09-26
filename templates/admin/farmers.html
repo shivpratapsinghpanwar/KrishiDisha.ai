@@ -1,0 +1,108 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Farmers{% endblock %}
+{% block admin_title %}
+  <h4 class="kd-section-title mb-0"><i class="bi bi-people me-2"></i>Farmers</h4>
+  <div class="text-muted small">{{ farmers|length }} farmer(s) found.</div>
+{% endblock %}
+{% block admin_content %}
+<div class="kd-card p-3 mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-6">
+      <label for="q" class="form-label">Search</label>
+      <input type="text" class="form-control" id="q" name="q" value="{{ q }}" placeholder="Name, email, phone, username, district...">
+    </div>
+    <div class="col-md-3">
+      <label for="status" class="form-label">Status</label>
+      <select class="form-select" id="status" name="status">
+        <option value="" {% if status == '' %}selected{% endif %}>All</option>
+        <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="verified" {% if status == 'verified' %}selected{% endif %}>Verified</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+      <button class="btn btn-success" type="submit"><i class="bi bi-search"></i> Filter</button>
+      <a class="btn btn-outline-success ms-auto" href="{{ url_for('admin.create_farmer') }}"><i class="bi bi-person-plus"></i> Add farmer</a>
+    </div>
+  </form>
+</div>
+
+<div class="kd-card p-3">
+  {% if farmers %}
+  <div class="table-responsive">
+    <table class="table table-kd align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Name</th><th>Username</th><th>Email</th><th>Phone</th><th>State / District</th>
+          <th>Land</th><th>Language</th><th>Verified</th><th>Registered</th><th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in farmers %}
+        <tr>
+          <td><a href="{{ url_for('admin.farmer_detail', farmer_id=f.id) }}">{{ f.name }}</a></td>
+          <td>{{ f.username }}</td>
+          <td>{{ f.email }}</td>
+          <td>{{ f.phone }}</td>
+          <td>{{ f.state or '-' }} / {{ f.district or '-' }}</td>
+          <td>{{ f.land_area_acres if f.land_area_acres else '-' }}</td>
+          <td>{{ f.preferred_language }}</td>
+          <td>
+            {% if f.verified %}<span class="badge text-bg-success">Verified</span>
+            {% else %}<span class="badge text-bg-warning">Pending</span>{% endif %}
+          </td>
+          <td class="small text-muted">{{ f.created_at.strftime('%d %b %Y') }}</td>
+          <td class="text-end text-nowrap">
+            {% if f.verified %}
+            <form class="d-inline" method="post" action="{{ url_for('admin.unverify_farmer', farmer_id=f.id) }}">
+              <button class="btn btn-sm btn-outline-warning" type="submit"><i class="bi bi-slash-circle"></i> Suspend</button>
+            </form>
+            {% else %}
+            <a class="btn btn-sm btn-success" href="{{ url_for('admin.verify_farmer', farmer_id=f.id) }}"><i class="bi bi-check2-circle"></i> Verify</a>
+            {% endif %}
+            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.update_farmer', farmer_id=f.id) }}"><i class="bi bi-pencil"></i> Edit</a>
+            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteFarmerModal"
+                    data-farmer-id="{{ f.id }}" data-farmer-name="{{ f.name }}"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted mb-0">No farmers match this filter.</p>
+  {% endif %}
+</div>
+
+<div class="modal fade" id="deleteFarmerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" id="deleteFarmerForm">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-exclamation-triangle text-danger me-1"></i>Delete farmer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Delete <strong id="deleteFarmerName"></strong> and all their activities, orders and chat history? This cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete permanently</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const deleteFarmerUrlTemplate = "{{ url_for('admin.delete_farmer', farmer_id=0) }}";
+  document.getElementById('deleteFarmerModal').addEventListener('show.bs.modal', function (event) {
+    const btn = event.relatedTarget;
+    const id = btn.getAttribute('data-farmer-id');
+    const name = btn.getAttribute('data-farmer-name');
+    document.getElementById('deleteFarmerName').textContent = name;
+    document.getElementById('deleteFarmerForm').action = deleteFarmerUrlTemplate.replace(/0(?!.*0)/, id);
+  });
+</script>
+{% endblock %}

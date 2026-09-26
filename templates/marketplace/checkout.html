@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="kd-section-title mb-4"><i class="bi bi-bag-check me-2"></i>Checkout</h1>
+
+  <form method="post" action="{{ url_for('marketplace.checkout') }}">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="kd-form-card mb-4">
+          <h2 class="h5 mb-3">Delivery address</h2>
+
+          {% if addresses %}
+          <div class="mb-3">
+            {% for addr in addresses %}
+            <div class="form-check border rounded p-2 mb-2">
+              <input class="form-check-input address-radio" type="radio" name="address_id" id="addr{{ addr.id }}" value="{{ addr.id }}" {% if loop.first %}checked{% endif %}>
+              <label class="form-check-label" for="addr{{ addr.id }}">{{ addr.formatted() }}</label>
+            </div>
+            {% endfor %}
+            <div class="form-check border rounded p-2">
+              <input class="form-check-input address-radio" type="radio" name="address_id" id="addrNew" value="" data-new-address="1">
+              <label class="form-check-label fw-semibold" for="addrNew">Use a new address</label>
+            </div>
+          </div>
+          {% endif %}
+
+          <fieldset id="newAddressFields" {% if addresses %}hidden{% endif %}>
+            <legend class="h6">{% if addresses %}New address{% else %}Your address{% endif %}</legend>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="full_name" class="form-label">Full name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ form.get('full_name', '') }}">
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone number</label>
+                <input type="tel" class="form-control" id="phone" name="phone" pattern="\d{10}" value="{{ form.get('phone', '') }}">
+              </div>
+              <div class="col-12">
+                <label for="line1" class="form-label">Address line</label>
+                <input type="text" class="form-control" id="line1" name="line1" placeholder="House no., street, area" value="{{ form.get('line1', '') }}">
+              </div>
+              <div class="col-md-6">
+                <label for="village" class="form-label">Village / town (optional)</label>
+                <input type="text" class="form-control" id="village" name="village" value="{{ form.get('village', '') }}">
+              </div>
+              <div class="col-md-6">
+                <label for="district" class="form-label">District</label>
+                <input type="text" class="form-control" id="district" name="district" value="{{ form.get('district', '') }}">
+              </div>
+              <div class="col-md-6">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" list="stateList" value="{{ form.get('state', '') }}">
+                <datalist id="stateList">
+                  {% for st in ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"] %}
+                  <option value="{{ st }}">
+                  {% endfor %}
+                </datalist>
+              </div>
+              <div class="col-md-6">
+                <label for="pincode" class="form-label">PIN code</label>
+                <input type="text" class="form-control" id="pincode" name="pincode" pattern="\d{6}" maxlength="6" value="{{ form.get('pincode', '') }}">
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="kd-form-card">
+          <h2 class="h5 mb-3">Payment method</h2>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="payment_method" id="payCod" value="COD" checked>
+            <label class="form-check-label" for="payCod"><strong>Cash on Delivery</strong> — pay when the order arrives</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="payment_method" id="payUpi" value="UPI">
+            <label class="form-check-label" for="payUpi"><strong>UPI</strong> — pay after placing the order using the UPI ID shown on the order page</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="kd-form-card kd-sticky-summary">
+          <h2 class="h5 mb-3">Order summary</h2>
+          <ul class="list-unstyled small mb-3">
+            {% for item in items %}
+            <li class="d-flex justify-content-between mb-1">
+              <span>{{ item.product.name }} &times; {{ item.quantity }}</span>
+              <span>{{ item.line_total | inr }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+          <hr>
+          <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>{{ totals.subtotal | inr }}</span></div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Delivery</span>
+            <span>{% if totals.delivery == 0 %}<span class="text-success fw-semibold">Free</span>{% else %}{{ totals.delivery | inr }}{% endif %}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold fs-5 mb-3"><span>Total</span><span>{{ totals.total | inr }}</span></div>
+          <button type="submit" class="btn btn-success w-100">Place order</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var radios = document.querySelectorAll('.address-radio');
+    var fields = document.getElementById('newAddressFields');
+    if (!radios.length || !fields) return;
+    function sync() {
+      var newSelected = document.getElementById('addrNew');
+      fields.hidden = !(newSelected && newSelected.checked);
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    sync();
+  })();
+</script>
+{% endblock %}
