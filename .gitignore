@@ -49,3 +49,8 @@ docs/pop/
 .idea/
 .DS_Store
 Thumbs.db
+
+# API key files dropped in the repo root
+Gemini
+Gemini/
+*.key

@@ -118,7 +118,7 @@ class OpenAICompatible:
     """Sequential calls with a requests-per-minute budget; free tiers are slow but cost nothing."""
     name = "openai"
 
-    def __init__(self, base_url: str | None = None, api_key: str | None = None, rpm: float = 10.0, max_retries: int = 6):
+    def __init__(self, base_url: str | None = None, api_key: str | None = None, rpm: float = 10.0, max_retries: int = 40):
         from openai import OpenAI
 
         base_url = base_url or os.getenv("TEACHER_BASE_URL") or (GEMINI_OPENAI_BASE if os.getenv("GEMINI_API_KEY") else os.getenv("OPENAI_BASE_URL"))
@@ -146,9 +146,11 @@ class OpenAICompatible:
                 return openai_to_anthropic_message(resp.choices[0].message, resp.usage, params["model"])
             except Exception as exc:  # noqa: BLE001
                 msg = str(exc)
-                retry_after = 30 * (attempt + 1)
-                if "429" in msg or "rate" in msg.lower() or "quota" in msg.lower() or "503" in msg or "overloaded" in msg.lower():
-                    print(f"  provider throttled ({msg[:80]}); sleeping {retry_after}s", flush=True)
+                low = msg.lower()
+                # per-minute limits clear in seconds; per-day quota ("PerDay", "daily") needs a long pause
+                retry_after = min(60 * (attempt + 1), 900) if ("day" in low or "daily" in low) else min(20 * (attempt + 1), 180)
+                if "429" in msg or "rate" in low or "quota" in low or "503" in msg or "overloaded" in low or "resource" in low:
+                    print(f"  provider throttled ({msg[:90]}); sleeping {retry_after}s", flush=True)
                     time.sleep(retry_after)
                     continue
                 if "tool" in msg.lower() and tools:
@@ -168,6 +170,9 @@ class OpenAICompatible:
             except Exception as exc:  # noqa: BLE001
                 log.warning("%s failed: %s", r["custom_id"], exc)
                 out[r["custom_id"]] = SimpleNamespace(type="errored", error=str(exc)[:200])
+                msg = str(exc)
+                if i == 0 and ("404" in msg or "not found" in msg.lower() or "no longer available" in msg.lower()):
+                    raise SystemExit(f"model {r['params'].get('model')} is not available on this endpoint: {msg[:160]}")
             if (i + 1) % 25 == 0:
                 print(f"  {i + 1}/{len(requests_)} done ({time.time() - t0:.0f}s)", flush=True)
         return out

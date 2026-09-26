@@ -38,9 +38,10 @@ log = logging.getLogger(__name__)
 PRICES = {"claude-sonnet-5": (1.0, 5.0), "claude-opus-5": (2.5, 12.5), "claude-haiku-4-5": (0.5, 2.5),
           "claude-sonnet-4-6": (1.5, 7.5),
           # free tiers / local models: no cost, only time
-          "gemini-2.5-flash": (0.0, 0.0), "gemini-2.5-flash-lite": (0.0, 0.0), "gemini-2.0-flash": (0.0, 0.0),
-          "gemini-2.5-pro": (0.0, 0.0)}
-DEFAULT_MODELS = {"anthropic": ("claude-sonnet-5", "claude-opus-5"), "gemini": ("gemini-2.5-flash", "gemini-2.5-flash"),
+          "gemini-3-flash-preview": (0.0, 0.0), "gemini-flash-lite-latest": (0.0, 0.0), "gemini-flash-latest": (0.0, 0.0),
+          "gemini-2.5-flash": (0.0, 0.0), "gemini-2.5-pro": (0.0, 0.0)}
+# Gemini free tier (Sept 2026): 2.5-flash is closed to new keys; gemini-3-flash-preview and gemini-flash-lite-latest work.
+DEFAULT_MODELS = {"anthropic": ("claude-sonnet-5", "claude-opus-5"), "gemini": ("gemini-3-flash-preview", "gemini-3-flash-preview"),
                   "groq": ("llama-3.3-70b-versatile", "llama-3.3-70b-versatile"), "openrouter": ("qwen/qwen3-32b:free", "qwen/qwen3-32b:free"),
                   "ollama": ("qwen2.5:32b", "qwen2.5:32b"), "openai": ("gpt-4o-mini", "gpt-4o")}
 LEDGER = DATA_DIR / "cost_ledger.json"
