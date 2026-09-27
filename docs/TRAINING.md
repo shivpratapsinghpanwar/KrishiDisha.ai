@@ -17,7 +17,7 @@ python -m ml eval disease --manifest ...        # per-crop report, coverage tier
 python -m ml export disease                     # ONNX for the app + models/registry.json
 ```
 
-Larger backbones train in `notebooks/kaggle_train_disease.ipynb`; the RTX 2050 handles
+Larger backbones train in `notebooks/kaggle_train_disease/`; the RTX 2050 handles
 `efficientnet_b0` locally. Fallbacks without a trained model: `DISEASE_MODEL_BACKEND=hf`
 downloads a pretrained PlantVillage MobileNet from the Hugging Face Hub (lab data, demo only);
 the original `plant_disease_model_1_latest.pt` from `CNN.py` is also supported (`legacy`).
