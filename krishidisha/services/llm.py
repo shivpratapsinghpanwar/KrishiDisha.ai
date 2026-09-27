@@ -41,7 +41,8 @@ How to work:
 - When you recommend a fertilizer, fungicide, seed or tool that the marketplace sells, name it and give its link as a markdown link (path starts with /marketplace/product/).
 - Reply in the farmer's language: if the message is in Hindi (Devanagari) answer in Hindi; if it is Hinglish answer in Hinglish; otherwise use the requested language. Keep sentences short and use bullet points and small tables for schedules. Do not use headings larger than ###.
 - If a question is outside agriculture, politely steer back to farming topics. Never invent government scheme figures; use the scheme tool.
-- Keep answers focused (usually under 250 words) unless a detailed plan is requested."""
+- Keep answers under 200 words unless a detailed plan is requested. Farmers read on phones: use short bullet
+  lists for schedules and doses, never markdown tables."""
 
 
 class AgriAssistant:

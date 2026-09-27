@@ -116,6 +116,33 @@ def safety_ok(ex: dict, scheme_amounts: set[str]) -> bool:
     return True
 
 
+TABLE_LINE = re.compile(r"^\s*\|.*\|.*\|\s*$", re.M)
+MAX_WORDS = 350
+MAX_TABLE_LINES = 4
+
+
+def quality_issue(ex: dict) -> str | None:
+    """Return why an example should be dropped, or None. Catches what the teacher audit found: hallucinated or
+    misspelt tool names (they would fail at runtime), replies far longer than a farmer reads on a phone, and
+    wide markdown tables (unreadable on a phone). The system prompt asks for none of these."""
+    known = {t["function"]["name"] for t in ex.get("tools") or [] if isinstance(t, dict) and "function" in t}
+    for m in ex.get("messages", []):
+        if m.get("role") != "assistant":
+            continue
+        for c in m.get("tool_calls") or []:
+            name = (c.get("function") or {}).get("name", "")
+            if known and name not in known:
+                return f"unknown tool {name!r}"
+            if name != name.strip() or " " in name:
+                return f"malformed tool name {name!r}"
+    _, assistant = _user_assistant_text(ex)
+    if len(assistant.split()) > MAX_WORDS:
+        return f"reply too long ({len(assistant.split())} words)"
+    if len(TABLE_LINE.findall(assistant)) >= MAX_TABLE_LINES:
+        return "markdown table"
+    return None
+
+
 def load_scheme_amounts(path: Path = Path("data/knowledge/government_schemes.json")) -> set[str]:
     try:
         text = path.read_text(encoding="utf-8")
@@ -176,6 +203,18 @@ def main(argv: list[str] | None = None) -> int:
     amounts = load_scheme_amounts()
     examples = [e for e in examples if safety_ok(e, amounts)]
     n_safety = n0 - len(examples)
+    issues: dict[str, int] = {}
+    kept = []
+    for e in examples:
+        why = quality_issue(e)
+        if why:
+            issues[why.split(" (")[0].split(" '")[0]] = issues.get(why.split(" (")[0].split(" '")[0], 0) + 1
+        else:
+            kept.append(e)
+    n_quality = len(examples) - len(kept)
+    examples = kept
+    if n_quality:
+        print(f"quality filter dropped {n_quality}: {issues}")
     examples, n_dup = dedupe(examples, args.threshold)
 
     keep_ids = {e["id"] for e in read_jsonl(args.eval)} if args.keep_eval and args.eval.exists() else None

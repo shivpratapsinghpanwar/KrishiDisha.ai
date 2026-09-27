@@ -204,7 +204,10 @@ def _to_openai_history(content_blocks, tool_results: dict[str, str]) -> list[dic
 
 def stage_trajectories(args) -> int:
     from krishidisha.services.llm import SYSTEM_PROMPT
+    from krishidisha.services.safety import check_reply
     from krishidisha.services.tools import run_tool
+
+    n_banned = 0
 
     questions = read_jsonl(args.questions)
     rng = random.Random(args.seed)
@@ -272,6 +275,10 @@ def stage_trajectories(args) -> int:
                 else:
                     s["openai"] += _to_openai_history(msg.content, {})
                     s["done"] = True
+                    final_text = " ".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+                    if check_reply(final_text)["banned"]:  # second safety net, before the row ever reaches dedup_filter
+                        s["failed"] = True
+                        n_banned += 1
             ledger_add({"stage": f"trajectories_r{round_no}", "batch": batch_id, "n": len(results), "usd": round(usd, 4),
                         "at": time.strftime("%Y-%m-%dT%H:%M:%S")})
 
@@ -282,7 +289,8 @@ def stage_trajectories(args) -> int:
             rows.append(make_example("distill", s["q"]["language"], s["openai"], tools=tools_openai,
                                      meta={"teacher": s["model"], "tools_used": s["tools_used"], "question_id": sid}))
     write_jsonl(args.out, rows)
-    print(f"wrote {args.out}: {len(rows)} trajectories from {len(questions)} questions")
+    print(f"wrote {args.out}: {len(rows)} trajectories from {len(questions)} questions"
+          + (f"; {n_banned} dropped by the pesticide safety guard" if n_banned else ""))
     return 0
 
 
