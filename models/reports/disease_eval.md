@@ -1,51 +1,52 @@
-# Disease classifier evaluation (2026-09-26T13:52:13)
+# Disease classifier evaluation (2026-09-26T19:37:05)
 
-Checkpoint `plant_disease_model.pt`, arch `timm:convnext_tiny`, 224px, 54 classes, temperature 0.569, 8.6 ms/image on cuda.
+Checkpoint `plant_disease_model.pt`, arch `timm:convnext_tiny`, 224px, 60 classes, temperature 0.719, 5.9 ms/image on cuda.
 
 ## Headline
 
 | Set | Images | Top-1 | Top-3 |
 |---|---|---|---|
 | **KrishiDisha own field test** | 0 | - | - |
-| Public field test (all sources) | 1650 | 95.6% | 99.3% |
-| All test incl. not-a-leaf | 1875 | 96.1% | 99.4% |
+| Public field test (all sources) | 2828 | 94.3% | 98.8% |
+| All test incl. not-a-leaf | 3053 | 94.7% | 98.9% |
 
-Macro-F1 85.7%; ECE 0.0235; not-a-leaf AUROC 49.4%, leaf-pass threshold 0.997 lets 97.8% of non-leaves through
+Macro-F1 84.8%; ECE 0.0212; non-leaf photos rejected 99.6%, real leaves accepted 93.2% (max-softmax AUROC 43.3%, secondary)
 
 ## Per source
 
 | Source | Images | Top-1 | Top-3 |
 |---|---|---|---|
-| coco_val_subset | 225 | 99.1% | 100.0% |
+| coco_val_subset | 225 | 99.6% | 100.0% |
 | cotton_leaf | 149 | 99.3% | 100.0% |
 | mango_leaf | 544 | 100.0% | 100.0% |
-| plantdoc | 236 | 73.3% | 94.9% |
+| paddy_doctor | 1178 | 92.7% | 98.4% |
+| plantdoc | 236 | 70.3% | 93.6% |
 | rice_leaf_4 | 317 | 100.0% | 100.0% |
-| sugarcane_leaf | 343 | 98.3% | 100.0% |
-| wheat_leaf | 61 | 96.7% | 100.0% |
+| sugarcane_leaf | 343 | 98.8% | 100.0% |
+| wheat_leaf | 61 | 100.0% | 100.0% |
 
 ## Per crop (field test)
 
 | Crop | Tier | Train field imgs | Test imgs | Top-1 | Top-3 | Classes |
 |---|---|---|---|---|---|---|
-| Apple | C | 239 | 29 | 72.4% | 93.1% | 3 |
-| Bell_pepper | C | 112 | 17 | 88.2% | 100.0% | 2 |
-| Blueberry | C | 103 | 11 | 72.7% | 100.0% | 1 |
-| Cherry | C | 47 | 10 | 60.0% | 90.0% | 1 |
+| Apple | C | 239 | 29 | 79.3% | 96.6% | 3 |
+| Bell_pepper | C | 112 | 17 | 58.8% | 88.2% | 2 |
+| Blueberry | C | 103 | 11 | 63.6% | 100.0% | 1 |
+| Cherry | C | 47 | 10 | 70.0% | 90.0% | 1 |
 | Cotton | B | 697 | 149 | 99.3% | 100.0% | 4 |
-| Grape | C | 111 | 20 | 90.0% | 100.0% | 2 |
-| Maize | C | 339 | 26 | 61.5% | 100.0% | 3 |
+| Grape | C | 112 | 20 | 95.0% | 100.0% | 2 |
+| Maize | C | 339 | 26 | 57.7% | 96.2% | 3 |
 | Mango | A | 2542 | 544 | 100.0% | 100.0% | 8 |
-| Peach | C | 99 | 9 | 66.7% | 100.0% | 1 |
-| Potato | C | 196 | 16 | 50.0% | 93.8% | 2 |
+| Peach | C | 100 | 9 | 66.7% | 88.9% | 1 |
+| Potato | C | 196 | 16 | 37.5% | 93.8% | 2 |
 | Raspberry | C | 111 | 7 | 100.0% | 100.0% | 1 |
-| Rice | A | 1478 | 317 | 100.0% | 100.0% | 4 |
-| Soybean | C | 56 | 8 | 75.0% | 87.5% | 1 |
+| Rice | A | 6972 | 1495 | 94.2% | 98.7% | 10 |
+| Soybean | C | 56 | 8 | 62.5% | 100.0% | 1 |
 | Squash | C | 122 | 6 | 100.0% | 100.0% | 1 |
 | Strawberry | C | 88 | 8 | 100.0% | 100.0% | 1 |
-| Sugarcane | A | 1602 | 343 | 98.3% | 100.0% | 5 |
-| Tomato | C | 637 | 69 | 69.6% | 89.9% | 8 |
-| Wheat | B | 715 | 61 | 96.7% | 100.0% | 3 |
+| Sugarcane | A | 1602 | 343 | 98.8% | 100.0% | 5 |
+| Tomato | C | 637 | 69 | 68.1% | 88.4% | 8 |
+| Wheat | B | 715 | 61 | 100.0% | 100.0% | 3 |
 
 Tier A: >= 1,000 field training images and >= 90% top-1. B: >= 300 and >= 80%. C: experimental (shown with a warning in the app).
 
@@ -53,55 +54,61 @@ Tier A: >= 1,000 field training images and >= 90% top-1. B: >= 300 and >= 80%. C
 
 | Class | Support | Precision | Recall | F1 |
 |---|---|---|---|---|
-| Apple___Cedar_apple_rust | 10 | 0.875 | 0.700 | 0.778 |
-| Apple___Scab | 10 | 0.636 | 0.700 | 0.667 |
-| Apple___healthy | 9 | 0.700 | 0.778 | 0.737 |
-| Bell_pepper___Bacterial_spot | 9 | 0.889 | 0.889 | 0.889 |
-| Bell_pepper___healthy | 8 | 0.778 | 0.875 | 0.824 |
-| Blueberry___healthy | 11 | 0.800 | 0.727 | 0.762 |
-| Cherry___healthy | 10 | 0.667 | 0.600 | 0.632 |
+| Apple___Cedar_apple_rust | 10 | 1.000 | 0.800 | 0.889 |
+| Apple___Scab | 10 | 0.889 | 0.800 | 0.842 |
+| Apple___healthy | 9 | 0.538 | 0.778 | 0.636 |
+| Bell_pepper___Bacterial_spot | 9 | 0.625 | 0.556 | 0.588 |
+| Bell_pepper___healthy | 8 | 0.714 | 0.625 | 0.667 |
+| Blueberry___healthy | 11 | 0.700 | 0.636 | 0.667 |
+| Cherry___healthy | 10 | 0.700 | 0.700 | 0.700 |
 | Cotton___Bacterial_blight | 32 | 1.000 | 1.000 | 1.000 |
 | Cotton___Leaf_curl_virus | 33 | 1.000 | 1.000 | 1.000 |
-| Cotton___Wilt | 40 | 1.000 | 0.975 | 0.987 |
-| Cotton___healthy | 44 | 0.978 | 1.000 | 0.989 |
-| Grape___Black_rot | 8 | 0.875 | 0.875 | 0.875 |
-| Grape___healthy | 12 | 0.917 | 0.917 | 0.917 |
+| Cotton___Wilt | 40 | 0.976 | 1.000 | 0.988 |
+| Cotton___healthy | 44 | 1.000 | 0.977 | 0.989 |
+| Grape___Black_rot | 8 | 1.000 | 0.875 | 0.933 |
+| Grape___healthy | 12 | 0.923 | 1.000 | 0.960 |
 | Maize___Common_rust | 10 | 1.000 | 0.800 | 0.889 |
 | Maize___Gray_leaf_spot | 4 | 0.143 | 0.250 | 0.182 |
-| Maize___Northern_leaf_blight | 12 | 0.700 | 0.583 | 0.636 |
-| Mango___Anthracnose | 71 | 1.000 | 1.000 | 1.000 |
+| Maize___Northern_leaf_blight | 12 | 0.600 | 0.500 | 0.545 |
+| Mango___Anthracnose | 71 | 0.986 | 1.000 | 0.993 |
 | Mango___Bacterial_canker | 73 | 1.000 | 1.000 | 1.000 |
 | Mango___Cutting_weevil | 36 | 1.000 | 1.000 | 1.000 |
-| Mango___Die_back | 71 | 0.986 | 1.000 | 0.993 |
+| Mango___Die_back | 71 | 1.000 | 1.000 | 1.000 |
 | Mango___Gall_midge | 73 | 1.000 | 1.000 | 1.000 |
 | Mango___Powdery_mildew | 74 | 1.000 | 1.000 | 1.000 |
 | Mango___Sooty_mould | 72 | 1.000 | 1.000 | 1.000 |
-| Mango___healthy | 74 | 0.987 | 1.000 | 0.993 |
-| Other___not_a_leaf | 225 | 0.991 | 0.991 | 0.991 |
+| Mango___healthy | 74 | 1.000 | 1.000 | 1.000 |
+| Other___not_a_leaf | 225 | 0.996 | 0.996 | 0.996 |
 | Peach___healthy | 9 | 0.857 | 0.667 | 0.750 |
 | Potato___Early_blight | 8 | 0.444 | 0.500 | 0.471 |
-| Potato___Late_blight | 8 | 0.444 | 0.500 | 0.471 |
-| Raspberry___healthy | 7 | 1.000 | 1.000 | 1.000 |
-| Rice___Bacterial_leaf_blight | 77 | 1.000 | 1.000 | 1.000 |
-| Rice___Blast | 71 | 1.000 | 1.000 | 1.000 |
-| Rice___Brown_spot | 91 | 0.989 | 1.000 | 0.995 |
-| Rice___Tungro | 78 | 1.000 | 1.000 | 1.000 |
-| Soybean___healthy | 8 | 0.750 | 0.750 | 0.750 |
+| Potato___Late_blight | 8 | 0.333 | 0.250 | 0.286 |
+| Raspberry___healthy | 7 | 0.875 | 1.000 | 0.933 |
+| Rice___Bacterial_leaf_blight | 134 | 0.934 | 0.948 | 0.941 |
+| Rice___Bacterial_leaf_streak | 35 | 0.970 | 0.914 | 0.941 |
+| Rice___Bacterial_panicle_blight | 43 | 0.915 | 1.000 | 0.956 |
+| Rice___Blast | 267 | 0.952 | 0.888 | 0.919 |
+| Rice___Brown_spot | 196 | 0.945 | 0.969 | 0.957 |
+| Rice___Dead_heart | 170 | 1.000 | 0.994 | 0.997 |
+| Rice___Downy_mildew | 62 | 0.853 | 0.839 | 0.846 |
+| Rice___Hispa | 169 | 0.929 | 0.923 | 0.926 |
+| Rice___Tungro | 203 | 0.910 | 0.946 | 0.927 |
+| Rice___healthy | 216 | 0.959 | 0.977 | 0.968 |
+| Soybean___healthy | 8 | 0.500 | 0.625 | 0.556 |
 | Squash___Powdery_mildew | 6 | 1.000 | 1.000 | 1.000 |
 | Strawberry___healthy | 8 | 0.889 | 1.000 | 0.941 |
-| Sugarcane___Mosaic | 56 | 1.000 | 0.982 | 0.991 |
-| Sugarcane___Red_rot | 76 | 0.938 | 1.000 | 0.968 |
-| Sugarcane___Rust | 66 | 1.000 | 0.970 | 0.985 |
-| Sugarcane___Yellow_leaf | 74 | 1.000 | 0.960 | 0.979 |
-| Sugarcane___healthy | 71 | 0.986 | 1.000 | 0.993 |
-| Tomato___Bacterial_spot | 9 | 1.000 | 0.444 | 0.615 |
-| Tomato___Early_blight | 9 | 0.875 | 0.778 | 0.824 |
-| Tomato___Late_blight | 10 | 0.727 | 0.800 | 0.762 |
-| Tomato___Leaf_mold | 6 | 0.417 | 0.833 | 0.556 |
-| Tomato___Mosaic_virus | 10 | 1.000 | 0.300 | 0.462 |
-| Tomato___Septoria_leaf_spot | 11 | 0.733 | 1.000 | 0.846 |
+| Sugarcane___Mosaic | 56 | 1.000 | 1.000 | 1.000 |
+| Sugarcane___Red_rot | 76 | 1.000 | 0.974 | 0.987 |
+| Sugarcane___Rust | 66 | 1.000 | 0.985 | 0.992 |
+| Sugarcane___Yellow_leaf | 74 | 0.949 | 1.000 | 0.974 |
+| Sugarcane___healthy | 71 | 1.000 | 0.986 | 0.993 |
+| Tomato___Bacterial_spot | 9 | 0.571 | 0.444 | 0.500 |
+| Tomato___Early_blight | 9 | 0.545 | 0.667 | 0.600 |
+| Tomato___Late_blight | 10 | 0.667 | 0.800 | 0.727 |
+| Tomato___Leaf_mold | 6 | 0.500 | 0.667 | 0.571 |
+| Tomato___Mosaic_virus | 10 | 1.000 | 0.600 | 0.750 |
+| Tomato___Septoria_leaf_spot | 11 | 0.692 | 0.818 | 0.750 |
 | Tomato___Yellow_leaf_curl_virus | 6 | 1.000 | 0.833 | 0.909 |
 | Tomato___healthy | 8 | 0.714 | 0.625 | 0.667 |
 | Wheat___Septoria | 15 | 1.000 | 1.000 | 1.000 |
-| Wheat___Stripe_rust | 31 | 0.968 | 0.968 | 0.968 |
-| Wheat___healthy | 15 | 0.875 | 0.933 | 0.903 |
+| Wheat___Stripe_rust | 31 | 1.000 | 1.000 | 1.000 |
+| Wheat___healthy | 15 | 1.000 | 1.000 | 1.000 |

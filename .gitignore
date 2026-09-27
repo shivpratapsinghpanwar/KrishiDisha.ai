@@ -54,3 +54,5 @@ Thumbs.db
 Gemini
 Gemini/
 *.key
+data/llm/.cache/
+models/kb_index_*.npz

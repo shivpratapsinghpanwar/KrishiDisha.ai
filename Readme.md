@@ -64,14 +64,25 @@ sugarcane, mango, cotton, wheat, plus PlantDoc field images for tomato, potato, 
 and a "not a leaf" class). PlantVillage lab photos are excluded from training and from every
 number below.
 
-ConvNeXt-Tiny trained on Kaggle, 13,858 images / 54 classes: **95.6% top-1, 99.3% top-3 on 1,650
-held-out field photos**. Non-leaf photos are rejected 99% of the time.
+Model v2 (ConvNeXt-Tiny trained on Kaggle, 21,710 images / 60 classes / 9 sources, including the
+10,407 Paddy Doctor phone photos from Tamil Nadu paddy fields covering 10 rice conditions):
+**94.3% top-1, 98.8% top-3 on 2,828 held-out field photos**. Non-leaf photos are rejected 99.6% of
+the time and 93% of real leaves pass the plant check. Macro-F1 84.8%, expected calibration error 0.021.
 
 | Tier | Crops | Top-1 |
 |---|---|---|
-| A (>=1,000 field training images, >=90% top-1) | Rice, Mango, Sugarcane | 98-100% |
-| B (>=300 images, >=80% top-1) | Cotton, Wheat | 97-99% |
-| C (experimental — shown with a warning in the app) | PlantDoc crops (apple, tomato, potato, maize, ...) | 60-90% |
+| A (>=1,000 field training images, >=90% top-1) | Rice (10 conditions), Mango, Sugarcane | 94-100% |
+| B (>=300 images, >=80% top-1) | Cotton, Wheat | 99-100% |
+| C (experimental — shown with a warning in the app) | PlantDoc crops (apple, tomato, potato, maize, ...) | 40-100%, 70% overall |
+
+| Version | Images / classes | Field test | Top-1 | Top-3 |
+|---|---|---|---|---|
+| v1 (2026-09-26) | 13,858 / 54 | 1,650 photos | 95.6% | 99.3% |
+| v2 (2026-09-27) | 21,710 / 60 | 2,828 photos (harder: adds Paddy Doctor) | 94.3% | 98.8% |
+
+On the sources shared by both versions v2 matches v1 (cotton 99.3%, mango 100%, sugarcane 98.8%,
+wheat 100%); the headline moved because the test set grew, not because the model regressed.
+Paddy Doctor alone scores 92.7% top-1 / 98.4% top-3 on its 1,178 test photos.
 
 ### Tabular models
 
