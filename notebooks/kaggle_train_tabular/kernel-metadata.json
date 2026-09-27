@@ -1,0 +1,15 @@
+{
+  "id": "sspanwar/krishidisha-tabular-models-training",
+  "title": "KrishiDisha tabular models - training",
+  "code_file": "kaggle_train_tabular.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "competition_sources": [
+    "playground-series-s5e6"
+  ],
+  "kernel_sources": []
+}

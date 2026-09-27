@@ -63,6 +63,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 import warnings
 from pathlib import Path
@@ -213,6 +214,15 @@ def map_at_k(y_true, proba: np.ndarray, classes, k: int = 3) -> float:
     return float(total / len(top)) if len(top) else 0.0
 
 
+# XGBoost runs on the GPU when KRISHIDISHA_XGB_DEVICE=cuda (Kaggle T4): the 750k-row fertilizer search drops
+# from hours on a laptop CPU to minutes. Default stays CPU so the tests and the app never need a GPU.
+XGB_DEVICE = os.getenv("KRISHIDISHA_XGB_DEVICE", "cpu")
+
+
+def _xgb_device_kwargs() -> dict[str, Any]:
+    return {"device": XGB_DEVICE} if XGB_DEVICE != "cpu" else {}
+
+
 def _classifiers(n_jobs: int = -1) -> dict[str, Any]:
     """Candidate classifiers shared by the crop and fertilizer tasks."""
     return {
@@ -229,6 +239,7 @@ def _classifiers(n_jobs: int = -1) -> dict[str, Any]:
             "subsample": 0.9,
             "colsample_bytree": 0.9,
             "tree_method": "hist",
+            **_xgb_device_kwargs(),
             "random_state": RANDOM_STATE,
             "n_jobs": n_jobs,
             "verbosity": 0,
@@ -613,7 +624,7 @@ def train_fertilizer(data_dir: Path, out_dir: Path, reports: Path, cv_folds: int
         {
             "model__params": [
                 {"n_estimators": n, "max_depth": d, "learning_rate": lr, "subsample": ss,
-                 "colsample_bytree": cs, "min_child_weight": mcw, "tree_method": "hist",
+                 "colsample_bytree": cs, "min_child_weight": mcw, "tree_method": "hist", **_xgb_device_kwargs(),
                  "random_state": RANDOM_STATE, "n_jobs": -1, "verbosity": 0}
                 for n in (300, 500, 800)
                 for d in (4, 6, 8, 10)
@@ -696,7 +707,7 @@ def _log_target(estimator) -> TransformedTargetRegressor:
 def _xgb_regressor(params: dict[str, Any]):
     from xgboost import XGBRegressor
 
-    return XGBRegressor(tree_method="hist", random_state=RANDOM_STATE, n_jobs=-1, verbosity=0, **params)
+    return XGBRegressor(tree_method="hist", random_state=RANDOM_STATE, n_jobs=-1, verbosity=0, **_xgb_device_kwargs(), **params)
 
 
 def _tune_yield_xgb(X_fit, y_fit, X_val, y_val, n_trials: int) -> dict[str, Any]:
