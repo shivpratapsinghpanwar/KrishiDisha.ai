@@ -340,7 +340,9 @@ FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 10.0}
 
 
 def _single(name: str, base_url: str | None, rpm: float | None, model: str | None, multi: bool) -> OpenAICompatible:
-    base_url = base_url or KNOWN_BASES.get(name)
+    # TEACHER_<NAME>_BASE_URL overrides the endpoint per provider, e.g. TEACHER_OLLAMA_BASE_URL=https://ollama.com/v1
+    # to use Ollama cloud with an OLLAMA_API_KEY from a machine that has no signed-in local Ollama server.
+    base_url = base_url or os.getenv(f"TEACHER_{name.upper()}_BASE_URL") or KNOWN_BASES.get(name)
     api_key = None
     if name == "groq":
         api_key = os.getenv("GROQ_API_KEY")
@@ -348,6 +350,10 @@ def _single(name: str, base_url: str | None, rpm: float | None, model: str | Non
         api_key = os.getenv("OPENROUTER_API_KEY")
     elif name == "gemini":
         api_key = os.getenv("GEMINI_API_KEY")
+    elif name == "ollama":
+        api_key = os.getenv("OLLAMA_API_KEY") or "ollama"
+        if model and model.endswith("-cloud") and "ollama.com" in (base_url or ""):
+            model = model[: -len("-cloud")]  # ollama.com names the model without the -cloud suffix
     return OpenAICompatible(base_url=base_url, api_key=api_key, rpm=rpm or FREE_TIER_RPM.get(name, 10.0),
                             model=model, label=name, stop_on_daily_quota=multi)
 
