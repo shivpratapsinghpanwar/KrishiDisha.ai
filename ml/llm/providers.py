@@ -336,7 +336,7 @@ class MultiProvider:
         return out
 
 
-FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 60.0}
+FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 10.0}  # ollama = cloud models via the local server
 
 
 def _single(name: str, base_url: str | None, rpm: float | None, model: str | None, multi: bool) -> OpenAICompatible:

@@ -44,9 +44,10 @@ PRICES = {"claude-sonnet-5": (1.0, 5.0), "claude-opus-5": (2.5, 12.5), "claude-h
 # 20 requests/day, so only the lite tier (gemini-flash-lite-latest = 3.1-flash-lite) is usable for volume stages.
 # Groq free tier (Sept 2026): openai/gpt-oss-120b, 1,000 requests/day but 8,000 tokens/minute -> use --rpm 3.
 # OpenRouter free tier: 50 requests/day without credit; nvidia/nemotron-3-ultra-550b-a55b:free handles tool calls.
+# Ollama cloud (signed-in `ollama signin`): gpt-oss:120b-cloud through http://localhost:11434/v1, separate free quota.
 DEFAULT_MODELS = {"anthropic": ("claude-sonnet-5", "claude-opus-5"), "gemini": ("gemini-flash-lite-latest", "gemini-flash-lite-latest"),
                   "groq": ("openai/gpt-oss-120b", "openai/gpt-oss-120b"), "openrouter": ("nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3-ultra-550b-a55b:free"),
-                  "ollama": ("qwen2.5:32b", "qwen2.5:32b"), "openai": ("gpt-4o-mini", "gpt-4o")}
+                  "ollama": ("gpt-oss:120b-cloud", "gpt-oss:120b-cloud"), "openai": ("gpt-4o-mini", "gpt-4o")}
 LEDGER = DATA_DIR / "cost_ledger.json"
 
 PERSONAS = {
