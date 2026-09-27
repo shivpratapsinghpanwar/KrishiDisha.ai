@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # the <tool_call>/<tool_response> text format is defined once, next to the training-data renderer
-from ml.llm.common import format_tool_call, format_tool_response  # noqa: F401  (re-exported)
+from ml.toolformat import format_tool_call, format_tool_response  # noqa: F401  (re-exported)
 
 _BLOCK = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.DOTALL)
 _OPEN_ONLY = re.compile(r"<tool_call>\s*(\{.*\})\s*$", re.DOTALL)          # unterminated block at the end
