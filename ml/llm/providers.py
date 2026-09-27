@@ -152,7 +152,11 @@ class OpenAICompatible:
                 # per-minute limits clear in seconds; per-day quota ("PerDay", "daily") needs a long pause
                 retry_after = min(60 * (attempt + 1), 900) if ("day" in low or "daily" in low) else min(20 * (attempt + 1), 180)
                 if "429" in msg or "rate" in low or "quota" in low or "503" in msg or "overloaded" in low or "resource" in low:
-                    print(f"  provider throttled ({msg[:90]}); sleeping {retry_after}s", flush=True)
+                    quota = re.findall(r"quotaId': '([^']*)'", msg)
+                    hint = re.findall(r"retryDelay': '(\d+)", msg)
+                    if hint:  # honour the server's own delay when it gives one (plus a little slack)
+                        retry_after = max(retry_after if quota and "Day" in quota[0] else 0, int(hint[0]) + 5)
+                    print(f"  provider throttled ({quota[0] if quota else msg[:90]}); sleeping {retry_after}s", flush=True)
                     time.sleep(retry_after)
                     continue
                 if "tool" in msg.lower() and tools:

@@ -1,0 +1,13 @@
+{
+  "id": "sspanwar/krishidisha-assistant-qlora-training",
+  "title": "KrishiDisha assistant - QLoRA training",
+  "code_file": "kaggle_train_llm.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["sspanwar/krishidisha-llm-sft"],
+  "competition_sources": [],
+  "kernel_sources": []
+}
