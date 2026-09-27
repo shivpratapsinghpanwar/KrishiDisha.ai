@@ -95,6 +95,14 @@ Paddy Doctor alone scores 92.7% top-1 / 98.4% top-3 on its 1,178 test photos.
 Full model cards: `models/reports/crop_card.md`, `fertilizer_card.md`, `yield_card.md`,
 `disease_eval.md`.
 
+## Model weights
+
+The trained weights (disease classifier ONNX/PyTorch, tabular models, the fine-tuned assistant GGUF) are **not
+distributed** with this repository or on Kaggle; the training data, code, metrics, reports and model cards are.
+The code runs without them (rule-based and fallback paths), and `python -m ml.vision.train` / `python -m ml.train_tabular`
+reproduce them from the public datasets listed in `ml/datasets/sources.yaml`. To obtain the weights themselves
+(research, pilot or partnership), email Shivpratap Singh Panwar at shivpratapsinghpanwar19@gmail.com.
+
 ## Architecture
 
 ```mermaid

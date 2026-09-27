@@ -56,3 +56,10 @@ Gemini/
 *.key
 data/llm/.cache/
 models/kb_index_*.npz
+
+# trained weights are never published
+models/**/*.gguf
+models/**/*.safetensors
+models/**/*.bin
+models/llm/adapter*/
+models/llm/merged*/

@@ -6,6 +6,11 @@
 * Headline: own field test - top-1 (0 images); public field test 94.3% top-1 (2828 images)
 * PlantVillage (lab photography) is NOT part of the training set or any number above.
 
+## Availability
+
+The weights are private (not in the repository, not on Kaggle). Code, data recipe, metrics and this card are public. 
+To obtain the weights for research, a pilot or a partnership, email Shivpratap Singh Panwar at shivpratapsinghpanwar19@gmail.com.
+
 ## Intended use
 Decision support for Indian farmers photographing a single leaf in daylight. Tier C crops are experimental; every prediction below the uncertainty threshold is shown as uncertain. Not a substitute for a KVK diagnosis.
 
