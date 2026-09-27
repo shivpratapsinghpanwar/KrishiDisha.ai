@@ -102,14 +102,23 @@ def tool_result_turn(call: dict, content: Any) -> dict:
 
 
 # ------------------------------------------------------------------ Hermes rendering
+def format_tool_call(name: str, arguments: dict[str, Any]) -> str:
+    """Render a call in the training/serving format (shared with krishidisha.services.toolcalls)."""
+    body = json.dumps({"name": name, "arguments": arguments}, ensure_ascii=False)
+    return "<tool_call>" + chr(10) + body + chr(10) + "</tool_call>"
+
+
+def format_tool_response(name: str, content: str) -> str:
+    body = "{" + f"\"name\": {json.dumps(name)}, \"content\": {json.dumps(content, ensure_ascii=False)}" + "}"
+    return "<tool_response>" + chr(10) + body + chr(10) + "</tool_response>"
+
+
 def render_hermes(messages: list[dict], tools: list[dict] | None) -> list[dict]:
     """Convert OpenAI-shaped messages into plain text turns with <tool_call>/<tool_response> blocks.
 
     Used for models whose chat template has no native tool support (Gemma) and as a fallback for
     any template: every assistant tool call becomes text, every tool result becomes a user turn.
     """
-    from krishidisha.services.toolcalls import format_tool_call, format_tool_response
-
     out: list[dict] = []
     for m in messages:
         role = m["role"]
