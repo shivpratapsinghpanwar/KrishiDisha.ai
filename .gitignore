@@ -63,3 +63,5 @@ models/**/*.safetensors
 models/**/*.bin
 models/llm/adapter*/
 models/llm/merged*/
+
+models/llm/Modelfile.*.local
