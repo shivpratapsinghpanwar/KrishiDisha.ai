@@ -20,6 +20,9 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
+# the <tool_call>/<tool_response> text format is defined once, next to the training-data renderer
+from ml.llm.common import format_tool_call, format_tool_response  # noqa: F401  (re-exported)
+
 _BLOCK = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.DOTALL)
 _OPEN_ONLY = re.compile(r"<tool_call>\s*(\{.*\})\s*$", re.DOTALL)          # unterminated block at the end
 _FENCED = re.compile(r"```(?:json|tool_call)?\s*(\{\s*\"name\"\s*:.*?\})\s*```", re.DOTALL)
@@ -100,10 +103,5 @@ def strip_tool_calls(text: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", out).strip()
 
 
-def format_tool_call(name: str, arguments: dict[str, Any]) -> str:
-    """Render a call in the training/serving format."""
-    return f"<tool_call>\n{json.dumps({'name': name, 'arguments': arguments}, ensure_ascii=False)}\n</tool_call>"
 
 
-def format_tool_response(name: str, content: str) -> str:
-    return f"<tool_response>\n{{\"name\": {json.dumps(name)}, \"content\": {json.dumps(content, ensure_ascii=False)}}}\n</tool_response>"
