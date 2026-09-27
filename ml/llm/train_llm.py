@@ -69,17 +69,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--seed", type=int, default=42)
     args = p.parse_args(argv)
 
+    import inspect
+
+    from unsloth import FastLanguageModel  # must be imported before trl/transformers/peft (it patches them)
+    from unsloth.chat_templates import train_on_responses_only
+
     import torch
     from datasets import Dataset
     from trl import SFTConfig, SFTTrainer
-    from unsloth import FastLanguageModel
-    from unsloth.chat_templates import train_on_responses_only
 
     fam = FAMILY[family_of(args.base)]
     model, tokenizer = FastLanguageModel.from_pretrained(model_name=args.base, max_seq_length=args.max_seq,
                                                          load_in_4bit=True, dtype=None)
     model = FastLanguageModel.get_peft_model(
-        model, r=args.rank, lora_alpha=args.rank * 2, lora_dropout=0.05, bias="none",
+        model, r=args.rank, lora_alpha=args.rank * 2, lora_dropout=0.0, bias="none",  # 0 keeps Unsloth's fused kernels
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
         use_gradient_checkpointing="unsloth", random_state=args.seed)
 
@@ -95,13 +98,18 @@ def main(argv: list[str] | None = None) -> int:
         eval_ds = Dataset.from_list([{"text": render_example(tokenizer, ex, fam)} for ex in read_jsonl(args.eval)[:300]])
 
     bf16 = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
-    cfg = SFTConfig(
+    cfg_kwargs = dict(
         output_dir=str(args.out), per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=args.accum,
         num_train_epochs=args.epochs, learning_rate=args.lr, lr_scheduler_type="cosine", warmup_ratio=0.03,
         logging_steps=10, save_steps=args.save_steps, save_total_limit=2, eval_strategy="steps" if eval_ds else "no",
         eval_steps=args.save_steps, bf16=bf16, fp16=not bf16, optim="adamw_8bit", weight_decay=0.01, seed=args.seed,
-        max_seq_length=args.max_seq, dataset_text_field="text", packing=False, report_to="none")
-    trainer = SFTTrainer(model=model, tokenizer=tokenizer, train_dataset=train_ds, eval_dataset=eval_ds, args=cfg)
+        dataset_text_field="text", packing=False, report_to="none")
+    # TRL renamed max_seq_length -> max_length (0.20) and SFTTrainer(tokenizer=) -> processing_class
+    cfg_fields = set(inspect.signature(SFTConfig).parameters)
+    cfg_kwargs["max_length" if "max_length" in cfg_fields else "max_seq_length"] = args.max_seq
+    cfg = SFTConfig(**{k: v for k, v in cfg_kwargs.items() if k in cfg_fields})
+    tok_kw = "processing_class" if "processing_class" in inspect.signature(SFTTrainer).parameters else "tokenizer"
+    trainer = SFTTrainer(model=model, train_dataset=train_ds, eval_dataset=eval_ds, args=cfg, **{tok_kw: tokenizer})
     trainer = train_on_responses_only(trainer, instruction_part=fam["instruction"], response_part=fam["response"])
 
     t0 = time.time()
@@ -123,9 +131,11 @@ def main(argv: list[str] | None = None) -> int:
         prompt_msgs = [m for m in ex["messages"] if m["role"] in ("system", "user")][:2]
         if fam is FAMILY["gemma"] and prompt_msgs[0]["role"] == "system":
             prompt_msgs = [{"role": "user", "content": prompt_msgs[0]["content"] + "\n\n" + prompt_msgs[1]["content"]}]
-        ids = tokenizer.apply_chat_template(prompt_msgs, tools=ex.get("tools") if fam["native_tools"] else None,
-                                            add_generation_prompt=True, return_tensors="pt").to(model.device)
-        out = model.generate(ids, max_new_tokens=300, temperature=0.3, do_sample=True)
+        enc = tokenizer.apply_chat_template(prompt_msgs, tools=ex.get("tools") if fam["native_tools"] else None,
+                                            add_generation_prompt=True, return_tensors="pt", return_dict=True)
+        ids = enc["input_ids"].to(model.device)
+        out = model.generate(ids, attention_mask=enc["attention_mask"].to(model.device), max_new_tokens=300,
+                             temperature=0.3, do_sample=True)
         text = tokenizer.decode(out[0][ids.shape[1]:], skip_special_tokens=True)
         lines += [f"**User ({ex.get('language')}):** {user[:300]}", "", f"**Model:** {text[:900]}", "", "---", ""]
     (args.out / "sample_generations.md").write_text("\n".join(lines), encoding="utf-8")
