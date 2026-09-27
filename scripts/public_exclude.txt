@@ -1,0 +1,23 @@
+# paths removed from the public mirror (training pipeline, notebooks, pipeline tests, legacy scripts)
+ml/cli.py
+ml/__main__.py
+ml/train_all.py
+ml/train_disease.py
+ml/train_tabular.py
+ml/vision/train.py
+ml/vision/data.py
+ml/vision/calibrate.py
+ml/vision/eval.py
+ml/vision/export.py
+ml/datasets/build_disease_manifest.py
+ml/datasets/download.py
+ml/llm/
+ml/kb/
+ml/tabular/
+notebooks/
+scripts/
+docs/TRAINING.md
+tests/test_ml_pipeline.py
+tests/test_providers.py
+CNN.py
+train_all.py

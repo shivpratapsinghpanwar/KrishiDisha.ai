@@ -7,7 +7,10 @@
   "is_private": true,
   "enable_gpu": true,
   "enable_internet": true,
-  "dataset_sources": ["sspanwar/krishidisha-llm-sft"],
+  "dataset_sources": [
+    "sspanwar/krishidisha-llm-sft",
+    "sspanwar/krishidisha-lab-src"
+  ],
   "competition_sources": [],
   "kernel_sources": []
 }

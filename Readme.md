@@ -99,8 +99,8 @@ Full model cards: `models/reports/crop_card.md`, `fertilizer_card.md`, `yield_ca
 
 The trained weights (disease classifier ONNX/PyTorch, tabular models, the fine-tuned assistant GGUF) are **not
 distributed** with this repository or on Kaggle; the training data, code, metrics, reports and model cards are.
-The code runs without them (rule-based and fallback paths), and `python -m ml.vision.train` / `python -m ml.train_tabular`
-reproduce them from the public datasets listed in `ml/datasets/sources.yaml`. To obtain the weights themselves
+The code runs without them (rule-based and fallback paths), and the private lab pipeline
+reproduces them from the public datasets listed in `ml/datasets/sources.yaml`. To obtain the weights themselves
 (research, pilot or partnership), email Shivpratap Singh Panwar at shivpratapsinghpanwar19@gmail.com.
 
 ## Architecture
@@ -138,7 +138,7 @@ python app.py
 
 * Default admin: `admin` / `admin123` (change with `DEFAULT_ADMIN_*` in `.env` or `flask --app app create-admin NAME PASS`).
 * The database is SQLite in `instance/` by default; set `DATABASE_URL` for MySQL.
-* The tabular models ship in `models/`; if missing they are trained on first use (seconds). Run `python -m ml.train_all` for a full retrain with evaluation reports.
+* The tabular models ship in `models/`; if missing they are trained on first use (seconds). The lab pipeline retrains them.
 * Farmers must be verified by an admin before login (as in the project report). Set `AUTO_VERIFY_FARMERS=true` for demos.
 * Warm everything up once (models, disease network, assistant): `flask --app app warmup`.
 
@@ -162,7 +162,7 @@ krishidisha/                Flask package
   models.py                 Farmer, Admin, FarmerActivity, Product, CartItem, Address, Order, ChatSession ...
   blueprints/               main, auth, farmer, marketplace, admin, chat, api
   services/                 ml, disease, knowledge, tools, llm, fallback_bot, weather, market, reports
-ml/                         reproducible training: train_tabular, train_disease, train_all, datasets, eval
+ml/                         runtime model code: estimators, registry, taxonomy, model factory, tool format
 data/                       CSV datasets + knowledge/*.json (schemes, products, crop guides, calendar, pests, MSP)
 models/                     trained artefacts, metrics_tabular.json, evaluation plots and reports in models/reports
 templates/, static/         Bootstrap 5 UI
@@ -173,25 +173,7 @@ docs/screenshots/           UI screenshots used in this README
 
 ## Training
 
-```bash
-python -m ml.train_tabular --data-dir data --output models        # compares RF / GB / XGBoost / SVM / kNN / NB ...
-python -m ml.train_all                                            # tabular + disease (image stage skipped if dataset absent)
-```
-
-Disease model — trained only on field photographs (see [Results](#results) above):
-
-```bash
-python -m ml datasets download --all            # Kaggle/GitHub sources listed in ml/datasets/sources.yaml
-python -m ml build disease-manifest --resize 320 # unified manifest, dedup, per-source splits
-python -m ml train disease --manifest <DATA_ROOT>/disease_unified/manifest.csv --arch timm:efficientnet_b0 --ema --calibrate
-python -m ml eval disease --manifest ...        # per-crop report, coverage tiers, model card
-python -m ml export disease                     # ONNX for the app + models/registry.json
-```
-
-Larger backbones train in `notebooks/kaggle_train_disease.ipynb`; the RTX 2050 handles
-`efficientnet_b0` locally. Fallbacks without a trained model: `DISEASE_MODEL_BACKEND=hf`
-downloads a pretrained PlantVillage MobileNet from the Hugging Face Hub (lab data, demo only);
-the original `plant_disease_model_1_latest.pt` from `CNN.py` is also supported (`legacy`).
+The models are trained with KrishiDisha's own pipeline (field-photo dataset builder with perceptual-hash dedup, ConvNeXt trainer with calibration and ONNX export, honest tabular protocol with a time split, teacher distillation and QLoRA fine-tuning for the assistant). That pipeline, the Kaggle notebooks and the trained weights are kept in a private lab repository; the public repository ships the app, the runtime model code, every metric, report and model card, and the dataset licence table in `ml/datasets/sources.yaml`. For research or partnership access email Shivpratap Singh Panwar at shivpratapsinghpanwar19@gmail.com.
 
 ## Tests
 

@@ -7,7 +7,9 @@
   "is_private": true,
   "enable_gpu": true,
   "enable_internet": true,
-  "dataset_sources": [],
+  "dataset_sources": [
+    "sspanwar/krishidisha-lab-src"
+  ],
   "competition_sources": [
     "playground-series-s5e6"
   ],

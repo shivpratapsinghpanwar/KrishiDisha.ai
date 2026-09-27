@@ -8,7 +8,8 @@
   "enable_gpu": true,
   "enable_internet": true,
   "dataset_sources": [
-    "sspanwar/krishidisha-disease-unified"
+    "sspanwar/krishidisha-disease-unified",
+    "sspanwar/krishidisha-lab-src"
   ],
   "competition_sources": [],
   "kernel_sources": []
