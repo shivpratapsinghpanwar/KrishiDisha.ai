@@ -214,13 +214,10 @@ def map_at_k(y_true, proba: np.ndarray, classes, k: int = 3) -> float:
     return float(total / len(top)) if len(top) else 0.0
 
 
-# XGBoost runs on the GPU when KRISHIDISHA_XGB_DEVICE=cuda (Kaggle T4): the 750k-row fertilizer search drops
-# from hours on a laptop CPU to minutes. Default stays CPU so the tests and the app never need a GPU.
-XGB_DEVICE = os.getenv("KRISHIDISHA_XGB_DEVICE", "cpu")
-
-
+# Tabular training is CPU-only by decision of the owner (2026-09-27): the models are small, GPU quota is
+# reserved for vision/LLM runs, and a GPU queue wait outweighs any XGBoost speed-up. No device switch exists.
 def _xgb_device_kwargs() -> dict[str, Any]:
-    return {"device": XGB_DEVICE} if XGB_DEVICE != "cpu" else {}
+    return {}
 
 
 def _classifiers(n_jobs: int = -1) -> dict[str, Any]:
