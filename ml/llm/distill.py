@@ -303,21 +303,43 @@ REWRITE_PROMPT = (
     "not invent scheme amounts or banned pesticides. Reply with the answer only.\n\nQuestion: {q}\nOperator note: {a}")
 
 
+REWRITE_LANG_PROMPT = {
+    "hi": (
+        "You are rewriting an answer from an agricultural assistant for an Indian farmer. The farmer asked in Hindi. "
+        "Rewrite the answer in natural, simple Hindi written in Devanagari script (the kind a Krishi Vigyan Kendra "
+        "officer would use), keeping EVERY number, unit, dose, date, variety name and product name exactly as given "
+        "(those may stay in Latin script). Do not add new facts. At most 120 words. Short bullet lines are fine; no "
+        "markdown tables. Return only the rewritten answer.\n\nQuestion: {q}\n\nAnswer to rewrite: {a}"),
+    "hinglish": (
+        "You are rewriting an answer from an agricultural assistant for an Indian farmer who wrote in Hinglish "
+        "(Hindi in Latin letters). Rewrite the answer in natural Hinglish as spoken in north India, keeping EVERY "
+        "number, unit, dose, date, variety name and product name exactly as given. Do not add new facts. At most "
+        "120 words, no markdown tables. Return only the rewritten answer.\n\nQuestion: {q}\n\nAnswer to rewrite: {a}"),
+}
+
+
 def stage_rewrite(args) -> int:
     rows = read_jsonl(args.inp)
+    if args.filter_language:
+        rows = [r for r in rows if r.get("language") == args.filter_language]
     if args.n:
         rows = rows[: args.n]
     client = _client(args)
+    prompt = REWRITE_LANG_PROMPT.get(args.target_language, REWRITE_PROMPT) if args.target_language else REWRITE_PROMPT
     reqs = []
     for r in rows:
-        q, a = r["messages"][1]["content"], r["messages"][2]["content"]
+        user = next((m["content"] for m in r["messages"] if m["role"] == "user"), "")
+        answer = next((m["content"] for m in reversed(r["messages"]) if m["role"] == "assistant" and m.get("content")), "")
+        if not user or not answer:
+            continue
+        r["_q"], r["_a"] = user, answer
         reqs.append({"custom_id": r["id"], "params": {"model": args.model, "max_tokens": 600,
-                                                      "messages": [{"role": "user", "content": REWRITE_PROMPT.format(q=q, a=a)}]}})
+                                                      "messages": [{"role": "user", "content": prompt.format(q=user, a=answer)}]}})
     guard(args.max_usd, estimate(args.model, len(reqs), 260, 260), "rewrite")
     if args.dry_run:
         return 0
-    batch_id = "rewrite"
-    results = run_batch(client, reqs, "rewrite")
+    batch_id = "rewrite" + (f"_{args.target_language}" if args.target_language else "")
+    results = run_batch(client, reqs, batch_id)
     out_rows, usd = [], 0.0
     by_id = {r["id"]: r for r in rows}
     for cid, res in results.items():
@@ -326,11 +348,17 @@ def stage_rewrite(args) -> int:
         usd += cost_of(args.model, res.message.usage)
         text = "".join(b.text for b in res.message.content if b.type == "text").strip()
         src = by_id[cid]
-        if len(text) < 60:
+        if len(text) < 40:
             continue
+        if args.target_language == "hi":
+            letters = [ch for ch in text if ch.isalpha()]
+            if letters and sum(1 for ch in letters if "\u0900" <= ch <= "\u097f") / len(letters) < 0.5:
+                continue  # the teacher did not actually write Hindi
         meta = dict(src.get("meta") or {}, raw=False, rewritten_by=args.model)
-        out_rows.append(make_example("kcc", src.get("language", "en"), [src["messages"][1], {"role": "assistant", "content": text}],
-                                     meta=meta))
+        source = (src.get("meta") or {}).get("source") or src.get("source") or "kcc"
+        lang = args.target_language or src.get("language", "en")
+        out_rows.append(make_example(source, lang, [{"role": "user", "content": src["_q"]}, {"role": "assistant", "content": text}],
+                                     tools=src.get("tools"), meta=meta))
     ledger_add({"stage": "rewrite", "batch": batch_id, "model": args.model, "n": len(results), "usd": round(usd, 4),
                 "at": time.strftime("%Y-%m-%dT%H:%M:%S")})
     write_jsonl(args.out, out_rows)
@@ -368,6 +396,9 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--inp", type=Path, default=DATA_DIR / "kcc.jsonl")
     r.add_argument("--out", type=Path, default=DATA_DIR / "kcc_rewritten.jsonl")
     r.add_argument("--n", type=int, default=0)
+    r.add_argument("--filter-language", default=None, help="only rewrite rows with this language tag (e.g. hi)")
+    r.add_argument("--target-language", default=None, choices=[None, "hi", "hinglish"],
+                   help="rewrite the answer INTO this language (fixes KB pairs whose 'Hindi' answers were English facts)")
     sub.add_parser("status")
     args = p.parse_args(argv)
     if args.stage == "status":

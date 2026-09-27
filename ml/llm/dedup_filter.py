@@ -136,6 +136,10 @@ def quality_issue(ex: dict) -> str | None:
             if name != name.strip() or " " in name:
                 return f"malformed tool name {name!r}"
     _, assistant = _user_assistant_text(ex)
+    if ex.get("language") == "hi":
+        letters = [ch for ch in assistant if ch.isalpha()]
+        if letters and sum(1 for ch in letters if "\u0900" <= ch <= "\u097f") / len(letters) < 0.5:
+            return "hindi tag but answer not in Devanagari"
     if len(assistant.split()) > MAX_WORDS:
         return f"reply too long ({len(assistant.split())} words)"
     if len(TABLE_LINE.findall(assistant)) >= MAX_TABLE_LINES:
