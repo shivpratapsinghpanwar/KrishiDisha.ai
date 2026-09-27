@@ -1,5 +1,5 @@
 {
-  "id": "sspanwar/krishidisha-teacher-distillation",
+  "id": "sspanwar/krishidisha-teacher-distillation-cpu-resumable",
   "title": "KrishiDisha teacher distillation (CPU, resumable)",
   "code_file": "kaggle_distill.ipynb",
   "language": "python",
