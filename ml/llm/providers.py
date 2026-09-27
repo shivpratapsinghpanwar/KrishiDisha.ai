@@ -124,8 +124,13 @@ class OpenAICompatible:
     """Sequential calls with a requests-per-minute budget; free tiers are slow but cost nothing."""
     name = "openai"
 
-    def __init__(self, base_url: str | None = None, api_key: str | None = None, rpm: float = 10.0, max_retries: int = 40):
+    def __init__(self, base_url: str | None = None, api_key: str | None = None, rpm: float = 10.0, max_retries: int = 40,
+                 model: str | None = None, label: str | None = None, stop_on_daily_quota: bool = False):
         from openai import OpenAI
+
+        self.model = model                      # when set, overrides params["model"] (multi-provider runs)
+        self.label = label or "openai"
+        self.stop_on_daily_quota = stop_on_daily_quota
 
         base_url = base_url or os.getenv("TEACHER_BASE_URL") or (GEMINI_OPENAI_BASE if os.getenv("GEMINI_API_KEY") else os.getenv("OPENAI_BASE_URL"))
         api_key = api_key or os.getenv("TEACHER_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY") or "none"
@@ -140,7 +145,7 @@ class OpenAICompatible:
         if wait > 0:
             time.sleep(wait)
         messages = anthropic_to_openai_messages(params.get("system"), params["messages"])
-        kwargs: dict[str, Any] = {"model": params["model"], "messages": messages, "max_tokens": params.get("max_tokens", 1024),
+        kwargs: dict[str, Any] = {"model": self.model or params["model"], "messages": messages, "max_tokens": params.get("max_tokens", 1024),
                                   "temperature": params.get("temperature", 0.7)}
         tools = anthropic_tools_to_openai(params.get("tools"))
         if tools:
@@ -149,13 +154,16 @@ class OpenAICompatible:
             try:
                 resp = self.client.chat.completions.create(**kwargs)
                 self._last = time.time()
-                return openai_to_anthropic_message(resp.choices[0].message, resp.usage, params["model"])
+                return openai_to_anthropic_message(resp.choices[0].message, resp.usage, kwargs["model"])
             except Exception as exc:  # noqa: BLE001
                 msg = str(exc)
                 low = msg.lower()
                 # per-minute limits clear in seconds; per-day quota ("PerDay", "daily") needs a long pause
-                retry_after = min(60 * (attempt + 1), 900) if ("day" in low or "daily" in low) else min(20 * (attempt + 1), 180)
+                daily = "day" in low or "daily" in low
+                retry_after = min(60 * (attempt + 1), 900) if daily else min(20 * (attempt + 1), 180)
                 if "429" in msg or "rate" in low or "quota" in low or "503" in msg or "overloaded" in low or "resource" in low:
+                    if daily and self.stop_on_daily_quota:
+                        raise DailyQuotaExhausted(f"{self.label}: {msg[:160]}")
                     quota = re.findall(r"quotaId': '([^']*)'", msg)
                     hint = re.findall(r"retryDelay': '(\d+)", msg)
                     if hint:  # honour the server's own delay when it gives one (plus a little slack)
@@ -244,17 +252,120 @@ def _message_from_json(d: dict):
                            usage=SimpleNamespace(**d["usage"]))
 
 
-def make_provider(name: str, dry_run: bool = False, base_url: str | None = None, rpm: float = 10.0):
+class DailyQuotaExhausted(RuntimeError):
+    """Raised by OpenAICompatible(stop_on_daily_quota=True) so a multi-provider run can hand the request to another API."""
+
+
+class MultiProvider:
+    """Several OpenAI-compatible providers draining one request queue concurrently (one thread each).
+
+    Each worker honours its own requests-per-minute budget and uses its own model; a worker that hits its
+    daily quota puts the request back and exits, so the remaining providers finish the batch. Results are
+    cached per request exactly like OpenAICompatible.run_batch (shared cache file, guarded by a lock).
+    """
+    name = "multi"
+
+    def __init__(self, providers: list[OpenAICompatible]):
+        assert providers, "MultiProvider needs at least one provider"
+        self.providers = providers
+        self.base_url = " + ".join(f"{p.label}:{p.model or 'default'}" for p in providers)
+
+    def run_batch(self, requests_: list[dict], label: str, poll: int = 0) -> dict[str, Any]:
+        import queue
+        import threading
+
+        cache_path = _batch_cache_path(label)
+        cached = _load_batch_cache(cache_path)
+        wanted = {r["custom_id"] for r in requests_}
+        out: dict[str, Any] = {cid: SimpleNamespace(type="succeeded", message=_message_from_json(m))
+                               for cid, m in cached.items() if cid in wanted}
+        todo = [r for r in requests_ if r["custom_id"] not in out]
+        print(f"[{label}] {len(todo)} requests across {len(self.providers)} providers ({self.base_url})"
+              + (f"; {len(out)} restored from {cache_path}" if out else ""), flush=True)
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        q: queue.Queue = queue.Queue()
+        for r in todo:
+            q.put(r)
+        lock = threading.Lock()
+        done_count = {"n": 0}
+        t0 = time.time()
+        per_provider: dict[str, int] = {p.label: 0 for p in self.providers}
+
+        def worker(p: OpenAICompatible) -> None:
+            while True:
+                try:
+                    r = q.get_nowait()
+                except queue.Empty:
+                    return
+                try:
+                    message = p._one(r["params"])
+                except DailyQuotaExhausted as exc:
+                    q.put(r)
+                    print(f"  {p.label}: daily quota reached, leaving the pool ({str(exc)[:100]})", flush=True)
+                    return
+                except SystemExit as exc:  # model not found on this endpoint: this provider is misconfigured
+                    q.put(r)
+                    print(f"  {p.label}: {exc}; leaving the pool", flush=True)
+                    return
+                except Exception as exc:  # noqa: BLE001
+                    log.warning("%s failed on %s: %s", r["custom_id"], p.label, exc)
+                    with lock:
+                        out[r["custom_id"]] = SimpleNamespace(type="errored", error=str(exc)[:200])
+                    continue
+                with lock:
+                    out[r["custom_id"]] = SimpleNamespace(type="succeeded", message=message)
+                    with cache_path.open("a", encoding="utf-8") as fh:
+                        fh.write(json.dumps({"custom_id": r["custom_id"], "message": _message_to_json(message)}, ensure_ascii=False) + chr(10))
+                    done_count["n"] += 1
+                    per_provider[p.label] += 1
+                    if done_count["n"] % 25 == 0:
+                        print(f"  {done_count['n']}/{len(todo)} done ({time.time() - t0:.0f}s) {per_provider}", flush=True)
+
+        threads = [threading.Thread(target=worker, args=(p,), daemon=True, name=p.label) for p in self.providers]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        left = q.qsize()
+        if left:
+            print(f"  {left} requests left undone: every provider hit its daily quota; rerun tomorrow (cache resumes)", flush=True)
+            while not q.empty():
+                r = q.get_nowait()
+                out[r["custom_id"]] = SimpleNamespace(type="errored", error="daily quota exhausted on all providers")
+        print(f"  finished {done_count['n']} requests in {time.time() - t0:.0f}s: {per_provider}", flush=True)
+        return out
+
+
+FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 60.0}
+
+
+def _single(name: str, base_url: str | None, rpm: float | None, model: str | None, multi: bool) -> OpenAICompatible:
+    base_url = base_url or KNOWN_BASES.get(name)
+    api_key = None
+    if name == "groq":
+        api_key = os.getenv("GROQ_API_KEY")
+    elif name == "openrouter":
+        api_key = os.getenv("OPENROUTER_API_KEY")
+    elif name == "gemini":
+        api_key = os.getenv("GEMINI_API_KEY")
+    return OpenAICompatible(base_url=base_url, api_key=api_key, rpm=rpm or FREE_TIER_RPM.get(name, 10.0),
+                            model=model, label=name, stop_on_daily_quota=multi)
+
+
+def make_provider(name: str, dry_run: bool = False, base_url: str | None = None, rpm: float | None = None,
+                  models: dict[str, str] | None = None):
+    """``name`` may be a comma-separated list ("groq,gemini,openrouter") -> MultiProvider; ``models`` maps each
+    provider name to the model it should use (required for a multi run, since one request cannot name them all)."""
     if dry_run:
         return None
+    names = [n.strip() for n in name.split(",") if n.strip()]
+    if len(names) > 1:
+        if "anthropic" in names:
+            raise SystemExit("anthropic (Message Batches) cannot be pooled with sequential providers")
+        return MultiProvider([_single(n, None, None, (models or {}).get(n), multi=True) for n in names])
+    name = names[0]
     if name == "anthropic":
         return AnthropicBatches()
     if name in ("openai", "gemini", "groq", "openrouter", "ollama"):
-        base_url = base_url or KNOWN_BASES.get(name)
-        api_key = None
-        if name == "groq":
-            api_key = os.getenv("GROQ_API_KEY")
-        elif name == "openrouter":
-            api_key = os.getenv("OPENROUTER_API_KEY")
-        return OpenAICompatible(base_url=base_url, api_key=api_key, rpm=rpm)
+        return _single(name, base_url, rpm, None, multi=False)
     raise SystemExit(f"unknown provider {name}")

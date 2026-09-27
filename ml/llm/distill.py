@@ -78,7 +78,8 @@ def _client(args):
     free tier (GEMINI_API_KEY), Groq, OpenRouter or a local Ollama model. See ml/llm/providers.py."""
     from .providers import make_provider
 
-    return make_provider(args.provider, dry_run=args.dry_run, base_url=args.base_url, rpm=args.rpm)
+    models = {n: DEFAULT_MODELS.get(n, DEFAULT_MODELS["openai"])[0] for n in args.provider.split(",")}
+    return make_provider(args.provider, dry_run=args.dry_run, base_url=args.base_url, rpm=args.rpm, models=models)
 
 
 def run_batch(client, requests_: list[dict], label: str) -> dict:
@@ -333,11 +334,13 @@ def main(argv: list[str] | None = None) -> int:
     sub = p.add_subparsers(dest="stage", required=True)
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--provider", default=os.getenv("TEACHER_PROVIDER", "gemini" if os.getenv("GEMINI_API_KEY") else "anthropic"),
-                        choices=["anthropic", "gemini", "openai", "groq", "openrouter", "ollama"],
-                        help="anthropic = Message Batches (paid); gemini = Google AI Studio free tier via the OpenAI-compatible "
+                        help="anthropic | gemini | openai | groq | openrouter | ollama, or a comma-separated pool such as "
+                             "groq,gemini,openrouter that runs concurrently; anthropic = Message Batches (paid); "
+                             "gemini = Google AI Studio free tier via the OpenAI-compatible "
                              "endpoint (GEMINI_API_KEY); openai/groq/openrouter/ollama = any OpenAI-style endpoint (TEACHER_BASE_URL/TEACHER_API_KEY)")
     common.add_argument("--base-url", default=None, help="override the OpenAI-compatible endpoint")
-    common.add_argument("--rpm", type=float, default=float(os.getenv("TEACHER_RPM", "8")), help="requests per minute for sequential providers")
+    common.add_argument("--rpm", type=float, default=float(os.getenv("TEACHER_RPM", "0")) or None,
+                        help="requests per minute for a single sequential provider (default: the provider's free-tier rate)")
     common.add_argument("--model", default=None, help="teacher model (default depends on --provider)")
     common.add_argument("--max-usd", type=float, default=100.0)
     common.add_argument("--dry-run", action="store_true", help="estimate cost, submit nothing")
@@ -361,9 +364,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.stage == "status":
         print(json.dumps(ledger_load(), indent=1))
         return 0
-    defaults = DEFAULT_MODELS.get(args.provider, DEFAULT_MODELS["openai"])
+    primary = args.provider.split(",")[0]
+    defaults = DEFAULT_MODELS.get(primary, DEFAULT_MODELS["openai"])
     if not args.model:
         args.model = defaults[0]
+    if primary in ("gemini", "groq", "openrouter", "ollama"):  # free tiers / local: the ledger must not invent a bill
+        for n in args.provider.split(","):
+            for mdl in DEFAULT_MODELS.get(n, ()):
+                PRICES[mdl] = (0.0, 0.0)
+        PRICES[args.model] = (0.0, 0.0)
     if getattr(args, "hard_model", None) in (None, "claude-opus-5") and args.provider != "anthropic":
         args.hard_model = defaults[1]
     print(f"teacher: provider={args.provider} model={args.model}" + (f" hard_model={args.hard_model}" if hasattr(args, "hard_model") else ""))
