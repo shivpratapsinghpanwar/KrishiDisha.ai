@@ -24,6 +24,10 @@ from typing import Any
 
 log = logging.getLogger(__name__)
 
+KNOWN_BASES = {"gemini": "https://generativelanguage.googleapis.com/v1beta/openai/",
+               "groq": "https://api.groq.com/openai/v1",
+               "openrouter": "https://openrouter.ai/api/v1",
+               "ollama": "http://localhost:11434/v1"}
 GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 
@@ -246,7 +250,11 @@ def make_provider(name: str, dry_run: bool = False, base_url: str | None = None,
     if name == "anthropic":
         return AnthropicBatches()
     if name in ("openai", "gemini", "groq", "openrouter", "ollama"):
-        if name == "gemini":
-            base_url = base_url or GEMINI_OPENAI_BASE
-        return OpenAICompatible(base_url=base_url, rpm=rpm)
+        base_url = base_url or KNOWN_BASES.get(name)
+        api_key = None
+        if name == "groq":
+            api_key = os.getenv("GROQ_API_KEY")
+        elif name == "openrouter":
+            api_key = os.getenv("OPENROUTER_API_KEY")
+        return OpenAICompatible(base_url=base_url, api_key=api_key, rpm=rpm)
     raise SystemExit(f"unknown provider {name}")
