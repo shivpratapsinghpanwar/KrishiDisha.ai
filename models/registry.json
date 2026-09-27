@@ -43,5 +43,61 @@
    "trained_on": "Kaggle T4, convnext_tiny 12 ep + 4 ep stage B"
   },
   "card": "reports/plant_disease_card.md"
+ },
+ {
+  "name": "plant_disease",
+  "version": 2,
+  "path": "plant_disease_model.onnx",
+  "sha256": "8e729f90e4cf2203ab2c144ad68c80bd1b16d3bdbdaaabb319bddf29e6151da9",
+  "size_mb": 111.54,
+  "git_sha": "8364894",
+  "registered_at": "2026-09-27T10:24:24",
+  "arch": "timm:convnext_tiny",
+  "metrics": {
+   "val_top1": 0.9652,
+   "own_field_test": {
+    "n": 0,
+    "top1": null,
+    "top3": null
+   },
+   "public_field_test": {
+    "n": 2828,
+    "top1": 0.943069306930693,
+    "top3": 0.987977369165488
+   },
+   "all_test": {
+    "n": 3053,
+    "top1": 0.9469374385849983,
+    "top3": 0.9888634130363577,
+    "macro_f1": 0.8482241379310346
+   },
+   "paddy_doctor_test": {
+    "n": 1178,
+    "top1": 0.9269949066213922,
+    "top3": 0.9838709677419355
+   },
+   "ood": {
+    "non_leaf_rejected": 0.9955555555555555,
+    "leaf_accepted": 0.9321074964639321
+   },
+   "ece": 0.0212
+  },
+  "extra": {
+   "classes": 60,
+   "img_size": 224,
+   "sources": [
+    "coco_val_subset",
+    "cotton_leaf",
+    "mango_leaf",
+    "paddy_doctor",
+    "plantdoc",
+    "rice_leaf_4",
+    "sugarcane_leaf",
+    "wheat_leaf"
+   ],
+   "trained_on": "Kaggle T4, convnext_tiny 12 ep + 4 ep stage B (kernel v6, dataset v3)",
+   "changes_vs_v1": "adds Paddy Doctor (10,407 Tamil Nadu paddy photos, 10 rice conditions); test set grows from 1,875 to 3,053 images"
+  },
+  "card": "reports/plant_disease_card.md"
  }
 ]

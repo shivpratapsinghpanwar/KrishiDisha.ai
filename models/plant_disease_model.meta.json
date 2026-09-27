@@ -43,9 +43,15 @@
   "Potato___Late_blight",
   "Raspberry___healthy",
   "Rice___Bacterial_leaf_blight",
+  "Rice___Bacterial_leaf_streak",
+  "Rice___Bacterial_panicle_blight",
   "Rice___Blast",
   "Rice___Brown_spot",
+  "Rice___Dead_heart",
+  "Rice___Downy_mildew",
+  "Rice___Hispa",
   "Rice___Tungro",
+  "Rice___healthy",
   "Soybean___healthy",
   "Squash___Powdery_mildew",
   "Strawberry___healthy",
@@ -68,8 +74,8 @@
   "Wheat___Stripe_rust",
   "Wheat___healthy"
  ],
- "temperature": 0.5693939924240112,
- "ood_threshold": 0.9972797632217407,
+ "temperature": 0.7185933589935303,
+ "ood_threshold": 0.8729809522628784,
  "uncertain_threshold": 0.45,
  "crop_tiers": {
   "Apple": "C",
@@ -91,7 +97,7 @@
   "Tomato": "C",
   "Wheat": "B"
  },
- "val_accuracy": 0.9957,
+ "val_accuracy": 0.9652,
  "metrics_summary": {
   "own_field_test": {
    "n": 0,
@@ -99,22 +105,23 @@
    "top3": null
   },
   "public_field_test": {
-   "n": 1650,
-   "top1": 0.9563636363636364,
-   "top3": 0.9927272727272727
+   "n": 2828,
+   "top1": 0.943069306930693,
+   "top3": 0.987977369165488
   },
   "all_test": {
-   "n": 1875,
-   "top1": 0.9605333333333334,
-   "top3": 0.9936,
-   "macro_f1": 0.8566019230769231
+   "n": 3053,
+   "top1": 0.9469374385849983,
+   "top3": 0.9888634130363577,
+   "macro_f1": 0.8482241379310346
   }
  },
- "trained_at": "2026-09-26T13:48:43",
+ "trained_at": "2026-09-26T19:36:31",
  "sources": [
   "coco_val_subset",
   "cotton_leaf",
   "mango_leaf",
+  "paddy_doctor",
   "plantdoc",
   "rice_leaf_4",
   "sugarcane_leaf",

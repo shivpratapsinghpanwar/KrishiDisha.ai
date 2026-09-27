@@ -16,6 +16,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
+from pathlib import Path
 import time
 from types import SimpleNamespace
 from typing import Any
@@ -161,12 +163,26 @@ class OpenAICompatible:
         raise RuntimeError("provider kept throttling")
 
     def run_batch(self, requests_: list[dict], label: str, poll: int = 0) -> dict[str, Any]:
-        print(f"[{label}] {len(requests_)} sequential requests via {self.base_url} (~{self.min_interval:.0f}s apart)")
-        out: dict[str, Any] = {}
+        """Sequential requests with an append-only cache so an interrupted run resumes where it stopped.
+
+        Cache: ``data/llm/.cache/<label>.jsonl`` (one line per succeeded request, keyed by custom_id).
+        Delete the file to force a fresh run.
+        """
+        cache_path = _batch_cache_path(label)
+        cached = _load_batch_cache(cache_path)
+        out: dict[str, Any] = {cid: SimpleNamespace(type="succeeded", message=_message_from_json(m))
+                               for cid, m in cached.items() if any(r["custom_id"] == cid for r in requests_)}
+        todo = [r for r in requests_ if r["custom_id"] not in out]
+        print(f"[{label}] {len(todo)} sequential requests via {self.base_url} (~{self.min_interval:.0f}s apart)"
+              + (f"; {len(out)} restored from {cache_path}" if out else ""))
         t0 = time.time()
-        for i, r in enumerate(requests_):
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        for i, r in enumerate(todo):
             try:
-                out[r["custom_id"]] = SimpleNamespace(type="succeeded", message=self._one(r["params"]))
+                message = self._one(r["params"])
+                out[r["custom_id"]] = SimpleNamespace(type="succeeded", message=message)
+                with cache_path.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps({"custom_id": r["custom_id"], "message": _message_to_json(message)}, ensure_ascii=False) + "\n")
             except Exception as exc:  # noqa: BLE001
                 log.warning("%s failed: %s", r["custom_id"], exc)
                 out[r["custom_id"]] = SimpleNamespace(type="errored", error=str(exc)[:200])
@@ -174,8 +190,50 @@ class OpenAICompatible:
                 if i == 0 and ("404" in msg or "not found" in msg.lower() or "no longer available" in msg.lower()):
                     raise SystemExit(f"model {r['params'].get('model')} is not available on this endpoint: {msg[:160]}")
             if (i + 1) % 25 == 0:
-                print(f"  {i + 1}/{len(requests_)} done ({time.time() - t0:.0f}s)", flush=True)
+                print(f"  {i + 1}/{len(todo)} done ({time.time() - t0:.0f}s)", flush=True)
         return out
+
+
+def _batch_cache_path(label: str) -> Path:
+    safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", label)
+    return Path(os.getenv("KRISHIDISHA_LLM_CACHE", "data/llm/.cache")) / f"{safe}.jsonl"
+
+
+def _load_batch_cache(path: Path) -> dict[str, dict]:
+    if not path.exists():
+        return {}
+    rows: dict[str, dict] = {}
+    with path.open(encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+                rows[d["custom_id"]] = d["message"]
+            except (ValueError, KeyError):
+                continue  # a partially written last line from a killed process
+    return rows
+
+
+def _message_to_json(m) -> dict:
+    blocks = []
+    for b in m.content:
+        if b.type == "text":
+            blocks.append({"type": "text", "text": b.text})
+        elif b.type == "tool_use":
+            blocks.append({"type": "tool_use", "id": b.id, "name": b.name, "input": b.input})
+    u = m.usage
+    return {"content": blocks, "stop_reason": m.stop_reason, "model": m.model,
+            "usage": {"input_tokens": u.input_tokens, "output_tokens": u.output_tokens,
+                      "cache_read_input_tokens": getattr(u, "cache_read_input_tokens", 0),
+                      "cache_creation_input_tokens": getattr(u, "cache_creation_input_tokens", 0)}}
+
+
+def _message_from_json(d: dict):
+    blocks = [SimpleNamespace(**b) for b in d["content"]]
+    return SimpleNamespace(content=blocks, stop_reason=d["stop_reason"], model=d.get("model"),
+                           usage=SimpleNamespace(**d["usage"]))
 
 
 def make_provider(name: str, dry_run: bool = False, base_url: str | None = None, rpm: float = 10.0):
