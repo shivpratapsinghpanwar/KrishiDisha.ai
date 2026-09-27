@@ -222,7 +222,7 @@ third-party libraries keep their own licences (see `ml/datasets/sources.yaml` an
 
 ## Team
 
-Abhishek Chourasia, Goutam Mandloi and Shivpratap Singh Panwar - the founding team behind
+Shivpratap Singh Panwar, Abhishek Chourasia and Goutam Mandloi - the founding team behind
 KrishiDisha.
 
 ## Citation
