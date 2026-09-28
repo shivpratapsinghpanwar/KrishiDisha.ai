@@ -339,23 +339,38 @@ class MultiProvider:
 FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 10.0}  # ollama = cloud models via the local server
 
 
-def _single(name: str, base_url: str | None, rpm: float | None, model: str | None, multi: bool) -> OpenAICompatible:
+def _keys_for(name: str) -> list[str]:
+    """All keys configured for a provider: <NAME>_API_KEY plus <NAME>_API_KEY_2, _3, ... (one worker each in a pool).
+    Use keys from different people's own accounts; every key stays within its own free quota."""
+    env = {"gemini": "GEMINI_API_KEY", "groq": "GROQ_API_KEY", "openrouter": "OPENROUTER_API_KEY", "ollama": "OLLAMA_API_KEY"}.get(name)
+    if not env:
+        return []
+    keys = [os.getenv(env, "")] + [os.getenv(f"{env}_{i}", "") for i in range(2, 10)]
+    if os.getenv(env + "S"):  # comma-separated form, e.g. GEMINI_API_KEYS=a,b,c
+        keys += os.getenv(env + "S", "").split(",")
+    seen, out = set(), []
+    for k in keys:
+        k = k.strip()
+        if k and k not in seen:
+            seen.add(k)
+            out.append(k)
+    return out
+
+
+def _single(name: str, base_url: str | None, rpm: float | None, model: str | None, multi: bool,
+            api_key: str | None = None, label: str | None = None) -> OpenAICompatible:
     # TEACHER_<NAME>_BASE_URL overrides the endpoint per provider, e.g. TEACHER_OLLAMA_BASE_URL=https://ollama.com/v1
     # to use Ollama cloud with an OLLAMA_API_KEY from a machine that has no signed-in local Ollama server.
     base_url = base_url or os.getenv(f"TEACHER_{name.upper()}_BASE_URL") or KNOWN_BASES.get(name)
-    api_key = None
-    if name == "groq":
-        api_key = os.getenv("GROQ_API_KEY")
-    elif name == "openrouter":
-        api_key = os.getenv("OPENROUTER_API_KEY")
-    elif name == "gemini":
-        api_key = os.getenv("GEMINI_API_KEY")
-    elif name == "ollama":
-        api_key = os.getenv("OLLAMA_API_KEY") or "ollama"
+    if api_key is None:
+        first = _keys_for(name)
+        api_key = first[0] if first else None
+    if name == "ollama":
+        api_key = api_key or "ollama"
         if model and model.endswith("-cloud") and "ollama.com" in (base_url or ""):
             model = model[: -len("-cloud")]  # ollama.com names the model without the -cloud suffix
     return OpenAICompatible(base_url=base_url, api_key=api_key, rpm=rpm or FREE_TIER_RPM.get(name, 10.0),
-                            model=model, label=name, stop_on_daily_quota=multi)
+                            model=model, label=label or name, stop_on_daily_quota=multi)
 
 
 def make_provider(name: str, dry_run: bool = False, base_url: str | None = None, rpm: float | None = None,
@@ -368,7 +383,13 @@ def make_provider(name: str, dry_run: bool = False, base_url: str | None = None,
     if len(names) > 1:
         if "anthropic" in names:
             raise SystemExit("anthropic (Message Batches) cannot be pooled with sequential providers")
-        return MultiProvider([_single(n, None, None, (models or {}).get(n), multi=True) for n in names])
+        workers = []
+        for n in names:
+            keys = _keys_for(n) or [None]
+            for i, k in enumerate(keys):
+                workers.append(_single(n, None, None, (models or {}).get(n), multi=True, api_key=k,
+                                       label=n if i == 0 else f"{n}#{i + 1}"))
+        return MultiProvider(workers)
     name = names[0]
     if name == "anthropic":
         return AnthropicBatches()
