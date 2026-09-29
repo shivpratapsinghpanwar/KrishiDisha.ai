@@ -47,7 +47,9 @@ PRICES = {"claude-sonnet-5": (1.0, 5.0), "claude-opus-5": (2.5, 12.5), "claude-h
 # Ollama cloud (signed-in `ollama signin`): gpt-oss:120b-cloud through http://localhost:11434/v1, separate free quota.
 DEFAULT_MODELS = {"anthropic": ("claude-sonnet-5", "claude-opus-5"), "gemini": ("gemini-flash-lite-latest", "gemini-flash-lite-latest"),
                   "groq": ("openai/gpt-oss-120b", "openai/gpt-oss-120b"), "openrouter": ("nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3-ultra-550b-a55b:free"),
-                  "ollama": ("gpt-oss:120b-cloud", "gpt-oss:120b-cloud"), "openai": ("gpt-4o-mini", "gpt-4o")}
+                  "ollama": ("gpt-oss:120b-cloud", "gpt-oss:120b-cloud"), "openai": ("gpt-4o-mini", "gpt-4o"),
+                  # Kaggle Model Proxy ($10/day): Gemini 3 Flash for volume, Qwen3-Next 80B as the second opinion
+                  "kaggle": ("google/gemini-3-flash-preview", "qwen/qwen3-next-80b-a3b-instruct")}
 LEDGER = DATA_DIR / "cost_ledger.json"
 
 PERSONAS = {
@@ -103,6 +105,11 @@ def ledger_add(entry: dict) -> None:
 
 
 def cost_of(model: str, usage) -> float:
+    usd = getattr(usage, "usd", None)
+    if usd is None and isinstance(usage, dict):
+        usd = usage.get("usd")
+    if usd is not None:  # provider-reported dollars (Kaggle Model Proxy)
+        return float(usd)
     pin, pout = PRICES.get(model, (2.5, 12.5))
     u = usage
     inp = getattr(u, "input_tokens", 0) or 0
@@ -408,7 +415,7 @@ def main(argv: list[str] | None = None) -> int:
     defaults = DEFAULT_MODELS.get(primary, DEFAULT_MODELS["openai"])
     if not args.model:
         args.model = defaults[0]
-    if primary in ("gemini", "groq", "openrouter", "ollama"):  # free tiers / local: the ledger must not invent a bill
+    if primary in ("gemini", "groq", "openrouter", "ollama", "kaggle"):  # free tiers / local: no invented bill (kaggle reports real cost per reply)
         for n in args.provider.split(","):
             for mdl in DEFAULT_MODELS.get(n, ()):
                 PRICES[mdl] = (0.0, 0.0)

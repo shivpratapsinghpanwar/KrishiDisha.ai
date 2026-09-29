@@ -16,7 +16,7 @@ import time
 
 W = os.environ.get("KAGGLE_WORKING", "/kaggle/working")
 MAX_HOURS = float(os.environ.get("DISTILL_MAX_HOURS", "11"))
-PROVIDERS = os.environ.get("DISTILL_PROVIDERS") or "groq,gemini,openrouter"
+PROVIDERS = os.environ.get("DISTILL_PROVIDERS") or "kaggle,groq,gemini,openrouter"  # kaggle = Model Proxy ($10/day)
 if os.environ.get("OLLAMA_API_KEY") and "ollama" not in PROVIDERS:
     os.environ["TEACHER_OLLAMA_BASE_URL"] = "https://ollama.com/v1"
     PROVIDERS += ",ollama"
@@ -25,7 +25,7 @@ os.environ.setdefault("KB_EMBEDDING_MODEL", "")
 
 n_keys = {b: len([1 for k in [b] + [f"{b}_{i}" for i in range(2, 10)] if os.environ.get(k)])
           for b in ("GEMINI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY")}
-assert any(n_keys.values()), "no teacher API key found: attach the secrets in the Kaggle editor (Add-ons > Secrets)"
+assert any(n_keys.values()) or os.environ.get("KAGGLE_KEY"), "no teacher API key found: attach the secrets in the Kaggle editor (Add-ons > Secrets)"
 print("providers:", PROVIDERS, "keys per provider:", n_keys, flush=True)
 
 subprocess.run("pip install -q flask flask-sqlalchemy python-dotenv openai anthropic datasketch reportlab 2>&1 | tail -1", shell=True)

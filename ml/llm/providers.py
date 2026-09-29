@@ -117,7 +117,55 @@ def openai_to_anthropic_message(choice_message, usage, model: str):
     stop = "tool_use" if any(b.type == "tool_use" for b in blocks) else "end_turn"
     u = SimpleNamespace(input_tokens=getattr(usage, "prompt_tokens", 0) or 0, output_tokens=getattr(usage, "completion_tokens", 0) or 0,
                         cache_read_input_tokens=0, cache_creation_input_tokens=0)
+    cost = getattr(usage, "cost", None) or (usage.get("cost") if isinstance(usage, dict) else None)
+    if isinstance(cost, dict):  # Kaggle Model Proxy reports nanodollars per request
+        u.usd = (cost.get("input_tokens_cost_nanodollars", 0) + cost.get("output_tokens_cost_nanodollars", 0)) / 1e9
     return SimpleNamespace(content=blocks, stop_reason=stop, usage=u, model=model)
+
+
+class KaggleModelProxyAuth:
+    """Credentials for Kaggle's Model Proxy (kaggle.com/benchmarks): $10/day of model calls per account.
+
+    ``kaggle benchmarks auth -y --env-file <tmp>`` mints a token that lives one hour, so the token is re-minted
+    whenever it is within five minutes of expiry or a request comes back 401. Works wherever the Kaggle CLI is
+    authenticated (kaggle.json locally, KAGGLE_USERNAME/KAGGLE_KEY in a kernel).
+    """
+
+    def __init__(self):
+        import tempfile
+        self.env_file = Path(tempfile.mkdtemp(prefix="kd-mp-")) / "mp.env"
+        self.base_url = None
+        self.api_key = None
+        self.expiry = 0.0
+        self.refresh(force=True)
+
+    def _cli(self) -> list[str]:
+        import shutil
+        import sys
+        here = Path(__file__).resolve().parents[2]
+        for cand in (here / ".venv-train" / "Scripts" / "kaggle.exe", here / ".venv-train" / "bin" / "kaggle"):
+            if cand.exists():
+                return [str(cand)]
+        exe = shutil.which("kaggle")
+        return [exe] if exe else [sys.executable, "-m", "kaggle.cli"]
+
+    def refresh(self, force: bool = False) -> None:
+        import subprocess
+        if not force and time.time() < self.expiry - 300:
+            return
+        r = subprocess.run(self._cli() + ["benchmarks", "auth", "-y", "--env-file", str(self.env_file)],
+                           capture_output=True, text=True)
+        if r.returncode != 0 and not self.env_file.exists():
+            raise SystemExit(f"kaggle benchmarks auth failed: {(r.stdout + r.stderr)[-300:]}")
+        env = {}
+        for line in self.env_file.read_text(encoding="utf-8").splitlines():
+            if "=" in line and not line.startswith("#"):
+                k, v = line.split("=", 1)
+                env[k.strip()] = v.strip().strip('"')
+        self.base_url = env["MODEL_PROXY_URL"].rstrip("/") + "/openapi"
+        self.api_key = env["MODEL_PROXY_API_KEY"]
+        self.expiry = time.time() + 3600  # the CLI says "Expires: In 1 hour"
+        log.info("kaggle model proxy token refreshed")
 
 
 class OpenAICompatible:
@@ -131,6 +179,7 @@ class OpenAICompatible:
         self.model = model                      # when set, overrides params["model"] (multi-provider runs)
         self.label = label or "openai"
         self.stop_on_daily_quota = stop_on_daily_quota
+        self.auth: KaggleModelProxyAuth | None = None   # set for the kaggle provider (hourly token refresh)
 
         base_url = base_url or os.getenv("TEACHER_BASE_URL") or (GEMINI_OPENAI_BASE if os.getenv("GEMINI_API_KEY") else os.getenv("OPENAI_BASE_URL"))
         api_key = api_key or os.getenv("TEACHER_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY") or "none"
@@ -152,14 +201,19 @@ class OpenAICompatible:
             kwargs.update(tools=tools, tool_choice="auto")
         for attempt in range(self.max_retries):
             try:
+                if self.auth is not None:
+                    self.auth.refresh()
+                    self.client.api_key = self.auth.api_key
                 resp = self.client.chat.completions.create(**kwargs)
                 self._last = time.time()
                 return openai_to_anthropic_message(resp.choices[0].message, resp.usage, kwargs["model"])
             except Exception as exc:  # noqa: BLE001
                 msg = str(exc)
                 low = msg.lower()
-                # per-minute limits clear in seconds; per-day quota ("PerDay", "daily") needs a long pause
-                daily = "day" in low or "daily" in low
+                if self.auth is not None and ("401" in msg or "unauthorized" in low or "expired" in low):
+                    self.auth.refresh(force=True)
+                    continue
+                daily = "day" in low or "daily" in low or "402" in msg or "credit" in low or "budget" in low
                 retry_after = min(60 * (attempt + 1), 900) if daily else min(20 * (attempt + 1), 180)
                 if "429" in msg or "rate" in low or "quota" in low or "503" in msg or "overloaded" in low or "resource" in low:
                     if daily and self.stop_on_daily_quota:
@@ -240,10 +294,12 @@ def _message_to_json(m) -> dict:
         elif b.type == "tool_use":
             blocks.append({"type": "tool_use", "id": b.id, "name": b.name, "input": b.input})
     u = m.usage
-    return {"content": blocks, "stop_reason": m.stop_reason, "model": m.model,
-            "usage": {"input_tokens": u.input_tokens, "output_tokens": u.output_tokens,
-                      "cache_read_input_tokens": getattr(u, "cache_read_input_tokens", 0),
-                      "cache_creation_input_tokens": getattr(u, "cache_creation_input_tokens", 0)}}
+    usage = {"input_tokens": u.input_tokens, "output_tokens": u.output_tokens,
+             "cache_read_input_tokens": getattr(u, "cache_read_input_tokens", 0),
+             "cache_creation_input_tokens": getattr(u, "cache_creation_input_tokens", 0)}
+    if getattr(u, "usd", None) is not None:
+        usage["usd"] = u.usd
+    return {"content": blocks, "stop_reason": m.stop_reason, "model": m.model, "usage": usage}
 
 
 def _message_from_json(d: dict):
@@ -336,7 +392,8 @@ class MultiProvider:
         return out
 
 
-FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 10.0}  # ollama = cloud models via the local server
+FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 10.0,  # ollama = cloud models via the local server
+                 "kaggle": 30.0}  # Kaggle Model Proxy: $10/day, so cost not rate is the limit
 
 
 def _keys_for(name: str) -> list[str]:
@@ -365,12 +422,18 @@ def _single(name: str, base_url: str | None, rpm: float | None, model: str | Non
     if api_key is None:
         first = _keys_for(name)
         api_key = first[0] if first else None
+    auth = None
+    if name == "kaggle":
+        auth = KaggleModelProxyAuth()
+        base_url, api_key = auth.base_url, auth.api_key
     if name == "ollama":
         api_key = api_key or "ollama"
         if model and model.endswith("-cloud") and "ollama.com" in (base_url or ""):
             model = model[: -len("-cloud")]  # ollama.com names the model without the -cloud suffix
-    return OpenAICompatible(base_url=base_url, api_key=api_key, rpm=rpm or FREE_TIER_RPM.get(name, 10.0),
+    prov = OpenAICompatible(base_url=base_url, api_key=api_key, rpm=rpm or FREE_TIER_RPM.get(name, 10.0),
                             model=model, label=label or name, stop_on_daily_quota=multi)
+    prov.auth = auth
+    return prov
 
 
 def make_provider(name: str, dry_run: bool = False, base_url: str | None = None, rpm: float | None = None,
@@ -393,6 +456,6 @@ def make_provider(name: str, dry_run: bool = False, base_url: str | None = None,
     name = names[0]
     if name == "anthropic":
         return AnthropicBatches()
-    if name in ("openai", "gemini", "groq", "openrouter", "ollama"):
+    if name in ("openai", "gemini", "groq", "openrouter", "ollama", "kaggle"):
         return _single(name, base_url, rpm, None, multi=False)
     raise SystemExit(f"unknown provider {name}")
