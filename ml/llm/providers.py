@@ -392,6 +392,7 @@ class MultiProvider:
         return out
 
 
+_KAGGLE_AUTH: dict[str, Any] = {}   # one Model Proxy token per process
 FREE_TIER_RPM = {"gemini": 10.0, "groq": 3.0, "openrouter": 4.0, "ollama": 10.0,  # ollama = cloud models via the local server
                  "kaggle": 30.0}  # Kaggle Model Proxy: $10/day, so cost not rate is the limit
 
@@ -424,7 +425,7 @@ def _single(name: str, base_url: str | None, rpm: float | None, model: str | Non
         api_key = first[0] if first else None
     auth = None
     if name == "kaggle":
-        auth = KaggleModelProxyAuth()
+        auth = _KAGGLE_AUTH.get("auth") or _KAGGLE_AUTH.setdefault("auth", KaggleModelProxyAuth())
         base_url, api_key = auth.base_url, auth.api_key
     if name == "ollama":
         api_key = api_key or "ollama"
@@ -447,11 +448,18 @@ def make_provider(name: str, dry_run: bool = False, base_url: str | None = None,
         if "anthropic" in names:
             raise SystemExit("anthropic (Message Batches) cannot be pooled with sequential providers")
         workers = []
-        for n in names:
+        shared_auth: dict[str, Any] = {}
+        for spec in names:
+            n, _, mult = spec.partition("*")          # "kaggle*4" = four concurrent workers on one credential
+            copies = max(1, int(mult or 1))
             keys = _keys_for(n) or [None]
             for i, k in enumerate(keys):
-                workers.append(_single(n, None, None, (models or {}).get(n), multi=True, api_key=k,
-                                       label=n if i == 0 else f"{n}#{i + 1}"))
+                for c in range(copies):
+                    w = _single(n, None, None, (models or {}).get(n), multi=True, api_key=k,
+                                label=(n if i == 0 else f"{n}#{i + 1}") + (f"/{c + 1}" if copies > 1 else ""))
+                    if w.auth is not None:            # one token refresher per provider, shared by its copies
+                        w.auth = shared_auth.setdefault(n, w.auth)
+                    workers.append(w)
         return MultiProvider(workers)
     name = names[0]
     if name == "anthropic":

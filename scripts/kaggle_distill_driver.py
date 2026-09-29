@@ -16,7 +16,7 @@ import time
 
 W = os.environ.get("KAGGLE_WORKING", "/kaggle/working")
 MAX_HOURS = float(os.environ.get("DISTILL_MAX_HOURS", "11"))
-PROVIDERS = os.environ.get("DISTILL_PROVIDERS") or "kaggle,groq,gemini,openrouter"  # kaggle = Model Proxy ($10/day)
+PROVIDERS = os.environ.get("DISTILL_PROVIDERS") or "kaggle*4,groq,gemini,openrouter"  # kaggle*4 = four workers on the Model Proxy ($10/day)
 if os.environ.get("OLLAMA_API_KEY") and "ollama" not in PROVIDERS:
     os.environ["TEACHER_OLLAMA_BASE_URL"] = "https://ollama.com/v1"
     PROVIDERS += ",ollama"

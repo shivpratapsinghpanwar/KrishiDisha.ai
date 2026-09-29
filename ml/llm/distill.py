@@ -81,7 +81,7 @@ def _client(args):
     free tier (GEMINI_API_KEY), Groq, OpenRouter or a local Ollama model. See ml/llm/providers.py."""
     from .providers import make_provider
 
-    models = {n: DEFAULT_MODELS.get(n, DEFAULT_MODELS["openai"])[0] for n in args.provider.split(",")}
+    models = {n.split("*")[0]: DEFAULT_MODELS.get(n.split("*")[0], DEFAULT_MODELS["openai"])[0] for n in args.provider.split(",")}
     return make_provider(args.provider, dry_run=args.dry_run, base_url=args.base_url, rpm=args.rpm, models=models)
 
 
@@ -411,13 +411,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.stage == "status":
         print(json.dumps(ledger_load(), indent=1))
         return 0
-    primary = args.provider.split(",")[0]
+    primary = args.provider.split(",")[0].split("*")[0]
     defaults = DEFAULT_MODELS.get(primary, DEFAULT_MODELS["openai"])
     if not args.model:
         args.model = defaults[0]
     if primary in ("gemini", "groq", "openrouter", "ollama", "kaggle"):  # free tiers / local: no invented bill (kaggle reports real cost per reply)
         for n in args.provider.split(","):
-            for mdl in DEFAULT_MODELS.get(n, ()):
+            for mdl in DEFAULT_MODELS.get(n.split("*")[0], ()):
                 PRICES[mdl] = (0.0, 0.0)
         PRICES[args.model] = (0.0, 0.0)
     if getattr(args, "hard_model", None) in (None, "claude-opus-5") and args.provider != "anthropic":
