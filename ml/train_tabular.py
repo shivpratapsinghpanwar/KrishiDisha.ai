@@ -384,6 +384,7 @@ def _run_classification(
     extra: dict[str, Any] | None = None,
     report_map3: bool = False,
     prefer: str | None = None,
+    only: set[str] | None = None,
 ) -> tuple[Any, dict[str, Any]]:
     """Compare classifiers, return ``(winner_refit_on_all_data, metrics)``.
 
@@ -404,7 +405,8 @@ def _run_classification(
     folds = max(folds, 2)
     cv = StratifiedKFold(n_splits=folds, shuffle=True, random_state=RANDOM_STATE)
 
-    factories: dict[str, Any] = {name: (lambda e=est: e) for name, est in _classifiers().items()}
+    factories: dict[str, Any] = {name: (lambda e=est: e) for name, est in _classifiers().items()
+                                 if only is None or name in only}
     factories.update(extra or {})
 
     results: dict[str, dict[str, Any]] = {}
@@ -644,10 +646,13 @@ def train_fertilizer(data_dir: Path, out_dir: Path, reports: Path, cv_folds: int
         return CalibratedClassifierCV(XGBLabelClassifier(params=best_params), method="isotonic",
                                       cv=calib_folds)
 
+    # On the 750k-row table the six-way comparison takes > 12 h on 4 CPU cores (GradientBoosting alone ~2 h,
+    # SVM/kNN worse), so only the default XGBoost is kept as the baseline next to the tuned one.
+    only = {"XGBoost"} if len(X) > 100_000 else None
     model, metrics = _run_classification("fertilizer", X, y, pre_factory, cv_folds, reports,
                                          extra={"XGBoost (tuned+calibrated)": tuned_factory},
                                          report_map3=True,
-                                         prefer="XGBoost (tuned+calibrated)")
+                                         prefer="XGBoost (tuned+calibrated)", only=only)
     # A hold-out drawn from a 99-row lookup table measures memorisation. Say so
     # in the metrics file so the app never quotes the number as if it meant
     # something.
