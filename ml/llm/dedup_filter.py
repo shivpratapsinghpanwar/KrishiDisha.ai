@@ -155,11 +155,24 @@ def load_scheme_amounts(path: Path = Path("data/knowledge/government_schemes.jso
     return {a.replace(",", "") for a in re.findall(r"(?:Rs\.?|₹|INR)\s*([\d,]{3,})", text)}
 
 
-def stratified_eval(examples: list[dict], size: int, seed: int, keep_ids: set[str] | None = None) -> tuple[list[dict], list[dict]]:
+def stratified_eval(examples: list[dict], size: int, seed: int, keep_ids: set[str] | None = None,
+                    extra: int = 0, extra_source: str = "distill") -> tuple[list[dict], list[dict]]:
     rng = random.Random(seed)
     if keep_ids:
         ev = [e for e in examples if e["id"] in keep_ids]
         tr = [e for e in examples if e["id"] not in keep_ids]
+        if extra:  # grow the frozen set once with a language-stratified slice of a new source (e.g. tool trajectories)
+            groups: dict[str, list[dict]] = defaultdict(list)
+            for e in tr:
+                if e["source"].startswith(extra_source):
+                    groups[e["language"]].append(e)
+            per = max(1, extra // max(len(groups), 1))
+            add_ids: set[str] = set()
+            for items in groups.values():
+                rng.shuffle(items)
+                add_ids.update(e["id"] for e in items[:per])
+            ev += [e for e in tr if e["id"] in add_ids]
+            tr = [e for e in tr if e["id"] not in add_ids]
         return tr, ev
     groups: dict[tuple[str, str], list[dict]] = defaultdict(list)
     for e in examples:
@@ -186,6 +199,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--eval", type=Path, default=DATA_DIR / "eval.jsonl")
     p.add_argument("--eval-size", type=int, default=600)
     p.add_argument("--keep-eval", action="store_true", help="reuse the ids in the existing --eval file")
+    p.add_argument("--eval-extra", type=int, default=0, help="with --keep-eval: also hold out this many examples of --eval-extra-source (stratified by language)")
+    p.add_argument("--eval-extra-source", default="distill")
     p.add_argument("--threshold", type=float, default=0.8)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--drop-raw", action="store_true", help="drop kcc_raw rows that were not rewritten by the teacher")
@@ -222,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
     examples, n_dup = dedupe(examples, args.threshold)
 
     keep_ids = {e["id"] for e in read_jsonl(args.eval)} if args.keep_eval and args.eval.exists() else None
-    train, ev = stratified_eval(examples, args.eval_size, args.seed, keep_ids)
+    train, ev = stratified_eval(examples, args.eval_size, args.seed, keep_ids, extra=args.eval_extra, extra_source=args.eval_extra_source)
     write_jsonl(args.train, train)
     write_jsonl(args.eval, ev)
     summary = {"input": n0, "dropped_safety": n_safety, "dropped_duplicates": n_dup, "train": len(train), "eval": len(ev),
