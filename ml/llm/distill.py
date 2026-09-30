@@ -345,7 +345,7 @@ def stage_rewrite(args) -> int:
     guard(args.max_usd, estimate(args.model, len(reqs), 260, 260), "rewrite")
     if args.dry_run:
         return 0
-    batch_id = "rewrite" + (f"_{args.target_language}" if args.target_language else "")
+    batch_id = args.cache_label or ("rewrite" + (f"_{args.target_language}" if args.target_language else ""))
     results = run_batch(client, reqs, batch_id)
     out_rows, usd = [], 0.0
     by_id = {r["id"]: r for r in rows}
@@ -404,6 +404,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--out", type=Path, default=DATA_DIR / "kcc_rewritten.jsonl")
     r.add_argument("--n", type=int, default=0)
     r.add_argument("--filter-language", default=None, help="only rewrite rows with this language tag (e.g. hi)")
+    r.add_argument("--cache-label", default=None, help="cache file name for this rewrite run (default rewrite_<lang>)")
     r.add_argument("--target-language", default=None, choices=[None, "hi", "hinglish"],
                    help="rewrite the answer INTO this language (fixes KB pairs whose 'Hindi' answers were English facts)")
     sub.add_parser("status")

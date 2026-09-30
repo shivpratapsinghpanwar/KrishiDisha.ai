@@ -68,7 +68,9 @@ while time.time() - t0 < MAX_HOURS * 3600:
     passes += 1
     before = counts()
     for stage in [f"python -u -m ml.llm.distill trajectories --provider {PROVIDERS} --questions data/llm/questions.jsonl --out {W}/distill.jsonl",
-                  f"python -u -m ml.llm.distill rewrite --provider {PROVIDERS} --inp data/llm/train.jsonl --filter-language hi --target-language hi --out {W}/kb_hi_rewritten.jsonl"]:
+                  f"python -u -m ml.llm.distill rewrite --provider {PROVIDERS} --inp data/llm/train.jsonl --filter-language hi --target-language hi --out {W}/kb_hi_rewritten.jsonl",
+                  # the frozen eval set has the same English-in-Hindi-frame reference answers: rewrite those too (separate cache label)
+                  f"python -u -m ml.llm.distill rewrite --provider {PROVIDERS} --inp data/llm/eval.jsonl --filter-language hi --target-language hi --out {W}/eval_hi_rewritten.jsonl --cache-label rewrite_hi_eval"]:
         subprocess.run(stage + f" 2>&1 | grep -vE 'INFO|Warning' | tee -a {W}/distill.log | tail -6", shell=True)
     after = counts()
     print(f"pass {passes} at {(time.time() - t0) / 3600:.1f}h: {after}", flush=True)
