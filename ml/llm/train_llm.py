@@ -22,7 +22,7 @@ import sys
 import time
 from pathlib import Path
 
-from .common import read_jsonl, render_hermes
+from .common import normalise_for_training, read_jsonl, render_hermes
 
 FAMILY = {"qwen": {"instruction": "<|im_start|>user\n", "response": "<|im_start|>assistant\n", "native_tools": True},
           "gemma": {"instruction": "<start_of_turn>user\n", "response": "<start_of_turn>model\n", "native_tools": False},
@@ -36,7 +36,7 @@ def family_of(base: str) -> str:
 
 
 def render_example(tokenizer, ex: dict, fam: dict) -> str:
-    messages, tools = ex["messages"], ex.get("tools")
+    messages, tools = normalise_for_training(ex["messages"]), ex.get("tools")
     if tools and fam["native_tools"]:
         try:
             return tokenizer.apply_chat_template(messages, tools=tools, tokenize=False)
@@ -59,7 +59,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--epochs", type=float, default=2.0)
     p.add_argument("--lr", type=float, default=2e-4)
-    p.add_argument("--max-seq", type=int, default=2048)
+    p.add_argument("--max-seq", type=int, default=6144,
+                   help="rendered token budget; the 13-tool schema block alone is ~2.5k tokens, so 2048 silently "
+                        "dropped every tool-call turn in the v1 run")
+    p.add_argument("--allow-truncation", action="store_true", help="do not abort when >2%% of examples exceed --max-seq")
     p.add_argument("--batch-size", type=int, default=2)
     p.add_argument("--accum", type=int, default=8)
     p.add_argument("--rank", type=int, default=16)
@@ -90,8 +93,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.limit:
         rows = rows[: args.limit]
     texts = [render_example(tokenizer, ex, fam) for ex in rows]
-    lengths = [len(tokenizer(t).input_ids) for t in texts[:500]]
-    print(f"{len(texts)} examples; token length p50={sorted(lengths)[len(lengths) // 2]} max={max(lengths)} (first 500)")
+    lengths = [len(tokenizer(t).input_ids) for t in texts]
+    over = sum(1 for n in lengths if n > args.max_seq)
+    tool_rows = [i for i, ex in enumerate(rows) if any(m.get("tool_calls") for m in ex["messages"])]
+    tool_over = sum(1 for i in tool_rows if lengths[i] > args.max_seq)
+    print(f"{len(texts)} examples; token length p50={sorted(lengths)[len(lengths) // 2]} "
+          f"p90={sorted(lengths)[int(len(lengths) * 0.9)]} max={max(lengths)}; over --max-seq {args.max_seq}: {over} "
+          f"({100 * over / len(lengths):.1f}%), tool examples over: {tool_over}/{len(tool_rows)}", flush=True)
+    if over > 0.02 * len(lengths) and not args.allow_truncation:
+        sys.exit(f"ABORT: {over} examples would be truncated at --max-seq {args.max_seq} (SFTTrainer cuts the tail, i.e. "
+                 "the answer turns). Raise --max-seq, shorten tool outputs, or pass --allow-truncation.")
     train_ds = Dataset.from_list([{"text": t} for t in texts]).shuffle(seed=args.seed)
     eval_ds = None
     if args.eval and args.eval.exists():

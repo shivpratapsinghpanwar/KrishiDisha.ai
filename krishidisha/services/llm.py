@@ -157,13 +157,19 @@ class AgriAssistant:
                 f"- ({p['source']}) {p['title']}: {p['text'][:500]}" for p in passages) + "]"
 
         lang_name = LANGUAGE_NAMES.get(language, language)
-        user_turn = message
-        if farmer_context:
-            user_turn = f"[Farmer profile: {farmer_context}]\n" + user_turn
-        if vision_note:
-            user_turn += "\n\n" + vision_note
-        user_turn += grounding
-        user_turn += f"\n\n[Preferred reply language: {lang_name}]"
+        if self.provider == "openai" and self.trained_format:
+            # KrishiDisha fine-tune: serve exactly what it was trained on - the compact system prompt and the
+            # bare question (no profile / retrieval / language tags, which it never saw and which push it to
+            # answer from the passages instead of calling a tool). The leaf-analysis note is the one exception.
+            user_turn = message if not vision_note else message + "\n\n" + vision_note
+        else:
+            user_turn = message
+            if farmer_context:
+                user_turn = f"[Farmer profile: {farmer_context}]\n" + user_turn
+            if vision_note:
+                user_turn += "\n\n" + vision_note
+            user_turn += grounding
+            user_turn += f"\n\n[Preferred reply language: {lang_name}]"
 
         try:
             if self.provider == "anthropic":
@@ -252,9 +258,31 @@ class AgriAssistant:
                 "sources": [p["title"] for p in passages], "detection": detection}
 
     # --------------------------------------------------------------- openai
+    @property
+    def trained_format(self) -> bool:
+        """True when the OpenAI-compatible model is a KrishiDisha fine-tune and must be prompted as trained.
+
+        ``LLM_TRAINED_FORMAT`` = ``auto`` (default: on when the model name starts with ``krishidisha``),
+        ``true`` or ``false``; the environment variable is honoured when the config has no such key.
+        """
+        import os
+
+        flag = getattr(self.cfg, "LLM_TRAINED_FORMAT", None) or os.getenv("LLM_TRAINED_FORMAT", "auto")
+        flag = str(flag).strip().lower()
+        if flag in {"1", "true", "yes", "on"}:
+            return True
+        if flag in {"0", "false", "no", "off"}:
+            return False
+        return str(self.cfg.OPENAI_MODEL or "").lower().startswith("krishidisha")
+
     def _chat_openai(self, user_turn, history, image_bytes, image_mime, passages, detection):
         client = self.openai_client
-        messages: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM_PROMPT}]
+        system_prompt = SYSTEM_PROMPT
+        if self.trained_format:
+            from ml.toolformat import COMPACT_SYSTEM_PROMPT
+
+            system_prompt = COMPACT_SYSTEM_PROMPT
+        messages: list[dict[str, Any]] = [{"role": "system", "content": system_prompt}]
         messages += [{"role": h["role"], "content": h["content"]} for h in history]
         if image_bytes:
             b64 = base64.standard_b64encode(image_bytes).decode()

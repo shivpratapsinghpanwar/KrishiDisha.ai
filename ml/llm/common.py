@@ -17,15 +17,9 @@ log = logging.getLogger(__name__)
 DATA_DIR = Path("data/llm")
 LANGS = ["en", "hi", "hinglish", "mr", "pa", "gu", "bn", "ta", "te", "kn", "ml", "or"]
 
-# Short production system prompt used for training data; must match what the app sends at serving
-# time (see krishidisha/services/llm.py SYSTEM_PROMPT) so the fine-tuned model sees the same context.
-COMPACT_SYSTEM_PROMPT = (
-    "You are KrishiDisha Sahayak, an expert agricultural advisor for Indian farmers. Be practical and specific "
-    "(doses in kg/acre or ml/litre, timings, product names, INR costs). Use the tools for numbers, forecasts, prices "
-    "and catalogue facts instead of guessing; ask briefly for missing inputs. Give prevention and an organic/IPM "
-    "option first, remind about safety gear and pre-harvest interval for sprays, never recommend banned pesticides. "
-    "Reply in the farmer's language. Keep answers under 250 words with bullets or small tables."
-)
+# Short production system prompt used for training data. Defined once in ml/toolformat.py so the app serves the
+# fine-tuned model with exactly the same prompt (krishidisha/services/llm.py, "trained format").
+from ml.toolformat import COMPACT_SYSTEM_PROMPT  # noqa: E402,F401
 
 
 @contextmanager
@@ -138,3 +132,34 @@ def render_hermes(messages: list[dict], tools: list[dict] | None) -> list[dict]:
 
 def seeded(seed: int = 42) -> random.Random:
     return random.Random(seed)
+
+# ------------------------------------------------------------------ training-side normalisation
+def normalise_for_training(messages: list[dict], max_tool_chars: int = 1800) -> list[dict]:
+    """Return a copy of OpenAI-shaped messages ready for ``apply_chat_template``.
+
+    * ``tool_calls[].function.arguments`` becomes a dict (the dataset stores the OpenAI JSON *string*; Qwen's
+      template would otherwise ``tojson`` the string and the model would learn ``"arguments": "{\\"crop\\"..."``
+      instead of the native ``"arguments": {...}`` object that Ollama / the app parser expect).
+    * tool results longer than *max_tool_chars* are cut (head kept) so the final answer stays inside ``max_seq``.
+    """
+    out: list[dict] = []
+    for m in messages:
+        m = dict(m)
+        if m.get("role") == "assistant" and m.get("tool_calls"):
+            calls = []
+            for c in m["tool_calls"]:
+                c = json.loads(json.dumps(c))  # deep copy
+                fn = c.get("function", c)
+                args = fn.get("arguments", {})
+                if isinstance(args, str):
+                    try:
+                        args = json.loads(args or "{}")
+                    except ValueError:
+                        args = {"_raw": args}
+                fn["arguments"] = args
+                calls.append(c)
+            m["tool_calls"] = calls
+        elif m.get("role") == "tool" and isinstance(m.get("content"), str) and len(m["content"]) > max_tool_chars:
+            m["content"] = m["content"][:max_tool_chars] + " ...(truncated)"
+        out.append(m)
+    return out
