@@ -1,0 +1,43 @@
+{
+ "usd": 0.2693,
+ "batches": [
+  {
+   "stage": "questions",
+   "batch": "questions",
+   "model": "gemini-2.5-flash",
+   "n": 375,
+   "usd": 0.0,
+   "at": "2026-09-26T23:12:52"
+  },
+  {
+   "stage": "questions",
+   "batch": "questions",
+   "model": "gemini-flash-lite-latest",
+   "n": 375,
+   "usd": 0.0,
+   "at": "2026-09-27T01:36:46"
+  },
+  {
+   "stage": "trajectories_r0",
+   "batch": "trajectories r0",
+   "n": 4,
+   "usd": 0.0,
+   "at": "2026-09-30T00:07:56"
+  },
+  {
+   "stage": "trajectories_r1",
+   "batch": "trajectories r1",
+   "n": 2,
+   "usd": 0.0,
+   "at": "2026-09-30T00:07:56"
+  },
+  {
+   "stage": "rewrite",
+   "batch": "rewrite_hi_eval",
+   "model": "google/gemini-3-flash-preview",
+   "n": 143,
+   "usd": 0.2693,
+   "at": "2026-10-02T19:28:32"
+  }
+ ]
+}

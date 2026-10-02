@@ -1,0 +1,40 @@
+{
+ "input": 6097,
+ "dropped_safety": 36,
+ "dropped_duplicates": 147,
+ "train": 4417,
+ "eval": 606,
+ "by_source": {
+  "kb_guide": 1231,
+  "kb_pest": 149,
+  "kb_disease": 37,
+  "kb_scheme": 15,
+  "tool_fert_calc": 158,
+  "tool_calendar": 82,
+  "tool_guide": 37,
+  "tool_scheme": 7,
+  "tool_disease": 12,
+  "tool_recommend_crop": 110,
+  "tool_yield": 68,
+  "kisanvaani": 1517,
+  "distill": 994
+ },
+ "by_language": {
+  "en": 2852,
+  "hinglish": 691,
+  "hi": 682,
+  "bn": 73,
+  "mr": 34,
+  "ta": 48,
+  "te": 37
+ },
+ "eval_by_language": {
+  "hinglish": 160,
+  "en": 231,
+  "hi": 147,
+  "mr": 17,
+  "te": 17,
+  "ta": 17,
+  "bn": 17
+ }
+}
