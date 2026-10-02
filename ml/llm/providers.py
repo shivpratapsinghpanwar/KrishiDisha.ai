@@ -444,7 +444,7 @@ def make_provider(name: str, dry_run: bool = False, base_url: str | None = None,
     if dry_run:
         return None
     names = [n.strip() for n in name.split(",") if n.strip()]
-    if len(names) > 1:
+    if len(names) > 1 or (names and "*" in names[0]):   # a pool, or N workers of one provider ("kaggle*4")
         if "anthropic" in names:
             raise SystemExit("anthropic (Message Batches) cannot be pooled with sequential providers")
         workers = []
