@@ -1,0 +1,18 @@
+{
+  "id": "sspanwar/krishidisha-assistant-evaluation",
+  "title": "KrishiDisha assistant - evaluation",
+  "code_file": "kaggle_eval_llm.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "sspanwar/krishidisha-lab-src",
+    "sspanwar/krishidisha-llm-gguf"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [
+    "sspanwar/krishidisha-assistant-qlora-training"
+  ]
+}
