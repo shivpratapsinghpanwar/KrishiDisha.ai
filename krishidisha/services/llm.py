@@ -275,6 +275,23 @@ class AgriAssistant:
             return False
         return str(self.cfg.OPENAI_MODEL or "").lower().startswith("krishidisha")
 
+    @property
+    def sampling_temperature(self) -> float:
+        """``LLM_TEMPERATURE`` (config or env). Default 0.3 for general models, 0.0 for KrishiDisha fine-tunes:
+        a 3B model's decision to emit a <tool_call> block is sampling-sensitive, and greedy decoding made it
+        call the right tool on every probe where 0.3 answered from memory instead."""
+        import os
+
+        raw = getattr(self.cfg, "LLM_TEMPERATURE", None)
+        if raw is None or raw == "":
+            raw = os.getenv("LLM_TEMPERATURE", "")
+        if raw not in (None, ""):
+            try:
+                return float(raw)
+            except ValueError:
+                pass
+        return 0.0 if self.trained_format else 0.3
+
     def _chat_openai(self, user_turn, history, image_bytes, image_mime, passages, detection):
         client = self.openai_client
         system_prompt = SYSTEM_PROMPT
@@ -313,7 +330,7 @@ class AgriAssistant:
         text = ""
         for _ in range(self.cfg.LLM_MAX_TOOL_ROUNDS + 1):
             try:
-                kwargs: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.3}
+                kwargs: dict[str, Any] = {"model": model, "messages": messages, "temperature": self.sampling_temperature}
                 if tool_defs and not inline_tools:
                     kwargs.update(tools=tool_defs, tool_choice="auto")
                 if getattr(self.cfg, "LLM_MAX_TOKENS", None):
