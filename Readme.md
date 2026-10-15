@@ -12,7 +12,7 @@ agricultural assistant — one Flask app, running on a laptop or a single dyno.
 
 [![Paper](https://img.shields.io/badge/IEEE%20ICoEIT%202025-10.1109%2FICoEIT63558.2025.11211713-00629B)](https://doi.org/10.1109/ICoEIT63558.2025.11211713)
 
-Built by Abhishek Chourasia, Goutam Mandloi and Shivpratap Singh Panwar.
+Built by Shivpratap Singh Panwar, Abhishek Chourasia and Goutam Mandloi.
 
 This repository is the reference implementation of our paper **"KrishiDisha: Revolutionizing
 Agriculture with Intelligent Recommendations, Disease Detection, and Yield Prediction"**,
