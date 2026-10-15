@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import os
 import statistics
 import sys
@@ -133,8 +134,26 @@ def main(argv: list[str] | None = None) -> int:
             jsonschema = None
         for spec in args.systems:
             name, run = _system_factory(app, spec)
+            # Per-example progress file: every result is appended as it lands and a restarted run skips the ids
+            # already there, so a killed run (memory reaper, session cap, sleep) never loses finished work.
+            progress = args.out.with_name(args.out.stem + "." + re.sub(r"[^A-Za-z0-9_.-]+", "_", name) + ".progress.jsonl")
             rows = []
+            done_ids: set[str] = set()
+            if progress.exists():
+                for line in progress.read_text(encoding="utf-8").splitlines():
+                    try:
+                        r = json.loads(line)
+                    except ValueError:
+                        continue
+                    if r.get("id") not in done_ids:
+                        rows.append(r)
+                        done_ids.add(r["id"])
+                if rows:
+                    print(f"{name}: resuming, {len(rows)} examples already scored in {progress}", flush=True)
+            progress.parent.mkdir(parents=True, exist_ok=True)
             for ex in examples:
+                if ex["id"] in done_ids:
+                    continue
                 question, ref_tools, ref_answer = _reference(ex)
                 lang = ex.get("language", "en")
                 try:
@@ -157,6 +176,10 @@ def main(argv: list[str] | None = None) -> int:
                 if judge_client and reply:
                     row["judge"] = _judge(judge_client, args.judge, lang, question, ref_answer, reply)
                 rows.append(row)
+                with progress.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(row, ensure_ascii=False) + chr(10))
+                if len(rows) % 25 == 0:
+                    print(f"{name}: {len(rows)}/{len(examples)} scored", flush=True)
             results[name] = rows
             print(f"{name}: {len(rows)} examples done", flush=True)
 
