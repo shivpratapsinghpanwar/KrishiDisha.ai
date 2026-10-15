@@ -294,7 +294,14 @@ class AgriAssistant:
         from .toolcalls import extract_tool_calls, strip_tool_calls
 
         tool_defs = [t.openai() for t in self.tools]
-        if getattr(self.cfg, "LLM_COMPACT_TOOLS", False):
+        inline_tools = False
+        if self.trained_format and tool_defs:
+            # Fine-tunes: tools go into the system message as trained; no `tools` parameter (see ml.toolformat).
+            from ml.toolformat import system_with_tools
+
+            messages[0] = {"role": "system", "content": system_with_tools(system_prompt, tool_defs)}
+            inline_tools = True
+        if getattr(self.cfg, "LLM_COMPACT_TOOLS", False) and not inline_tools:
             # Local 3-4B models: a 1.8k-token tool list costs seconds of prompt processing; keep one sentence each.
             for d in tool_defs:
                 desc = d["function"].get("description", "")
@@ -307,7 +314,7 @@ class AgriAssistant:
         for _ in range(self.cfg.LLM_MAX_TOOL_ROUNDS + 1):
             try:
                 kwargs: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.3}
-                if tool_defs:
+                if tool_defs and not inline_tools:
                     kwargs.update(tools=tool_defs, tool_choice="auto")
                 if getattr(self.cfg, "LLM_MAX_TOKENS", None):
                     kwargs["max_tokens"] = int(self.cfg.LLM_MAX_TOKENS)
@@ -334,9 +341,12 @@ class AgriAssistant:
                     text = strip_tool_calls(text)
             if not calls:
                 break
-            messages.append({"role": "assistant", "content": text,
-                             "tool_calls": [{"id": c["id"], "type": "function",
-                                             "function": {"name": c["name"], "arguments": c["arguments"]}} for c in calls]})
+            if inline_tools:
+                messages.append({"role": "assistant", "content": msg.content or ""})
+            else:
+                messages.append({"role": "assistant", "content": text,
+                                 "tool_calls": [{"id": c["id"], "type": "function",
+                                                 "function": {"name": c["name"], "arguments": c["arguments"]}} for c in calls]})
             for c in calls:
                 tools_used.append(c["name"])
                 try:

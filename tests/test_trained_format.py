@@ -46,10 +46,13 @@ def test_fine_tune_gets_compact_prompt_and_bare_question(app, monkeypatch):
     assert assistant.trained_format is True
     res = assistant.chat("How much urea for 2 acres of wheat?", farmer_context="state: MP", language="en")
     req = fake.requests[0]
-    assert req["messages"][0] == {"role": "system", "content": COMPACT_SYSTEM_PROMPT}
+    # tools are rendered into the system message exactly as in training; no `tools` parameter is sent
+    assert req["messages"][0]["role"] == "system"
+    assert req["messages"][0]["content"].startswith(COMPACT_SYSTEM_PROMPT)
+    assert "<tools>" in req["messages"][0]["content"] and "tools" not in req
     user = req["messages"][-1]["content"]
     assert user == "How much urea for 2 acres of wheat?"  # no profile / passages / language tag
-    assert "tools" in req and len(req["tools"]) == len(app.tools)
+    assert all(f"\"name\": \"{tool.name}\"" in req["messages"][0]["content"] for tool in app.tools)
     assert res["provider"] == "openai"
 
 
@@ -76,3 +79,25 @@ def test_training_prompt_matches_dataset_rows():
     """Guard against the prompt drifting away from what data/llm/train.jsonl was rendered with."""
     assert COMPACT_SYSTEM_PROMPT.startswith("You are KrishiDisha Sahayak, an expert agricultural advisor")
     assert json.dumps(COMPACT_SYSTEM_PROMPT)  # plain string, no formatting placeholders
+
+
+def test_qwen_tools_block_matches_template():
+    """The inline tools block must equal what Qwen2.5's chat template rendered during training."""
+    import re
+    from pathlib import Path
+
+    pytest = __import__("pytest")
+    adapter = Path("models/llm/adapter-qwen-v1")
+    if not (adapter / "tokenizer_config.json").exists():
+        pytest.skip("Qwen tokenizer (adapter) not present")
+    transformers = pytest.importorskip("transformers")
+    from ml.toolformat import COMPACT_SYSTEM_PROMPT, system_with_tools
+
+    tools = [{"type": "function", "function": {"name": "crop_calendar", "description": "Sowing and harvest windows.",
+                                               "parameters": {"type": "object", "properties": {"crop": {"type": "string"}}, "required": ["crop"]}}}]
+    tok = transformers.AutoTokenizer.from_pretrained(str(adapter))
+    full = tok.apply_chat_template([{"role": "system", "content": COMPACT_SYSTEM_PROMPT}, {"role": "user", "content": "x"}],
+                                   tools=tools, tokenize=False)
+    rendered = re.search(r"<\|im_start\|>system\n(.*?)<\|im_end\|>", full, re.S).group(1)
+    assert rendered == system_with_tools(COMPACT_SYSTEM_PROMPT, tools)
+
