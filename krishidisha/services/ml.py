@@ -400,14 +400,21 @@ class MLService:
         ])
         from sklearn.compose import TransformedTargetRegressor
 
-        point = TransformedTargetRegressor(
-            regressor=Pipeline([("pre", pre),
-                                ("model", HistGradientBoostingRegressor(random_state=42, max_iter=300))]),
-            func=np.log1p, inverse_func=np.expm1,
-        )
-        point.fit(X, y)
+        from sklearn.base import clone
+
+        def _model(**kw):
+            return TransformedTargetRegressor(
+                regressor=Pipeline([("pre", clone(pre)),
+                                    ("model", HistGradientBoostingRegressor(random_state=42, max_iter=300, **kw))]),
+                func=np.log1p, inverse_func=np.expm1)
+
+        point = _model().fit(X, y)
+        # 10th/90th percentile models from the same estimator family, so ``expected_range`` brackets the point
+        # estimate on a fresh checkout too (the shipped lab bundle carries the evaluated equivalents).
+        low = _model(loss="quantile", quantile=0.1).fit(X, y)
+        high = _model(loss="quantile", quantile=0.9).fit(X, y)
         baseline = MedianBaseline().fit(X, y)
-        return YieldBundle(point, baseline=baseline,
+        return YieldBundle(point, low=low, high=high, baseline=baseline,
                            meta={"winner": "HistGradientBoosting (untuned fallback)",
                                  "trained_by": "MLService fallback (first run without shipped weights); the evaluated model, "
                                                "quantile band and baseline comparison come from the lab training pipeline",
