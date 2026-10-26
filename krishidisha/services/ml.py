@@ -395,7 +395,7 @@ class MLService:
         df = self._yield_df()
         X, y = build_yield_features(df), df["Yield"].astype(float)
         pre = ColumnTransformer([
-            ("cat", OneHotEncoder(handle_unknown="ignore"), YIELD_CATEGORICAL),
+            ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), YIELD_CATEGORICAL),  # HGB needs dense
             ("num", "passthrough", YIELD_NUMERIC + YIELD_DERIVED),
         ])
         from sklearn.compose import TransformedTargetRegressor
@@ -409,8 +409,8 @@ class MLService:
         baseline = MedianBaseline().fit(X, y)
         return YieldBundle(point, baseline=baseline,
                            meta={"winner": "HistGradientBoosting (untuned fallback)",
-                                 "trained_by": "MLService fallback - run `python -m ml.train_tabular` for the "
-                                               "evaluated model, quantile band and baseline comparison",
+                                 "trained_by": "MLService fallback (first run without shipped weights); the evaluated model, "
+                                               "quantile band and baseline comparison come from the lab training pipeline",
                                  "n_samples": int(len(X))})
 
     @property
