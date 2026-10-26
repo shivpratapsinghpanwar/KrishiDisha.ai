@@ -29,7 +29,7 @@ v0 Ollama model is kept as `krishidisha-v0` for side-by-side evaluation.
 Run with `uv run python -m ml.llm.eval_llm --systems rules ollama:krishidisha-v0 ollama:krishidisha`
 through the real `AgriAssistant` (same tools, retrieval and safety guard as the app).
 
-_Pending: the v0 and v1 runs are in progress; the table is filled in from `models/reports/llm_eval_v1.md`._
+See `models/reports/llm_v2/README.md` for the completed comparison (rules bot, v1, v2 on the 606-set, run on Kaggle on 2026-10-15): v1 calls the exact tool set on 1.3% of tool examples (v2: 86.6%), confirming the truncation diagnosis; v1 keeps the best language compliance (85.5%, Hinglish 68.8%).
 
 ## Sample generations
 
@@ -58,8 +58,9 @@ Fixed for v2 in the same commit:
 
 ## Known gaps carried into v2
 
-- Distillation round 1/2 is incomplete (r0 2,904/2,904, r1 566, r2 143): about 800 tool questions still
-  lack their final assistant turn, so most distilled examples end after the tool result. v2 needs one more
-  editor-started Kaggle distillation session (Model Proxy quota) before `dedup_filter` and a retrain.
+- Distillation rounds 1/2 are incomplete (r0 2,904/2,904, r1 566, r2 143): about 800 tool questions still
+  lack their final assistant turn. `dedup_filter` keeps only complete trajectories, so just 172 distilled
+  tool conversations (plus ~400 templated ones) made it into the v1/v2 training set. One more editor-started
+  Kaggle distillation session (Model Proxy quota) would roughly triple the real tool examples for v3.
 - Regional languages other than Hindi/Hinglish have under 80 examples each.
 - No LLM-as-judge scores yet (needs an `ANTHROPIC_API_KEY` for `--judge`).
