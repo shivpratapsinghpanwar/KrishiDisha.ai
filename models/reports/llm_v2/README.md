@@ -14,7 +14,7 @@ set (v1: 0.607 on the same set). GGUF q4_k_m 1.93 GB, private; Ollama tag `krish
 
 Tool rows = eval examples whose reference trajectory calls at least one tool (157 of them).
 
-Raw per-example results: `models/reports/llm_eval_v2/*.json`.
+Raw per-example results: `models/reports/llm_eval_v2/*.json`. The "Args valid" column is empty because the assistant does not yet return the parsed tool arguments to the harness; argument validity was not measured.
 
 ### What the numbers say
 
@@ -25,11 +25,14 @@ Raw per-example results: `models/reports/llm_eval_v2/*.json`.
 - **v2 over-calls.** On the 449 plain questions it still calls a tool 52% of the time (crop_guide 59, search_knowledge 51,
   crop_calendar 50, get_disease_info 41, search_products 36). The answers are then grounded in the tool output rather
   than memory, which is the behaviour we want for facts, but the harness scores them as misses, and each such reply
-  costs a second model turn (35 s mean on plain rows vs 13 s on tool rows, on the T4).
-- **Hinglish regressed (23% vs 69% for v1)** because 136 of the 160 Hinglish questions now go through a tool, and the
-  answer written after the tool result comes back in English or Hindi. The teacher trajectories carried the
-  "reply in Hinglish" instruction only in the teacher prompt, not in the training prompt, so the model never learned
-  to keep the user's language across a tool turn. Hindi held at 76% (v1 88%), English 100%.
+  costs a second model turn (35 s mean on plain rows vs 13 s on tool rows; Kaggle T4 inside the kernel with the mandi API timing out, not laptop numbers).
+- **Hinglish regressed (23% vs 69% for v1)**, for two reasons that a five-question local probe separates: after a tool
+  turn v2 often does switch to English (the PM-Kisan and crop-calendar replies came back fully in English), and the
+  harness's keyword heuristic also labels genuinely Hinglish tool-grounded replies as English when they quote English
+  tool output ("3 acre cotton ke liye: Urea 212 kg..." scores as `en`). The real part is a data gap: the teacher
+  trajectories carried the "reply in Hinglish" instruction only in the teacher prompt, not the training prompt. Hindi
+  held at 76% (v1 88%), English 100%. On the same probe, the tool-grounded PM-Kisan answer quoted the correct
+  Rs 6,000 per year, where the from-memory answer had fabricated an amount.
 - The harness measures tool selection, language and banned-molecule hits only. It does not score factual accuracy:
   probes showed v2 fabricating numbers when it answers from memory (a PM-Kisan amount, "2 acres = 8 hectares"),
   and mapping "gulabi sundi" (pink bollworm) to leaf curl virus before calling get_disease_info. A judge run is the
